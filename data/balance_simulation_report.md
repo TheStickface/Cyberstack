@@ -4,25 +4,25 @@
 ---
 
 ## 1. Global Roguelite Run Performance
-- **Global 4-District Run Clear Rate:** **85.7%** (8573 Victories / 10000 Runs)
-- **Total Events Encountered:** 35953 (Avg 3.6 per run)
-- **Role-Check Activation Rate:** **65.2%** (23441 special checks passed)
-- **Average Bonus Event Gold Earned:** +22.4 credits/run
+- **Global 4-District Run Clear Rate:** **86.2%** (8615 Victories / 10000 Runs)
+- **Total Events Encountered:** 36029 (Avg 3.6 per run)
+- **Role-Check Activation Rate:** **65.2%** (23488 special checks passed)
+- **Average Bonus Event Gold Earned:** +22.6 credits/run
 - **Average Bonus Event Augments Gained:** +1.76 augments/run
 
 ## 2. Starter Operative Clear Rates & Event Synergies
 | Starter Operative | Runs Simulated | Victories | Clear Rate | Role-Check Success | Avg Event Gold |
 |---|---|---|---|---|---|
-| **Street Runner (Blitz)** | 2500 | 2466 | **98.6%** | 62.7% | +25.6 credits |
-| **Corp Enforcer (Sentinel-09)** | 2500 | 2327 | **93.1%** | 61.6% | +23.7 credits |
-| **Rogue AI (GLITCH.exe)** | 2500 | 1857 | **74.3%** | 70.2% | +20.6 credits |
-| **Fixer (Madame Vane)** | 2500 | 1923 | **76.9%** | 67.3% | +19.9 credits |
+| **Street Runner (Blitz)** | 2500 | 2472 | **98.9%** | 62.1% | +25.7 credits |
+| **Corp Enforcer (Sentinel-09)** | 2500 | 2321 | **92.8%** | 62.5% | +23.7 credits |
+| **Rogue AI (GLITCH.exe)** | 2500 | 1905 | **76.2%** | 69.2% | +20.7 credits |
+| **Fixer (Madame Vane)** | 2500 | 1917 | **76.7%** | 68.0% | +20.1 credits |
 
 ## 3. District Mortality Hotspot Distribution
 | District | Player Eliminations | % of Total Runs |
 |---|---|---|
-| District 1 (Slum Market) | 1345 | 13.5% |
-| District 2 (Corp Arcology) | 3 | 0.0% |
-| District 3 (Server Vault) | 6 | 0.1% |
-| District 4 (Black Site Boss) | 73 | 0.7% |
-| **RUN VICTORY (Secured)** | **8573** | **85.7%** |
+| District 1 (Slum Market) | 1321 | 13.2% |
+| District 2 (Corp Arcology) | 2 | 0.0% |
+| District 3 (Server Vault) | 4 | 0.0% |
+| District 4 (Black Site Boss) | 58 | 0.6% |
+| **RUN VICTORY (Secured)** | **8615** | **86.2%** |
