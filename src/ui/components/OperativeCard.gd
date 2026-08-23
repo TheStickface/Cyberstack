@@ -10,11 +10,13 @@ signal unit_toggle_field_requested(unit: UnitInstance)
 signal unit_sell_requested(unit: UnitInstance)
 signal card_mouse_entered(unit: UnitInstance, card_pos: Vector2)
 signal card_mouse_exited()
+signal augment_dropped(unit: UnitInstance, target_slot: int, drag_data: Dictionary)
 
 const SynergyTooltipScript = preload("res://src/ui/components/SynergyTooltip.gd")
 
 var unit_instance: UnitInstance = null
 var is_fielded: bool = true
+var default_style: StyleBoxFlat = null
 
 @onready var name_label: Label = $Margin/VBox/Header/NameLabel
 @onready var role_badge: Label = $Margin/VBox/Header/RoleBadge
@@ -31,6 +33,116 @@ func _ready() -> void:
 	mouse_entered.connect(_on_card_mouse_entered)
 	mouse_exited.connect(_on_card_mouse_exited)
 	_set_mouse_filter_recursive(self)
+	
+	if get_theme_stylebox("panel") is StyleBoxFlat:
+		default_style = (get_theme_stylebox("panel") as StyleBoxFlat).duplicate()
+		
+	if get_node_or_null("/root/EventBus"):
+		var eb = get_node("/root/EventBus")
+		eb.augment_drag_started.connect(_on_augment_drag_started)
+		eb.augment_drag_ended.connect(_on_augment_drag_ended)
+
+func _exit_tree() -> void:
+	if get_node_or_null("/root/EventBus"):
+		var eb = get_node("/root/EventBus")
+		if eb.augment_drag_started.is_connected(_on_augment_drag_started):
+			eb.augment_drag_started.disconnect(_on_augment_drag_started)
+		if eb.augment_drag_ended.is_connected(_on_augment_drag_ended):
+			eb.augment_drag_ended.disconnect(_on_augment_drag_ended)
+
+func _on_augment_drag_started(aug_res: Resource) -> void:
+	if not is_fielded or unit_instance == null or not aug_res is AugmentResource:
+		return
+		
+	var aug = aug_res as AugmentResource
+	var has_compat = false
+	var slot_types = unit_instance.unit_resource.get_slot_types()
+	
+	# Check compatibility across slots
+	for i in range(Constants.MAX_AUGMENT_SLOTS_PER_UNIT):
+		var slot_type = slot_types[i] if i < slot_types.size() else Enums.SlotType.PASSIVE
+		var is_compat = (aug.slot_type == slot_type or aug.slot_type == Enums.SlotType.FLEX or slot_type == Enums.SlotType.FLEX)
+		if is_compat:
+			has_compat = true
+			if slots_container and i < slots_container.get_child_count():
+				var btn = slots_container.get_child(i) as Button
+				if btn:
+					btn.add_theme_color_override("font_color", Color(0.2, 1.0, 0.4))
+					
+	if has_compat:
+		var glow_style = default_style.duplicate() if default_style else StyleBoxFlat.new()
+		glow_style.border_color = Color(0.0, 1.0, 0.85, 1.0)
+		glow_style.border_width_left = 2
+		glow_style.border_width_top = 2
+		glow_style.border_width_right = 2
+		glow_style.border_width_bottom = 2
+		glow_style.shadow_color = Color(0.0, 0.95, 0.83, 0.5)
+		glow_style.shadow_size = 6
+		add_theme_stylebox_override("panel", glow_style)
+		modulate.a = 1.0
+	else:
+		modulate.a = 0.45
+
+func _on_augment_drag_ended() -> void:
+	modulate.a = 1.0
+	if default_style:
+		add_theme_stylebox_override("panel", default_style)
+	_refresh_slots()
+
+func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
+	if not is_fielded or unit_instance == null:
+		return false
+	if not data is Dictionary:
+		return false
+	var dtype = data.get("type", "")
+	if dtype != "augment" and dtype != "slotted_augment":
+		return false
+	var aug_res = data.get("resource", null) as AugmentResource
+	if aug_res == null:
+		return false
+		
+	# Check if any slot is compatible
+	var slot_types = unit_instance.unit_resource.get_slot_types()
+	for i in range(Constants.MAX_AUGMENT_SLOTS_PER_UNIT):
+		var slot_type = slot_types[i] if i < slot_types.size() else Enums.SlotType.PASSIVE
+		if aug_res.slot_type == slot_type or aug_res.slot_type == Enums.SlotType.FLEX or slot_type == Enums.SlotType.FLEX:
+			return true
+	return false
+
+func _drop_data(at_position: Vector2, data: Variant) -> void:
+	if not _can_drop_data(at_position, data):
+		return
+		
+	var aug_res = data.get("resource", null) as AugmentResource
+	if aug_res == null:
+		return
+		
+	# Find which slot button was targeted, or find first compatible slot
+	var target_slot: int = -1
+	var slot_types = unit_instance.unit_resource.get_slot_types()
+	
+	if slots_container:
+		for i in range(slots_container.get_child_count()):
+			var btn = slots_container.get_child(i) as Button
+			if btn and btn.get_rect().has_point(btn.get_local_mouse_position()):
+				var slot_type = slot_types[i] if i < slot_types.size() else Enums.SlotType.PASSIVE
+				if aug_res.slot_type == slot_type or aug_res.slot_type == Enums.SlotType.FLEX or slot_type == Enums.SlotType.FLEX:
+					target_slot = i
+					break
+					
+	if target_slot == -1:
+		# Pick first empty compatible slot, or first compatible slot
+		for i in range(Constants.MAX_AUGMENT_SLOTS_PER_UNIT):
+			var slot_type = slot_types[i] if i < slot_types.size() else Enums.SlotType.PASSIVE
+			if aug_res.slot_type == slot_type or aug_res.slot_type == Enums.SlotType.FLEX or slot_type == Enums.SlotType.FLEX:
+				if unit_instance.equipped_augments[i] == null:
+					target_slot = i
+					break
+				elif target_slot == -1:
+					target_slot = i
+					
+	if target_slot != -1:
+		augment_dropped.emit(unit_instance, target_slot, data)
 
 func _set_mouse_filter_recursive(node: Node) -> void:
 	for child in node.get_children():
@@ -123,7 +235,10 @@ func _refresh_slots() -> void:
 		var slot_type = slot_types[i] if i < slot_types.size() else Enums.SlotType.PASSIVE
 		var aug = unit_instance.equipped_augments[i]
 		
-		var slot_btn = Button.new()
+		var slot_btn = AugmentSlotButton.new()
+		slot_btn.slot_index = i
+		slot_btn.unit_instance = unit_instance
+		slot_btn.augment_res = aug
 		slot_btn.custom_minimum_size = Vector2(0, 24)
 		slot_btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		slot_btn.add_theme_font_size_override("font_size", 9)
@@ -132,11 +247,11 @@ func _refresh_slots() -> void:
 			slot_btn.text = " [%s] %s" % [aug.get_tier_name().substr(0, 1), aug.display_name]
 			var tier_col = Color(aug.get_tier_color_hex())
 			slot_btn.add_theme_color_override("font_color", tier_col)
-			slot_btn.tooltip_text = "%s\nRight-click to unequip" % aug.description
+			slot_btn.tooltip_text = "%s\nDrag to swap/move or right-click to unequip" % aug.description
 		else:
 			slot_btn.text = " + Slot %d [%s]" % [i + 1, _slot_type_name(slot_type)]
 			slot_btn.add_theme_color_override("font_color", Color(0.4, 0.4, 0.5))
-			slot_btn.tooltip_text = "Empty %s slot. Click with augment selected to equip." % _slot_type_name(slot_type)
+			slot_btn.tooltip_text = "Empty %s slot. Drag augment here to equip." % _slot_type_name(slot_type)
 			
 		var slot_idx = i
 		slot_btn.pressed.connect(func(): slot_clicked.emit(unit_instance, slot_idx))
@@ -146,6 +261,57 @@ func _refresh_slots() -> void:
 		)
 		
 		slots_container.add_child(slot_btn)
+
+class AugmentSlotButton extends Button:
+	var slot_index: int = 0
+	var unit_instance: UnitInstance = null
+	var augment_res: AugmentResource = null
+	
+	func _get_drag_data(_pos: Vector2) -> Variant:
+		if augment_res == null:
+			return null
+		if get_node_or_null("/root/EventBus"):
+			get_node("/root/EventBus").augment_drag_started.emit(augment_res)
+			
+		var preview = PanelContainer.new()
+		preview.custom_minimum_size = Vector2(110, 28)
+		var pstyle = StyleBoxFlat.new()
+		pstyle.bg_color = Color(0.08, 0.06, 0.18, 0.95)
+		pstyle.border_width_left = 2
+		pstyle.border_width_top = 2
+		pstyle.border_width_right = 2
+		pstyle.border_width_bottom = 2
+		pstyle.border_color = Color(augment_res.get_tier_color_hex())
+		pstyle.corner_radius_top_left = 4
+		pstyle.corner_radius_top_right = 4
+		pstyle.corner_radius_bottom_left = 4
+		pstyle.corner_radius_bottom_right = 4
+		preview.add_theme_stylebox_override("panel", pstyle)
+		
+		var margin = MarginContainer.new()
+		margin.add_theme_constant_override("margin_left", 6)
+		margin.add_theme_constant_override("margin_right", 6)
+		preview.add_child(margin)
+		
+		var lbl = Label.new()
+		lbl.text = "⚡ %s" % augment_res.display_name
+		lbl.add_theme_font_size_override("font_size", 9)
+		lbl.add_theme_color_override("font_color", Color(augment_res.get_tier_color_hex()))
+		margin.add_child(lbl)
+		
+		set_drag_preview(preview)
+		
+		return {
+			"type": "slotted_augment",
+			"source_unit": unit_instance,
+			"source_slot": slot_index,
+			"resource": augment_res
+		}
+
+	func _notification(what: int) -> void:
+		if what == NOTIFICATION_DRAG_END:
+			if get_node_or_null("/root/EventBus"):
+				get_node("/root/EventBus").augment_drag_ended.emit()
 
 func _slot_type_name(st: Enums.SlotType) -> String:
 	match st:

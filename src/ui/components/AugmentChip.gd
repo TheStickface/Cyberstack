@@ -38,6 +38,52 @@ func _make_custom_tooltip(_for_text: String) -> Object:
 		return SynergyTooltipScript.create_augment_tooltip_node(augment_resource)
 	return null
 
+func _get_drag_data(_at_position: Vector2) -> Variant:
+	if augment_resource == null:
+		return null
+		
+	if get_node_or_null("/root/EventBus"):
+		get_node("/root/EventBus").augment_drag_started.emit(augment_resource)
+		
+	var preview = PanelContainer.new()
+	preview.custom_minimum_size = Vector2(110, 28)
+	var pstyle = StyleBoxFlat.new()
+	pstyle.bg_color = Color(0.08, 0.06, 0.18, 0.95)
+	pstyle.border_width_left = 2
+	pstyle.border_width_top = 2
+	pstyle.border_width_right = 2
+	pstyle.border_width_bottom = 2
+	pstyle.border_color = Color(augment_resource.get_tier_color_hex())
+	pstyle.corner_radius_top_left = 4
+	pstyle.corner_radius_top_right = 4
+	pstyle.corner_radius_bottom_left = 4
+	pstyle.corner_radius_bottom_right = 4
+	preview.add_theme_stylebox_override("panel", pstyle)
+	
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 6)
+	margin.add_theme_constant_override("margin_right", 6)
+	preview.add_child(margin)
+	
+	var lbl = Label.new()
+	lbl.text = "⚡ %s" % augment_resource.display_name
+	lbl.add_theme_font_size_override("font_size", 9)
+	lbl.add_theme_color_override("font_color", Color(augment_resource.get_tier_color_hex()))
+	margin.add_child(lbl)
+	
+	set_drag_preview(preview)
+	
+	return {
+		"type": "augment",
+		"resource": augment_resource,
+		"inventory_index": inventory_index
+	}
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_DRAG_END:
+		if get_node_or_null("/root/EventBus"):
+			get_node("/root/EventBus").augment_drag_ended.emit()
+
 func setup(aug: AugmentResource, inv_idx: int = -1) -> void:
 	augment_resource = aug
 	inventory_index = inv_idx

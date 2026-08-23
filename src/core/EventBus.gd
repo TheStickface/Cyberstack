@@ -12,6 +12,8 @@ signal augment_equipped(unit: RefCounted, slot_index: int, augment: Resource)
 signal augment_unequipped(unit: RefCounted, slot_index: int, augment: Resource)
 signal augment_purchased(augment: Resource)
 signal augment_sold(augment: Resource)
+signal augment_drag_started(augment_res: Resource)
+signal augment_drag_ended()
 
 # Economy Signals
 signal gold_changed(new_amount: int, delta: int)

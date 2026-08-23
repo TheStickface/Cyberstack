@@ -85,6 +85,7 @@ func _refresh_field_and_bench() -> void:
 			card.slot_unequip_requested.connect(_on_unit_slot_unequip_requested)
 			card.unit_toggle_field_requested.connect(_on_unit_toggle_field)
 			card.unit_sell_requested.connect(_on_unit_sell)
+			card.augment_dropped.connect(_on_augment_dropped_on_unit)
 
 	if bench_container:
 		for c in bench_container.get_children():
@@ -97,6 +98,7 @@ func _refresh_field_and_bench() -> void:
 			card.slot_unequip_requested.connect(_on_unit_slot_unequip_requested)
 			card.unit_toggle_field_requested.connect(_on_unit_toggle_field)
 			card.unit_sell_requested.connect(_on_unit_sell)
+			card.augment_dropped.connect(_on_augment_dropped_on_unit)
 
 func _refresh_augment_tray() -> void:
 	if not augment_tray:
@@ -259,6 +261,42 @@ func _on_unit_slot_clicked(unit: UnitInstance, slot_idx: int) -> void:
 	else:
 		_set_status("Incompatible slot! Check augment tags and slot type.", true)
 
+func _on_augment_dropped_on_unit(unit: UnitInstance, target_slot: int, drag_data: Dictionary) -> void:
+	var dtype = drag_data.get("type", "")
+	if dtype == "augment":
+		var inv_idx = drag_data.get("inventory_index", -1)
+		if inv_idx >= 0 and inv_idx < crew_mgr.augment_inventory.size():
+			var aug_res = crew_mgr.augment_inventory[inv_idx]
+			var success = crew_mgr.equip_augment_to_unit(unit, target_slot, inv_idx)
+			if success:
+				_set_status("Equipped [%s] to %s." % [aug_res.display_name, unit.unit_resource.display_name], false)
+				AudioManager.play_ui_click()
+			else:
+				_set_status("Incompatible slot! Check tags & slot requirements.", true)
+	elif dtype == "slotted_augment":
+		var src_unit = drag_data.get("source_unit", null) as UnitInstance
+		var src_slot = drag_data.get("source_slot", -1) as int
+		if src_unit != null and src_slot >= 0 and src_slot < src_unit.slotted_augments.size():
+			var src_aug = src_unit.slotted_augments[src_slot]
+			if src_unit == unit:
+				# Move within same unit
+				var target_aug = unit.slotted_augments[target_slot]
+				unit.slotted_augments[target_slot] = src_aug
+				unit.slotted_augments[src_slot] = target_aug
+				crew_mgr.recalculate_synergies()
+				_set_status("Moved [%s] to slot %d." % [src_aug.display_name, target_slot + 1], false)
+				AudioManager.play_ui_click()
+			else:
+				# Transfer between operatives
+				if crew_mgr.unequip_augment_from_unit(src_unit, src_slot):
+					var new_inv_idx = crew_mgr.augment_inventory.size() - 1
+					if crew_mgr.equip_augment_to_unit(unit, target_slot, new_inv_idx):
+						_set_status("Transferred [%s] to %s." % [src_aug.display_name, unit.unit_resource.display_name], false)
+						AudioManager.play_ui_click()
+					else:
+						_set_status("Incompatible slot on target operative.", true)
+	_refresh_all()
+
 func _on_unit_slot_unequip_requested(unit: UnitInstance, slot_idx: int) -> void:
 	if slot_idx < 0 or slot_idx >= unit.slotted_augments.size() or unit.slotted_augments[slot_idx] == null:
 		return
@@ -303,6 +341,25 @@ func _on_lock_in_pressed() -> void:
 	else:
 		var err_msg = ", ".join(result.errors)
 		_set_status("Lock-in failed: %s" % err_msg, true)
+
+func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
+	if not data is Dictionary:
+		return false
+	return data.get("type", "") == "slotted_augment"
+
+func _drop_data(_at_position: Vector2, data: Variant) -> void:
+	if not _can_drop_data(_at_position, data):
+		return
+	var src_unit = data.get("source_unit", null) as UnitInstance
+	var src_slot = data.get("source_slot", -1) as int
+	if src_unit != null and src_slot >= 0:
+		var unequipped_aug = src_unit.slotted_augments[src_slot]
+		if crew_mgr.unequip_augment_from_unit(src_unit, src_slot):
+			_set_status("Unequipped [%s] back to inventory." % (unequipped_aug.display_name if unequipped_aug else ""), false)
+			AudioManager.play_ui_click()
+			_refresh_all()
+		else:
+			_set_status("Cannot unequip: Inventory is full (Max %d)." % Constants.MAX_INVENTORY_AUGMENTS, true)
 
 func _set_status(msg: String, is_error: bool = false) -> void:
 	if status_label:
