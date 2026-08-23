@@ -69,14 +69,14 @@ func _update_ui() -> void:
 		sell_btn.text = "SELL (%s)" % Constants.format_currency(sell_val, true)
 		
 	if is_fielded:
-		custom_minimum_size = Vector2(185, 205)
+		custom_minimum_size = Vector2(160, 155)
 		if slots_header:
 			slots_header.visible = true
 		if slots_container:
 			slots_container.visible = true
 		_refresh_slots()
 	else:
-		custom_minimum_size = Vector2(175, 95)
+		custom_minimum_size = Vector2(140, 78)
 		if slots_header:
 			slots_header.visible = false
 		if slots_container:

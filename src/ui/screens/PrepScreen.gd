@@ -22,12 +22,12 @@ var selected_inventory_idx: int = -1
 @onready var lock_in_btn: Button = $Margin/VBox/TopBar/LockInBtn
 
 @onready var field_container: HBoxContainer = $Margin/VBox/MainBody/BoardArea/FieldSection/FieldScroll/FieldContainer
-@onready var bench_container: HBoxContainer = $Margin/VBox/MainBody/BoardArea/BenchAndTray/BenchSection/BenchScroll/BenchContainer
-@onready var augment_tray: HBoxContainer = $Margin/VBox/MainBody/BoardArea/BenchAndTray/AugmentTray/AugmentScroll/AugmentContainer
+@onready var bench_container: HBoxContainer = $Margin/VBox/MainBody/BoardArea/BenchSection/BenchScroll/BenchContainer
 @onready var shop_container: HBoxContainer = $Margin/VBox/MainBody/BoardArea/ShopSection/ShopScroll/ShopContainer
 @onready var reroll_btn: Button = $Margin/VBox/MainBody/BoardArea/ShopSection/ShopControls/RerollBtn
 
 @onready var synergy_hud: SynergyTrackerHUD = $Margin/VBox/MainBody/Sidebar/SynergyTrackerHUD
+@onready var augment_tray: HBoxContainer = $Margin/VBox/MainBody/Sidebar/AugmentTray/AugmentScroll/AugmentContainer
 @onready var status_label: Label = $Margin/VBox/StatusLabel
 
 func _ready() -> void:
