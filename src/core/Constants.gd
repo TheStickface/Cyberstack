@@ -7,6 +7,7 @@ extends RefCounted
 const MAX_AUGMENT_SLOTS_PER_UNIT: int = 3
 const MAX_BENCH_UNITS: int = 8
 const MAX_BENCH_AUGMENTS: int = 10
+const MAX_INVENTORY_AUGMENTS: int = 10
 
 # District Crew Limits
 const DISTRICT_CREW_LIMITS: Dictionary = {

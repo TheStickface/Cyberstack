@@ -6,13 +6,11 @@ extends Control
 const OperativeCardScene = preload("res://src/ui/components/OperativeCard.tscn")
 const AugmentChipScene = preload("res://src/ui/components/AugmentChip.tscn")
 const ShopSlotCardScene = preload("res://src/ui/components/ShopSlotCard.tscn")
-const SynergyTooltipScript = preload("res://src/ui/components/SynergyTooltip.gd")
 const DataRepoScript = preload("res://src/systems/DataRepository.gd")
 
 var repo: Object = null
 var shop_mgr: ShopManager = null
 var crew_mgr: CrewManager = null
-var synergy_tooltip: Object = null
 
 # Selection state for slotting
 var selected_inventory_aug: AugmentResource = null
@@ -34,9 +32,6 @@ var selected_inventory_idx: int = -1
 @onready var status_label: Label = $Margin/VBox/StatusLabel
 
 func _ready() -> void:
-	synergy_tooltip = SynergyTooltipScript.new()
-	add_child(synergy_tooltip)
-	
 	if get_node_or_null("/root/GameManager") and get_node("/root/GameManager").active_run_manager:
 		var gm = get_node("/root/GameManager")
 		var rm = gm.active_run_manager
@@ -90,8 +85,6 @@ func _refresh_field_and_bench() -> void:
 			card.slot_unequip_requested.connect(_on_unit_slot_unequip_requested)
 			card.unit_toggle_field_requested.connect(_on_unit_toggle_field)
 			card.unit_sell_requested.connect(_on_unit_sell)
-			card.card_mouse_entered.connect(_on_operative_card_hovered)
-			card.card_mouse_exited.connect(_on_card_hover_exited)
 
 	if bench_container:
 		for c in bench_container.get_children():
@@ -104,8 +97,6 @@ func _refresh_field_and_bench() -> void:
 			card.slot_unequip_requested.connect(_on_unit_slot_unequip_requested)
 			card.unit_toggle_field_requested.connect(_on_unit_toggle_field)
 			card.unit_sell_requested.connect(_on_unit_sell)
-			card.card_mouse_entered.connect(_on_operative_card_hovered)
-			card.card_mouse_exited.connect(_on_card_hover_exited)
 
 func _refresh_augment_tray() -> void:
 	if not augment_tray:
@@ -121,8 +112,6 @@ func _refresh_augment_tray() -> void:
 		chip.setup(aug, i)
 		chip.set_selected(selected_inventory_idx == i)
 		chip.chip_clicked.connect(_on_augment_chip_clicked)
-		chip.card_mouse_entered.connect(_on_shop_card_hovered)
-		chip.card_mouse_exited.connect(_on_card_hover_exited)
 
 func _refresh_shop() -> void:
 	# 1. Operative Recruitment Shelf (Pure Units)
@@ -135,8 +124,6 @@ func _refresh_shop() -> void:
 			crew_shop_container.add_child(card)
 			card.setup(i, slot_data, shop_mgr.gold)
 			card.buy_requested.connect(_on_crew_buy_requested)
-			card.card_mouse_entered.connect(_on_shop_card_hovered)
-			card.card_mouse_exited.connect(_on_card_hover_exited)
 			
 	# 2. Black Market Armory Shelf (Pure Augments)
 	if augment_shop_container:
@@ -148,8 +135,6 @@ func _refresh_shop() -> void:
 			augment_shop_container.add_child(card)
 			card.setup(i, slot_data, shop_mgr.gold)
 			card.buy_requested.connect(_on_augment_buy_requested)
-			card.card_mouse_entered.connect(_on_shop_card_hovered)
-			card.card_mouse_exited.connect(_on_card_hover_exited)
 		
 	if reroll_btn:
 		reroll_btn.text = "REROLL (%s)" % Constants.format_currency(Constants.BASE_REROLL_COST, true)
@@ -159,44 +144,37 @@ func _refresh_synergies() -> void:
 	if synergy_hud:
 		synergy_hud.update_synergies(crew_mgr.active_synergy_report)
 
-# Event Handlers
 func _on_crew_buy_requested(slot_index: int) -> void:
 	var result = shop_mgr.buy_unit_slot(slot_index, crew_mgr)
 	if result.success:
-		var combs = crew_mgr.last_combinations
-		if not combs.is_empty():
-			for c in combs:
-				AudioManager.play_star_upgrade()
-				_show_star_upgrade_banner(c["unit_name"], c["new_star_level"])
-		else:
-			_set_status("Recruited %s." % (result.item.unit_resource.display_name if result.item else "operative"), false)
+		_set_status("Recruited %s to crew." % (result.item.display_name if result.item else "unit"), false)
 		crew_mgr.recalculate_synergies()
+		
+		# Check for star upgrades
+		if not crew_mgr.last_combinations.is_empty():
+			var last_comb = crew_mgr.last_combinations.back()
+			_show_star_upgrade_banner(last_comb.unit_name, last_comb.new_star_level)
+			AudioManager.play_star_upgrade()
 	else:
 		_set_status("Recruitment failed: %s" % result.error, true)
 	_refresh_all()
 
 func _show_star_upgrade_banner(u_name: String, star_lvl: int) -> void:
-	var star_str = "★★" if star_lvl == 2 else "★★★"
-	var col_hex = "#ffd700" if star_lvl == 2 else "#ff007f"
-	_set_status("★ [color=%s]LEVEL UP! %s promoted to %s![/color] ★" % [col_hex, u_name, star_str], false)
-	
-	# Spawn floating notification across the screen
 	var banner = PanelContainer.new()
 	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.05, 0.04, 0.12, 0.95)
+	style.bg_color = Color(0.08, 0.05, 0.18, 0.95)
 	style.border_width_left = 2
 	style.border_width_top = 2
 	style.border_width_right = 2
 	style.border_width_bottom = 2
-	style.border_color = Color(1.0, 0.85, 0.0) if star_lvl == 2 else Color(1.0, 0.0, 0.5)
+	style.border_color = Color(1.0, 0.85, 0.0) if star_lvl == 2 else Color(1.0, 0.2, 0.6)
 	style.corner_radius_top_left = 6
 	style.corner_radius_top_right = 6
 	style.corner_radius_bottom_left = 6
 	style.corner_radius_bottom_right = 6
 	banner.add_theme_stylebox_override("panel", style)
-	banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	banner.top_level = true
 	
+	var star_str = "★★ (TIER 2)" if star_lvl == 2 else "★★★ (TIER 3)"
 	var margin = MarginContainer.new()
 	margin.add_theme_constant_override("margin_left", 16)
 	margin.add_theme_constant_override("margin_right", 16)
@@ -251,45 +229,57 @@ func _on_augment_chip_clicked(aug: AugmentResource, inv_idx: int) -> void:
 	if selected_inventory_idx == inv_idx:
 		selected_inventory_aug = null
 		selected_inventory_idx = -1
-		_set_status("Augment deselected.", false)
+		_set_status("Deselected augment.", false)
 	else:
 		selected_inventory_aug = aug
 		selected_inventory_idx = inv_idx
-		_set_status("Selected '%s'. Click a unit slot to equip." % aug.display_name, false)
+		_set_status("Selected [%s]. Click a compatible unit slot to equip." % aug.display_name, false)
 	_refresh_augment_tray()
 
 func _on_unit_slot_clicked(unit: UnitInstance, slot_idx: int) -> void:
-	if selected_inventory_aug != null and selected_inventory_idx >= 0:
-		var success = crew_mgr.equip_augment_from_inventory(unit, slot_idx, selected_inventory_idx)
-		if success:
-			_set_status("Equipped '%s' to slot %d." % [selected_inventory_aug.display_name, slot_idx + 1], false)
-			selected_inventory_aug = null
-			selected_inventory_idx = -1
+	if selected_inventory_aug == null or selected_inventory_idx < 0:
+		var slotted = unit.slotted_augments[slot_idx]
+		if slotted:
+			_set_status("Slot %d contains [%s]. Right-click to unequip." % [slot_idx + 1, slotted.display_name], false)
 		else:
-			_set_status("Cannot equip '%s' in slot %d (Invalid slot type)." % [selected_inventory_aug.display_name, slot_idx + 1], true)
+			var slot_t = unit.unit_resource.slot_layout[slot_idx]
+			_set_status("Slot %d is empty (%s). Select an augment first." % [
+				slot_idx + 1, 
+				Enums.slot_type_to_string(slot_t)
+			], false)
+		return
+		
+	# Attempt to equip
+	var success = crew_mgr.equip_augment_to_unit(unit, slot_idx, selected_inventory_idx)
+	if success:
+		_set_status("Equipped [%s] to %s." % [selected_inventory_aug.display_name, unit.unit_resource.display_name], false)
+		selected_inventory_aug = null
+		selected_inventory_idx = -1
 		_refresh_all()
+	else:
+		_set_status("Incompatible slot! Check augment tags and slot type.", true)
 
 func _on_unit_slot_unequip_requested(unit: UnitInstance, slot_idx: int) -> void:
-	var success = crew_mgr.unequip_augment_to_inventory(unit, slot_idx)
-	if success:
-		_set_status("Unequipped augment from slot %d." % (slot_idx + 1), false)
+	if slot_idx < 0 or slot_idx >= unit.slotted_augments.size() or unit.slotted_augments[slot_idx] == null:
+		return
+		
+	var unequipped_aug = unit.slotted_augments[slot_idx]
+	if crew_mgr.unequip_augment_from_unit(unit, slot_idx):
+		_set_status("Unequipped [%s] back to inventory." % unequipped_aug.display_name, false)
+		_refresh_all()
 	else:
-		_set_status("Failed to unequip augment (Inventory may be full).", true)
-	_refresh_all()
+		_set_status("Cannot unequip: Inventory is full (Max %d)." % Constants.MAX_INVENTORY_AUGMENTS, true)
 
 func _on_unit_toggle_field(unit: UnitInstance) -> void:
-	var f_idx = crew_mgr.fielded_units.find(unit)
-	if f_idx != -1:
-		crew_mgr.recall_unit_to_bench(f_idx)
+	if crew_mgr.fielded_units.has(unit):
+		crew_mgr.bench_unit(unit)
 		_set_status("Recalled %s to bench." % unit.unit_resource.display_name, false)
 	else:
-		var b_idx = crew_mgr.benched_units.find(unit)
-		if b_idx != -1:
-			var success = crew_mgr.deploy_unit_to_field(b_idx)
-			if success:
-				_set_status("Deployed %s to field." % unit.unit_resource.display_name, false)
-			else:
-				_set_status("Field is full (%d/%d for District %d). Bench an active unit to swap!" % [
+		if crew_mgr.fielded_units.size() < crew_mgr.get_max_field_units():
+			crew_mgr.field_unit(unit)
+			_set_status("Deployed %s to field." % unit.unit_resource.display_name, false)
+		else:
+			_set_status("Field limit reached (%d/%d for District %d)." % [
 					crew_mgr.fielded_units.size(),
 					crew_mgr.get_max_field_units(),
 					crew_mgr.current_district
@@ -318,127 +308,3 @@ func _set_status(msg: String, is_error: bool = false) -> void:
 	if status_label:
 		status_label.text = msg
 		status_label.add_theme_color_override("font_color", Color(1, 0.3, 0.3) if is_error else Color(0, 0.95, 0.83))
-
-func _input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode == KEY_F3:
-			if synergy_tooltip and synergy_tooltip.has_method("toggle_debug_hud"):
-				synergy_tooltip.toggle_debug_hud()
-
-func _process(_delta: float) -> void:
-	_check_hovered_card()
-
-func _check_hovered_card() -> void:
-	if synergy_tooltip == null:
-		return
-		
-	var mouse_pos = get_viewport().get_mouse_position()
-	var global_m_pos = get_global_mouse_position()
-	var vp_size = get_viewport_rect().size
-	var hovered_item_name: String = "None"
-	
-	# 1. Fielded operatives
-	if field_container:
-		for card in field_container.get_children():
-			if card is Control and card.visible and (card.get_global_rect().has_point(global_m_pos) or card.get_global_rect().has_point(mouse_pos)):
-				if "unit_instance" in card and card.unit_instance and card.unit_instance.unit_resource:
-					var u = card.unit_instance
-					hovered_item_name = "Fielded: " + u.unit_resource.display_name
-					var factions_dict = repo.factions if repo and "factions" in repo else {}
-					var tags_dict = repo.tags if repo and "tags" in repo else {}
-					var impact = SynergyEngine.calculate_synergy_impact(crew_mgr.fielded_units, u.unit_resource, factions_dict, tags_dict)
-					synergy_tooltip.show_for_unit(u.unit_resource, impact, u.star_level)
-					synergy_tooltip.update_screen_position(mouse_pos, vp_size)
-					if synergy_tooltip.is_debug_mode:
-						synergy_tooltip.set_debug_text("POS: (%.0f, %.0f) | ITEM: %s | STATUS: ACTIVE" % [mouse_pos.x, mouse_pos.y, hovered_item_name])
-					return
-					
-	# 2. Benched operatives
-	if bench_container:
-		for card in bench_container.get_children():
-			if card is Control and card.visible and (card.get_global_rect().has_point(global_m_pos) or card.get_global_rect().has_point(mouse_pos)):
-				if "unit_instance" in card and card.unit_instance and card.unit_instance.unit_resource:
-					var u = card.unit_instance
-					hovered_item_name = "Bench: " + u.unit_resource.display_name
-					var factions_dict = repo.factions if repo and "factions" in repo else {}
-					var tags_dict = repo.tags if repo and "tags" in repo else {}
-					var impact = SynergyEngine.calculate_synergy_impact(crew_mgr.fielded_units, u.unit_resource, factions_dict, tags_dict)
-					synergy_tooltip.show_for_unit(u.unit_resource, impact, u.star_level)
-					synergy_tooltip.update_screen_position(mouse_pos, vp_size)
-					if synergy_tooltip.is_debug_mode:
-						synergy_tooltip.set_debug_text("POS: (%.0f, %.0f) | ITEM: %s | STATUS: ACTIVE" % [mouse_pos.x, mouse_pos.y, hovered_item_name])
-					return
-					
-	# 3. Crew Shop candidates
-	if crew_shop_container:
-		for card in crew_shop_container.get_children():
-			if card is Control and card.visible and (card.get_global_rect().has_point(global_m_pos) or card.get_global_rect().has_point(mouse_pos)):
-				if "slot_data" in card and not card.slot_data.get("is_bought", false):
-					var res = card.slot_data.get("resource", null)
-					if res is UnitResource:
-						hovered_item_name = "Shop Unit: " + res.display_name
-						var factions_dict = repo.factions if repo and "factions" in repo else {}
-						var tags_dict = repo.tags if repo and "tags" in repo else {}
-						var impact = SynergyEngine.calculate_synergy_impact(crew_mgr.fielded_units, res as UnitResource, factions_dict, tags_dict)
-						synergy_tooltip.show_for_unit(res as UnitResource, impact, 1)
-						synergy_tooltip.update_screen_position(mouse_pos, vp_size)
-						if synergy_tooltip.is_debug_mode:
-							synergy_tooltip.set_debug_text("POS: (%.0f, %.0f) | ITEM: %s | STATUS: ACTIVE" % [mouse_pos.x, mouse_pos.y, hovered_item_name])
-						return
-						
-	# 4. Augment Shop offerings
-	if augment_shop_container:
-		for card in augment_shop_container.get_children():
-			if card is Control and card.visible and (card.get_global_rect().has_point(global_m_pos) or card.get_global_rect().has_point(mouse_pos)):
-				if "slot_data" in card and not card.slot_data.get("is_bought", false):
-					var res = card.slot_data.get("resource", null)
-					if res is AugmentResource:
-						hovered_item_name = "Shop Aug: " + res.display_name
-						synergy_tooltip.show_for_augment(res as AugmentResource)
-						synergy_tooltip.update_screen_position(mouse_pos, vp_size)
-						if synergy_tooltip.is_debug_mode:
-							synergy_tooltip.set_debug_text("POS: (%.0f, %.0f) | ITEM: %s | STATUS: ACTIVE" % [mouse_pos.x, mouse_pos.y, hovered_item_name])
-						return
-						
-	# 5. Augment Tray chips
-	if augment_tray:
-		for chip in augment_tray.get_children():
-			if chip is Control and chip.visible and (chip.get_global_rect().has_point(global_m_pos) or chip.get_global_rect().has_point(mouse_pos)):
-				if "augment_resource" in chip and chip.augment_resource:
-					hovered_item_name = "Tray Aug: " + chip.augment_resource.display_name
-					synergy_tooltip.show_for_augment(chip.augment_resource)
-					synergy_tooltip.update_screen_position(mouse_pos, vp_size)
-					if synergy_tooltip.is_debug_mode:
-						synergy_tooltip.set_debug_text("POS: (%.0f, %.0f) | ITEM: %s | STATUS: ACTIVE" % [mouse_pos.x, mouse_pos.y, hovered_item_name])
-					return
-					
-	# If mouse is not hovering any registered card
-	synergy_tooltip.hide_tooltip()
-	if synergy_tooltip.is_debug_mode:
-		synergy_tooltip.set_debug_text("POS: (%.0f, %.0f) | ITEM: None | STATUS: IDLE [F3 Toggle]" % [mouse_pos.x, mouse_pos.y])
-
-func _on_operative_card_hovered(unit: UnitInstance, card_pos: Vector2) -> void:
-	if unit == null or unit.unit_resource == null or synergy_tooltip == null:
-		return
-	var factions_dict = repo.factions if repo and "factions" in repo else {}
-	var tags_dict = repo.tags if repo and "tags" in repo else {}
-	var impact = SynergyEngine.calculate_synergy_impact(crew_mgr.fielded_units, unit.unit_resource, factions_dict, tags_dict)
-	synergy_tooltip.show_for_unit(unit.unit_resource, impact, unit.star_level)
-	synergy_tooltip.update_screen_position(card_pos, get_viewport_rect().size)
-
-func _on_shop_card_hovered(res: Resource, card_pos: Vector2) -> void:
-	if res == null or synergy_tooltip == null:
-		return
-	if res is UnitResource:
-		var factions_dict = repo.factions if repo and "factions" in repo else {}
-		var tags_dict = repo.tags if repo and "tags" in repo else {}
-		var impact = SynergyEngine.calculate_synergy_impact(crew_mgr.fielded_units, res as UnitResource, factions_dict, tags_dict)
-		synergy_tooltip.show_for_unit(res as UnitResource, impact, 1)
-		synergy_tooltip.update_screen_position(card_pos, get_viewport_rect().size)
-	elif res is AugmentResource:
-		synergy_tooltip.show_for_augment(res as AugmentResource)
-		synergy_tooltip.update_screen_position(card_pos, get_viewport_rect().size)
-
-func _on_card_hover_exited() -> void:
-	if synergy_tooltip:
-		synergy_tooltip.hide_tooltip()
