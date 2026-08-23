@@ -1,6 +1,18 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://src/ui/screens/CombatMockArena.gd" id="1_arena"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_modal"]
+bg_color = Color(0.04, 0.03, 0.08, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0.95, 0.83, 0.8)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [node name="CombatMockArena" type="Control"]
 layout_mode = 3
@@ -18,112 +30,181 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.02, 0.015, 0.06, 1)
+color = Color(0.02, 0.015, 0.05, 1)
 
-[node name="VBox" type="VBoxContainer" parent="."]
+[node name="Margin" type="MarginContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 20.0
-offset_top = 16.0
-offset_right = -20.0
-offset_bottom = -16.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 12
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 12
 
-[node name="TopBar" type="HBoxContainer" parent="VBox"]
+[node name="VBox" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TopBar" type="HBoxContainer" parent="Margin/VBox"]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="DistrictLabel" type="Label" parent="VBox/TopBar"]
+[node name="DistrictLabel" type="Label" parent="Margin/VBox/TopBar"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0.95, 0.83, 1)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 15
 text = "DISTRICT 1 COMBAT ARENA"
 
-[node name="CombatTypeLabel" type="Label" parent="VBox/TopBar"]
+[node name="CombatTypeLabel" type="Label" parent="Margin/VBox/TopBar"]
 layout_mode = 2
-size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 0.2, 0.4, 1)
 theme_override_font_sizes/font_size = 14
 text = "⚔ SECURITY PATROL CLASH"
-horizontal_alignment = 2
 
-[node name="Arena" type="HBoxContainer" parent="VBox"]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_constants/separation = 24
-
-[node name="PlayerSide" type="VBoxContainer" parent="VBox/Arena"]
+[node name="TimerLabel" type="Label" parent="Margin/VBox/TopBar"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 8
+theme_override_colors/font_color = Color(1, 0.85, 0, 1)
+theme_override_font_sizes/font_size = 14
+text = "TIME: 00:00"
+horizontal_alignment = 2
 
-[node name="PlayerHeader" type="Label" parent="VBox/Arena/PlayerSide"]
+[node name="SpeedBtn" type="Button" parent="Margin/VBox/TopBar"]
+custom_minimum_size = Vector2(80, 30)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "SPEED: 1x"
+
+[node name="SkipBtn" type="Button" parent="Margin/VBox/TopBar"]
+custom_minimum_size = Vector2(110, 30)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.4, 1, 1)
+theme_override_font_sizes/font_size = 11
+text = "⚡ FAST RESOLVE"
+
+[node name="Arena" type="HBoxContainer" parent="Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="PlayerSide" type="VBoxContainer" parent="Margin/VBox/Arena"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="PlayerHeader" type="Label" parent="Margin/VBox/Arena/PlayerSide"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0.95, 0.83, 1)
 theme_override_font_sizes/font_size = 12
-text = "PLAYER CREW (AUTO-ATTACK & MANA CAST)"
+text = "PLAYER CREW (AUTO-ATTACK & MANA BURST):"
 
-[node name="PlayerContainer" type="HBoxContainer" parent="VBox/Arena/PlayerSide"]
+[node name="PlayerScroll" type="ScrollContainer" parent="Margin/VBox/Arena/PlayerSide"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 8
+vertical_scroll_mode = 0
 
-[node name="EnemySide" type="VBoxContainer" parent="VBox/Arena"]
+[node name="PlayerContainer" type="HBoxContainer" parent="Margin/VBox/Arena/PlayerSide/PlayerScroll"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 8
+size_flags_vertical = 3
+theme_override_constants/separation = 10
 
-[node name="EnemyHeader" type="Label" parent="VBox/Arena/EnemySide"]
+[node name="EnemySide" type="VBoxContainer" parent="Margin/VBox/Arena"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="EnemyHeader" type="Label" parent="Margin/VBox/Arena/EnemySide"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.2, 0.4, 1)
 theme_override_font_sizes/font_size = 12
-text = "HOSTILE SQUAD"
+text = "HOSTILE PATROL SQUAD:"
 horizontal_alignment = 2
 
-[node name="EnemyContainer" type="HBoxContainer" parent="VBox/Arena/EnemySide"]
+[node name="EnemyScroll" type="ScrollContainer" parent="Margin/VBox/Arena/EnemySide"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 8
+vertical_scroll_mode = 0
+
+[node name="EnemyContainer" type="HBoxContainer" parent="Margin/VBox/Arena/EnemySide/EnemyScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 10
 alignment = 2
 
-[node name="BottomBar" type="VBoxContainer" parent="VBox"]
+[node name="BottomBar" type="VBoxContainer" parent="Margin/VBox"]
+custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 4
 
-[node name="CombatLog" type="RichTextLabel" parent="VBox/BottomBar"]
-custom_minimum_size = Vector2(0, 60)
+[node name="CombatLog" type="RichTextLabel" parent="Margin/VBox/BottomBar"]
 layout_mode = 2
-theme_override_font_sizes/normal_font_size = 10
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 11
 bbcode_enabled = true
-text = "[color=#00f5d4][SYSTEM][/color] Combat subroutines active..."
+text = "[color=#00f5d4][SYSTEM][/color] Combat engine active. Autobattler subroutines engaged."
+scroll_following = true
 
-[node name="Controls" type="HBoxContainer" parent="VBox/BottomBar"]
-layout_mode = 2
-theme_override_constants/separation = 16
+[node name="ResultOverlay" type="ColorRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.01, 0.01, 0.03, 0.88)
 
-[node name="ResolveVictoryBtn" type="Button" parent="VBox/BottomBar/Controls"]
-custom_minimum_size = Vector2(0, 36)
+[node name="Center" type="CenterContainer" parent="ResultOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="DialogPanel" type="PanelContainer" parent="ResultOverlay/Center"]
+custom_minimum_size = Vector2(420, 240)
 layout_mode = 2
-size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_modal")
+
+[node name="Margin" type="MarginContainer" parent="ResultOverlay/Center/DialogPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 16
+
+[node name="VBox" type="VBoxContainer" parent="ResultOverlay/Center/DialogPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="ResultTitle" type="Label" parent="ResultOverlay/Center/DialogPanel/Margin/VBox"]
+layout_mode = 2
 theme_override_colors/font_color = Color(0, 0.95, 0.83, 1)
-theme_override_font_sizes/font_size = 12
-text = "RESOLVE COMBAT (VICTORY)"
+theme_override_font_sizes/font_size = 20
+text = "VICTORY ACHIEVED"
+horizontal_alignment = 1
 
-[node name="ResolveDefeatBtn" type="Button" parent="VBox/BottomBar/Controls"]
-custom_minimum_size = Vector2(0, 36)
+[node name="ResultStats" type="Label" parent="ResultOverlay/Center/DialogPanel/Margin/VBox"]
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(1, 0.2, 0.3, 1)
+theme_override_colors/font_color = Color(0.85, 0.85, 0.95, 1)
 theme_override_font_sizes/font_size = 12
-text = "RESOLVE COMBAT (DEFEAT)"
+text = "Combat Duration: 8.2s\nTotal Damage Dealt: 1,420\nEncounter Reward: +4 Credits"
+horizontal_alignment = 1
 
-[node name="AutoResolveTimer" type="Timer" parent="."]
-wait_time = 5.0
-one_shot = true
+[node name="FinishBtn" type="Button" parent="ResultOverlay/Center/DialogPanel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0.95, 0.83, 1)
+theme_override_font_sizes/font_size = 13
+text = "CLAIM REWARDS & CONTINUE ▶"
 
-[connection signal="pressed" from="VBox/BottomBar/Controls/ResolveVictoryBtn" to="." method="_on_resolve_victory_pressed"]
-[connection signal="pressed" from="VBox/BottomBar/Controls/ResolveDefeatBtn" to="." method="_on_resolve_defeat_pressed"]
+[connection signal="pressed" from="Margin/VBox/TopBar/SpeedBtn" to="." method="_on_speed_btn_pressed"]
+[connection signal="pressed" from="Margin/VBox/TopBar/SkipBtn" to="." method="_on_skip_btn_pressed"]
+[connection signal="pressed" from="ResultOverlay/Center/DialogPanel/Margin/VBox/FinishBtn" to="." method="_on_finish_btn_pressed"]
