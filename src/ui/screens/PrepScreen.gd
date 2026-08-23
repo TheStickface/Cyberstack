@@ -11,6 +11,7 @@ const DataRepoScript = preload("res://src/systems/DataRepository.gd")
 var repo: Object = null
 var shop_mgr: ShopManager = null
 var crew_mgr: CrewManager = null
+var synergy_tooltip: SynergyTooltip = null
 
 # Selection state for slotting
 var selected_inventory_aug: AugmentResource = null
@@ -32,6 +33,9 @@ var selected_inventory_idx: int = -1
 @onready var status_label: Label = $Margin/VBox/StatusLabel
 
 func _ready() -> void:
+	synergy_tooltip = SynergyTooltip.new()
+	add_child(synergy_tooltip)
+	
 	if get_node_or_null("/root/GameManager") and get_node("/root/GameManager").active_run_manager:
 		var gm = get_node("/root/GameManager")
 		var rm = gm.active_run_manager
@@ -85,6 +89,8 @@ func _refresh_field_and_bench() -> void:
 			card.slot_unequip_requested.connect(_on_unit_slot_unequip_requested)
 			card.unit_toggle_field_requested.connect(_on_unit_toggle_field)
 			card.unit_sell_requested.connect(_on_unit_sell)
+			card.card_mouse_entered.connect(_on_operative_card_hovered)
+			card.card_mouse_exited.connect(_on_card_hover_exited)
 
 	if bench_container:
 		for c in bench_container.get_children():
@@ -97,6 +103,8 @@ func _refresh_field_and_bench() -> void:
 			card.slot_unequip_requested.connect(_on_unit_slot_unequip_requested)
 			card.unit_toggle_field_requested.connect(_on_unit_toggle_field)
 			card.unit_sell_requested.connect(_on_unit_sell)
+			card.card_mouse_entered.connect(_on_operative_card_hovered)
+			card.card_mouse_exited.connect(_on_card_hover_exited)
 
 func _refresh_augment_tray() -> void:
 	if not augment_tray:
@@ -124,6 +132,8 @@ func _refresh_shop() -> void:
 			crew_shop_container.add_child(card)
 			card.setup(i, slot_data, shop_mgr.gold)
 			card.buy_requested.connect(_on_crew_buy_requested)
+			card.card_mouse_entered.connect(_on_shop_card_hovered)
+			card.card_mouse_exited.connect(_on_card_hover_exited)
 			
 	# 2. Black Market Armory Shelf (Pure Augments)
 	if augment_shop_container:
@@ -135,6 +145,8 @@ func _refresh_shop() -> void:
 			augment_shop_container.add_child(card)
 			card.setup(i, slot_data, shop_mgr.gold)
 			card.buy_requested.connect(_on_augment_buy_requested)
+			card.card_mouse_entered.connect(_on_shop_card_hovered)
+			card.card_mouse_exited.connect(_on_card_hover_exited)
 		
 	if reroll_btn:
 		reroll_btn.text = "REROLL (%s)" % Constants.format_currency(Constants.BASE_REROLL_COST, true)
@@ -303,3 +315,29 @@ func _set_status(msg: String, is_error: bool = false) -> void:
 	if status_label:
 		status_label.text = msg
 		status_label.add_theme_color_override("font_color", Color(1, 0.3, 0.3) if is_error else Color(0, 0.95, 0.83))
+
+func _on_operative_card_hovered(unit: UnitInstance, card_pos: Vector2) -> void:
+	if unit == null or unit.unit_resource == null or synergy_tooltip == null:
+		return
+	var factions_dict = repo.factions if repo and "factions" in repo else {}
+	var tags_dict = repo.tags if repo and "tags" in repo else {}
+	var impact = SynergyEngine.calculate_synergy_impact(crew_mgr.fielded_units, unit.unit_resource, factions_dict, tags_dict)
+	synergy_tooltip.show_for_unit(unit.unit_resource, impact, unit.star_level)
+	synergy_tooltip.update_screen_position(card_pos, get_viewport_rect().size)
+
+func _on_shop_card_hovered(res: Resource, card_pos: Vector2) -> void:
+	if res == null or synergy_tooltip == null:
+		return
+	if res is UnitResource:
+		var factions_dict = repo.factions if repo and "factions" in repo else {}
+		var tags_dict = repo.tags if repo and "tags" in repo else {}
+		var impact = SynergyEngine.calculate_synergy_impact(crew_mgr.fielded_units, res as UnitResource, factions_dict, tags_dict)
+		synergy_tooltip.show_for_unit(res as UnitResource, impact, 1)
+		synergy_tooltip.update_screen_position(card_pos, get_viewport_rect().size)
+	elif res is AugmentResource:
+		synergy_tooltip.show_for_augment(res as AugmentResource)
+		synergy_tooltip.update_screen_position(card_pos, get_viewport_rect().size)
+
+func _on_card_hover_exited() -> void:
+	if synergy_tooltip:
+		synergy_tooltip.hide()

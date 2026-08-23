@@ -131,3 +131,25 @@ func test_effective_stat_calculation() -> Dictionary:
 		return {"passed": false, "message": "Expected %.1f HP with global synergy, got %.1f" % [blitz_res.base_max_health + 170.0, total_hp], "assertions": 4}
 		
 	return {"passed": true, "assertions": 4}
+
+func test_calculate_synergy_impact() -> Dictionary:
+	var blitz_res = repo.get_unit("runner_blitz")
+	var dash_res = repo.get_unit("runner_dash")
+	
+	var blitz = UnitInstance.new(blitz_res)
+	var current_crew: Array[UnitInstance] = [blitz]
+	
+	# Prospect adding Dash (another Street Runner) -> should activate 2-threshold
+	var impact = SynergyEngine.calculate_synergy_impact(current_crew, dash_res, repo.factions, repo.tags)
+	
+	if not impact["will_activate_threshold"]:
+		return {"passed": false, "message": "Expected will_activate_threshold to be true for second Street Runner", "assertions": 1}
+	if impact["prev_count"] != 1 or impact["new_count"] != 2:
+		return {"passed": false, "message": "Expected prev 1, new 2 counts. Got %d -> %d" % [impact["prev_count"], impact["new_count"]], "assertions": 2}
+		
+	# Prospect adding duplicate Blitz -> should flag duplicate
+	var dup_impact = SynergyEngine.calculate_synergy_impact(current_crew, blitz_res, repo.factions, repo.tags)
+	if not dup_impact["is_duplicate"]:
+		return {"passed": false, "message": "Expected is_duplicate to be true for duplicate Blitz", "assertions": 3}
+		
+	return {"passed": true, "assertions": 3}

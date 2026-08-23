@@ -4,6 +4,8 @@ extends PanelContainer
 ## Shop offering shelf card for purchasing units or augments
 
 signal buy_requested(slot_index: int)
+signal card_mouse_entered(resource: Resource, card_pos: Vector2)
+signal card_mouse_exited()
 
 var slot_index: int = 0
 var slot_data: Dictionary = {}
@@ -13,6 +15,10 @@ var slot_data: Dictionary = {}
 @onready var name_label: Label = $Margin/VBox/NameLabel
 @onready var details_label: Label = $Margin/VBox/DetailsLabel
 @onready var buy_btn: Button = $Margin/VBox/BuyBtn
+
+func _ready() -> void:
+	mouse_entered.connect(_on_mouse_entered)
+	mouse_exited.connect(_on_mouse_exited)
 
 func setup(p_index: int, p_data: Dictionary, player_gold: int) -> void:
 	slot_index = p_index
@@ -76,3 +82,11 @@ func _update_ui(player_gold: int) -> void:
 
 func _on_buy_btn_pressed() -> void:
 	buy_requested.emit(slot_index)
+
+func _on_mouse_entered() -> void:
+	var res = slot_data.get("resource", null)
+	if res and not slot_data.get("is_bought", false):
+		card_mouse_entered.emit(res, global_position)
+
+func _on_mouse_exited() -> void:
+	card_mouse_exited.emit()

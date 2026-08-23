@@ -130,3 +130,45 @@ static func _evaluate_cross_system_combos(report: SynergyReport) -> void:
 		)
 		report.cross_system_bonuses.append(combo)
 		_merge_bonus(report, combo)
+
+static func calculate_synergy_impact(
+	current_crew: Array[UnitInstance],
+	prospective_unit: UnitResource,
+	faction_registry: Dictionary = {},
+	tag_registry: Dictionary = {}
+) -> Dictionary:
+	var base_report = evaluate_crew(current_crew, faction_registry, tag_registry)
+	
+	var sim_crew: Array[UnitInstance] = []
+	for u in current_crew:
+		sim_crew.append(u)
+	if prospective_unit:
+		sim_crew.append(UnitInstance.new(prospective_unit))
+		
+	var new_report = evaluate_crew(sim_crew, faction_registry, tag_registry)
+	
+	var faction_enum = prospective_unit.faction if prospective_unit else Enums.Faction.NONE
+	var prev_f_count = base_report.faction_counts.get(faction_enum, 0)
+	var new_f_count = new_report.faction_counts.get(faction_enum, 0)
+	
+	var will_activate = (prev_f_count < 2 and new_f_count >= 2) or (prev_f_count < 4 and new_f_count >= 4) or (prev_f_count < 6 and new_f_count >= 6)
+	
+	var new_combos: Array[SynergyBonus] = []
+	for c in new_report.cross_system_bonuses:
+		var found = false
+		for old_c in base_report.cross_system_bonuses:
+			if old_c.id == c.id:
+				found = true
+				break
+		if not found:
+			new_combos.append(c)
+			
+	return {
+		"faction": faction_enum,
+		"faction_name": Enums.faction_to_string(faction_enum),
+		"prev_count": prev_f_count,
+		"new_count": new_f_count,
+		"will_activate_threshold": will_activate,
+		"new_combos": new_combos,
+		"is_duplicate": (prev_f_count == new_f_count and prev_f_count > 0)
+	}

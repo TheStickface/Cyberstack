@@ -8,6 +8,8 @@ signal slot_clicked(unit: UnitInstance, slot_index: int)
 signal slot_unequip_requested(unit: UnitInstance, slot_index: int)
 signal unit_toggle_field_requested(unit: UnitInstance)
 signal unit_sell_requested(unit: UnitInstance)
+signal card_mouse_entered(unit: UnitInstance, card_pos: Vector2)
+signal card_mouse_exited()
 
 var unit_instance: UnitInstance = null
 var is_fielded: bool = true
@@ -21,6 +23,17 @@ var is_fielded: bool = true
 @onready var slots_container: VBoxContainer = $Margin/VBox/SlotsContainer
 @onready var toggle_btn: Button = $Margin/VBox/Actions/ToggleFieldBtn
 @onready var sell_btn: Button = $Margin/VBox/Actions/SellBtn
+
+func _ready() -> void:
+	mouse_entered.connect(_on_card_mouse_entered)
+	mouse_exited.connect(_on_card_mouse_exited)
+
+func _on_card_mouse_entered() -> void:
+	if unit_instance and unit_instance.unit_resource:
+		card_mouse_entered.emit(unit_instance, global_position)
+
+func _on_card_mouse_exited() -> void:
+	card_mouse_exited.emit()
 
 func setup(unit: UnitInstance, fielded: bool = true) -> void:
 	unit_instance = unit
