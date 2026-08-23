@@ -1,65 +1,101 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://src/ui/components/EventModal.gd" id="1_modal"]
 
-[node name="EventModal" type="PanelContainer"]
-custom_minimum_size = Vector2(480, 320)
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -240.0
-offset_top = -160.0
-offset_right = 240.0
-offset_bottom = 160.0
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_modal"]
+bg_color = Color(0.04, 0.03, 0.09, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0.95, 0.83, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_color = Color(0, 0, 0, 0.8)
+shadow_size = 12
+
+[node name="EventModal" type="Control"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
 script = ExtResource("1_modal")
 
-[node name="VBox" type="VBoxContainer" parent="."]
-layout_mode = 2
-theme_override_constants/separation = 12
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.01, 0.01, 0.03, 0.88)
 
-[node name="Header" type="HBoxContainer" parent="VBox"]
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="DialogPanel" type="PanelContainer" parent="CenterContainer"]
+custom_minimum_size = Vector2(560, 360)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_modal")
+
+[node name="Margin" type="MarginContainer" parent="CenterContainer/DialogPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBox" type="VBoxContainer" parent="CenterContainer/DialogPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Header" type="HBoxContainer" parent="CenterContainer/DialogPanel/Margin/VBox"]
 layout_mode = 2
 
-[node name="TitleLabel" type="Label" parent="VBox/Header"]
+[node name="TitleLabel" type="Label" parent="CenterContainer/DialogPanel/Margin/VBox/Header"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0, 0.95, 0.83, 1)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 18
 text = "CORRUPTED DATA COURIER"
 
-[node name="StoryLabel" type="Label" parent="VBox"]
+[node name="StoryLabel" type="Label" parent="CenterContainer/DialogPanel/Margin/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
-theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.88, 0.88, 0.95, 1)
+theme_override_font_sizes/font_size = 13
 text = "In a steam-vented alleyway, you find a wounded street courier clutching a smoking cyberdeck."
 autowrap_mode = 2
 
-[node name="ChoicesContainer" type="VBoxContainer" parent="VBox"]
+[node name="ChoicesContainer" type="VBoxContainer" parent="CenterContainer/DialogPanel/Margin/VBox"]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 10
 
-[node name="OutcomeContainer" type="VBoxContainer" parent="VBox"]
+[node name="OutcomeContainer" type="VBoxContainer" parent="CenterContainer/DialogPanel/Margin/VBox"]
 visible = false
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 12
 
-[node name="OutcomeLabel" type="Label" parent="VBox/OutcomeContainer"]
+[node name="OutcomeLabel" type="Label" parent="CenterContainer/DialogPanel/Margin/VBox/OutcomeContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0.95, 0.83, 1)
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 13
 text = "The courier hands over the encrypted cache."
 autowrap_mode = 2
 
-[node name="ContinueBtn" type="Button" parent="VBox/OutcomeContainer"]
-custom_minimum_size = Vector2(0, 32)
+[node name="ContinueBtn" type="Button" parent="CenterContainer/DialogPanel/Margin/VBox/OutcomeContainer"]
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
-theme_override_font_sizes/font_size = 11
-text = "CONTINUE RUN"
+theme_override_font_sizes/font_size = 12
+text = "CONTINUE MISSION"
 
-[connection signal="pressed" from="VBox/OutcomeContainer/ContinueBtn" to="." method="_on_continue_pressed"]
+[connection signal="pressed" from="CenterContainer/DialogPanel/Margin/VBox/OutcomeContainer/ContinueBtn" to="." method="_on_continue_pressed"]

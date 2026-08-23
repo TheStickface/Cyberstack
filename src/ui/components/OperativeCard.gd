@@ -12,14 +12,14 @@ signal unit_sell_requested(unit: UnitInstance)
 var unit_instance: UnitInstance = null
 var is_fielded: bool = true
 
-@onready var name_label: Label = $VBox/Header/NameLabel
-@onready var role_badge: Label = $VBox/Header/RoleBadge
-@onready var faction_badge: Label = $VBox/Header/FactionBadge
-@onready var stats_label: Label = $VBox/StatsLabel
-@onready var ability_label: Label = $VBox/AbilityLabel
-@onready var slots_container: VBoxContainer = $VBox/SlotsContainer
-@onready var toggle_btn: Button = $VBox/Actions/ToggleFieldBtn
-@onready var sell_btn: Button = $VBox/Actions/SellBtn
+@onready var name_label: Label = $Margin/VBox/Header/NameLabel
+@onready var role_badge: Label = $Margin/VBox/Header/RoleBadge
+@onready var faction_badge: Label = $Margin/VBox/Header/FactionBadge
+@onready var stats_label: Label = $Margin/VBox/StatsLabel
+@onready var ability_label: Label = $Margin/VBox/AbilityLabel
+@onready var slots_container: VBoxContainer = $Margin/VBox/SlotsContainer
+@onready var toggle_btn: Button = $Margin/VBox/Actions/ToggleFieldBtn
+@onready var sell_btn: Button = $Margin/VBox/Actions/SellBtn
 
 func setup(unit: UnitInstance, fielded: bool = true) -> void:
 	unit_instance = unit

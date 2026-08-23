@@ -8,11 +8,11 @@ signal buy_requested(slot_index: int)
 var slot_index: int = 0
 var slot_data: Dictionary = {}
 
-@onready var type_label: Label = $VBox/Header/TypeLabel
-@onready var cost_label: Label = $VBox/Header/CostLabel
-@onready var name_label: Label = $VBox/NameLabel
-@onready var details_label: Label = $VBox/DetailsLabel
-@onready var buy_btn: Button = $VBox/BuyBtn
+@onready var type_label: Label = $Margin/VBox/Header/TypeLabel
+@onready var cost_label: Label = $Margin/VBox/Header/CostLabel
+@onready var name_label: Label = $Margin/VBox/NameLabel
+@onready var details_label: Label = $Margin/VBox/DetailsLabel
+@onready var buy_btn: Button = $Margin/VBox/BuyBtn
 
 func setup(p_index: int, p_data: Dictionary, player_gold: int) -> void:
 	slot_index = p_index

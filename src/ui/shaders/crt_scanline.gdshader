@@ -4,13 +4,13 @@ shader_type canvas_item;
 
 uniform sampler2D SCREEN_TEXTURE : hint_screen_texture, filter_linear_mipmap;
 
-uniform float scanline_count : hint_range(50.0, 800.0) = 360.0;
-uniform float scanline_intensity : hint_range(0.0, 1.0) = 0.08;
-uniform float scanline_speed : hint_range(0.0, 5.0) = 0.5;
-uniform float chromatic_aberration : hint_range(0.0, 0.02) = 0.0025;
-uniform float vignette_intensity : hint_range(0.0, 1.0) = 0.25;
-uniform float vignette_opacity : hint_range(0.0, 1.0) = 0.35;
-uniform float brightness : hint_range(0.5, 1.5) = 1.05;
+uniform float scanline_count : hint_range(50.0, 800.0) = 480.0;
+uniform float scanline_intensity : hint_range(0.0, 1.0) = 0.015;
+uniform float scanline_speed : hint_range(0.0, 5.0) = 0.0;
+uniform float chromatic_aberration : hint_range(0.0, 0.02) = 0.0;
+uniform float vignette_intensity : hint_range(0.0, 1.0) = 0.15;
+uniform float vignette_opacity : hint_range(0.0, 1.0) = 0.20;
+uniform float brightness : hint_range(0.5, 1.5) = 1.0;
 
 void fragment() {
     vec2 uv = SCREEN_UV;

@@ -1,5 +1,5 @@
 class_name EventModal
-extends PanelContainer
+extends Control
 
 ## Holographic popup dialog for resolving narrative vignettes
 
@@ -9,12 +9,12 @@ var event_resource: NarrativeEventResource = null
 var shop_mgr: ShopManager = null
 var crew_mgr: CrewManager = null
 
-@onready var title_label: Label = $VBox/Header/TitleLabel
-@onready var story_label: Label = $VBox/StoryLabel
-@onready var choices_container: VBoxContainer = $VBox/ChoicesContainer
-@onready var outcome_container: VBoxContainer = $VBox/OutcomeContainer
-@onready var outcome_label: Label = $VBox/OutcomeContainer/OutcomeLabel
-@onready var continue_btn: Button = $VBox/OutcomeContainer/ContinueBtn
+@onready var title_label: Label = $CenterContainer/DialogPanel/Margin/VBox/Header/TitleLabel
+@onready var story_label: Label = $CenterContainer/DialogPanel/Margin/VBox/StoryLabel
+@onready var choices_container: VBoxContainer = $CenterContainer/DialogPanel/Margin/VBox/ChoicesContainer
+@onready var outcome_container: VBoxContainer = $CenterContainer/DialogPanel/Margin/VBox/OutcomeContainer
+@onready var outcome_label: Label = $CenterContainer/DialogPanel/Margin/VBox/OutcomeContainer/OutcomeLabel
+@onready var continue_btn: Button = $CenterContainer/DialogPanel/Margin/VBox/OutcomeContainer/ContinueBtn
 
 var latest_outcome: Dictionary = {}
 

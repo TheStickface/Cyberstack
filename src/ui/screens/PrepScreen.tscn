@@ -19,139 +19,180 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.02, 0.015, 0.06, 1)
+color = Color(0.02, 0.015, 0.05, 1)
 
-[node name="VBox" type="VBoxContainer" parent="."]
+[node name="Margin" type="MarginContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 16.0
-offset_top = 12.0
-offset_right = -16.0
-offset_bottom = -12.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="TopBar" type="HBoxContainer" parent="VBox"]
+[node name="TopBar" type="HBoxContainer" parent="Margin/VBox"]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 20
 
-[node name="DistrictLabel" type="Label" parent="VBox/TopBar"]
+[node name="DistrictLabel" type="Label" parent="Margin/VBox/TopBar"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.7, 0.3, 1, 1)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 15
 text = "DISTRICT 1: SLUM MARKET"
 
-[node name="CrewCountLabel" type="Label" parent="VBox/TopBar"]
+[node name="CrewCountLabel" type="Label" parent="Margin/VBox/TopBar"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0.95, 0.83, 1)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 15
 text = "CREW: 1 / 2"
 
-[node name="GoldLabel" type="Label" parent="VBox/TopBar"]
+[node name="GoldLabel" type="Label" parent="Margin/VBox/TopBar"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 0.85, 0, 1)
-theme_override_font_sizes/font_size = 14
-text = "CREDITS: 10 (+1 Interest)"
+theme_override_font_sizes/font_size = 15
+text = "CREDITS: 12"
 
-[node name="LockInBtn" type="Button" parent="VBox/TopBar"]
-custom_minimum_size = Vector2(160, 32)
+[node name="LockInBtn" type="Button" parent="Margin/VBox/TopBar"]
+custom_minimum_size = Vector2(180, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.1, 0.4, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 13
 text = "[BREACH / LOCK IN]"
 
-[node name="MainBody" type="HBoxContainer" parent="VBox"]
+[node name="MainBody" type="HBoxContainer" parent="Margin/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 12
 
-[node name="BoardArea" type="VBoxContainer" parent="VBox/MainBody"]
+[node name="BoardArea" type="VBoxContainer" parent="Margin/VBox/MainBody"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="FieldSection" type="VBoxContainer" parent="VBox/MainBody/BoardArea"]
+[node name="FieldSection" type="VBoxContainer" parent="Margin/VBox/MainBody/BoardArea"]
 layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 4
 
-[node name="Label" type="Label" parent="VBox/MainBody/BoardArea/FieldSection"]
+[node name="Label" type="Label" parent="Margin/VBox/MainBody/BoardArea/FieldSection"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0.95, 0.83, 1)
 theme_override_font_sizes/font_size = 11
-text = "FIELDED OPERATIVES:"
+text = "FIELDED OPERATIVES (Click slots to equip augments):"
 
-[node name="FieldContainer" type="HBoxContainer" parent="VBox/MainBody/BoardArea/FieldSection"]
-custom_minimum_size = Vector2(0, 240)
+[node name="FieldScroll" type="ScrollContainer" parent="Margin/VBox/MainBody/BoardArea/FieldSection"]
 layout_mode = 2
+size_flags_vertical = 3
+vertical_scroll_mode = 0
+
+[node name="FieldContainer" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/FieldSection/FieldScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 theme_override_constants/separation = 8
 
-[node name="BenchSection" type="VBoxContainer" parent="VBox/MainBody/BoardArea"]
+[node name="BenchAndTray" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea"]
+custom_minimum_size = Vector2(0, 70)
 layout_mode = 2
+theme_override_constants/separation = 12
 
-[node name="Label" type="Label" parent="VBox/MainBody/BoardArea/BenchSection"]
+[node name="BenchSection" type="VBoxContainer" parent="Margin/VBox/MainBody/BoardArea/BenchAndTray"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Label" type="Label" parent="Margin/VBox/MainBody/BoardArea/BenchAndTray/BenchSection"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
 theme_override_font_sizes/font_size = 10
 text = "BENCH RESERVES:"
 
-[node name="BenchContainer" type="HBoxContainer" parent="VBox/MainBody/BoardArea/BenchSection"]
+[node name="BenchScroll" type="ScrollContainer" parent="Margin/VBox/MainBody/BoardArea/BenchAndTray/BenchSection"]
 layout_mode = 2
-theme_override_constants/separation = 8
+size_flags_vertical = 3
+vertical_scroll_mode = 0
 
-[node name="AugmentTray" type="VBoxContainer" parent="VBox/MainBody/BoardArea"]
+[node name="BenchContainer" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/BenchAndTray/BenchSection/BenchScroll"]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 6
 
-[node name="Label" type="Label" parent="VBox/MainBody/BoardArea/AugmentTray"]
+[node name="AugmentTray" type="VBoxContainer" parent="Margin/VBox/MainBody/BoardArea/BenchAndTray"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Label" type="Label" parent="Margin/VBox/MainBody/BoardArea/BenchAndTray/AugmentTray"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.7, 0.3, 1, 1)
 theme_override_font_sizes/font_size = 10
-text = "AUGMENT INVENTORY (Select chip, then click unit slot to equip):"
+text = "AUGMENT BAG (Select chip to equip):"
 
-[node name="AugmentContainer" type="HBoxContainer" parent="VBox/MainBody/BoardArea/AugmentTray"]
-custom_minimum_size = Vector2(0, 54)
+[node name="AugmentScroll" type="ScrollContainer" parent="Margin/VBox/MainBody/BoardArea/BenchAndTray/AugmentTray"]
 layout_mode = 2
+size_flags_vertical = 3
+vertical_scroll_mode = 0
+
+[node name="AugmentContainer" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/BenchAndTray/AugmentTray/AugmentScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 theme_override_constants/separation = 6
 
-[node name="ShopSection" type="VBoxContainer" parent="VBox/MainBody/BoardArea"]
+[node name="ShopSection" type="VBoxContainer" parent="Margin/VBox/MainBody/BoardArea"]
+custom_minimum_size = Vector2(0, 180)
 layout_mode = 2
-size_flags_vertical = 10
+theme_override_constants/separation = 4
 
-[node name="ShopControls" type="HBoxContainer" parent="VBox/MainBody/BoardArea/ShopSection"]
+[node name="ShopControls" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/ShopSection"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBox/MainBody/BoardArea/ShopSection/ShopControls"]
+[node name="Label" type="Label" parent="Margin/VBox/MainBody/BoardArea/ShopSection/ShopControls"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 0.85, 0, 1)
 theme_override_font_sizes/font_size = 11
-text = "BLACK MARKET / CREW RECRUITMENT:"
+text = "BLACK MARKET RECRUITMENT:"
 
-[node name="RerollBtn" type="Button" parent="VBox/MainBody/BoardArea/ShopSection/ShopControls"]
+[node name="RerollBtn" type="Button" parent="Margin/VBox/MainBody/BoardArea/ShopSection/ShopControls"]
+custom_minimum_size = Vector2(100, 24)
 layout_mode = 2
 theme_override_font_sizes/font_size = 10
 text = "REROLL (2g)"
 
-[node name="ShopContainer" type="HBoxContainer" parent="VBox/MainBody/BoardArea/ShopSection"]
-custom_minimum_size = Vector2(0, 150)
+[node name="ShopScroll" type="ScrollContainer" parent="Margin/VBox/MainBody/BoardArea/ShopSection"]
 layout_mode = 2
+size_flags_vertical = 3
+vertical_scroll_mode = 0
+
+[node name="ShopContainer" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/ShopSection/ShopScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 theme_override_constants/separation = 8
 
-[node name="Sidebar" type="VBoxContainer" parent="VBox/MainBody"]
-custom_minimum_size = Vector2(220, 0)
+[node name="Sidebar" type="VBoxContainer" parent="Margin/VBox/MainBody"]
+custom_minimum_size = Vector2(230, 0)
 layout_mode = 2
 
-[node name="SynergyTrackerHUD" parent="VBox/MainBody/Sidebar" instance=ExtResource("2_hud")]
+[node name="SynergyTrackerHUD" parent="Margin/VBox/MainBody/Sidebar" instance=ExtResource("2_hud")]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="StatusLabel" type="Label" parent="VBox"]
+[node name="StatusLabel" type="Label" parent="Margin/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0.95, 0.83, 1)
 theme_override_font_sizes/font_size = 11
 text = "Welcome to Cyberstack Prep Phase. Assemble your crew."
 
-[connection signal="pressed" from="VBox/TopBar/LockInBtn" to="." method="_on_lock_in_pressed"]
-[connection signal="pressed" from="VBox/MainBody/BoardArea/ShopSection/ShopControls/RerollBtn" to="." method="_on_reroll_pressed"]
+[connection signal="pressed" from="Margin/VBox/TopBar/LockInBtn" to="." method="_on_lock_in_pressed"]
+[connection signal="pressed" from="Margin/VBox/MainBody/BoardArea/ShopSection/ShopControls/RerollBtn" to="." method="_on_reroll_pressed"]

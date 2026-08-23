@@ -10,9 +10,9 @@ var encounter_type: Enums.EncounterType = Enums.EncounterType.FIGHT
 var is_visited: bool = false
 var is_current: bool = false
 
-@onready var icon_label: Label = $VBox/IconLabel
-@onready var type_label: Label = $VBox/TypeLabel
-@onready var status_label: Label = $VBox/StatusLabel
+@onready var icon_label: Label = $Margin/VBox/IconLabel
+@onready var type_label: Label = $Margin/VBox/TypeLabel
+@onready var status_label: Label = $Margin/VBox/StatusLabel
 
 func setup(p_index: int, p_type: Enums.EncounterType, p_visited: bool, p_current: bool) -> void:
 	node_index = p_index

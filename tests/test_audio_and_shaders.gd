@@ -9,8 +9,8 @@ func test_shader_and_overlay() -> Dictionary:
 	if overlay == null:
 		return {"passed": false, "message": "Failed to instantiate CRTOverlay", "assertions": 1}
 		
-	if not overlay.enabled:
-		return {"passed": false, "message": "CRTOverlay should be enabled by default", "assertions": 2}
+	if overlay.enabled:
+		return {"passed": false, "message": "CRTOverlay should be disabled by default", "assertions": 2}
 		
 	var mat = overlay.material as ShaderMaterial
 	if mat == null or mat.shader == null:
@@ -18,8 +18,8 @@ func test_shader_and_overlay() -> Dictionary:
 		
 	# Test toggle
 	var new_state = overlay.toggle_crt()
-	if new_state or overlay.enabled:
-		return {"passed": false, "message": "toggle_crt failed to disable overlay", "assertions": 4}
+	if not new_state or not overlay.enabled:
+		return {"passed": false, "message": "toggle_crt failed to enable overlay", "assertions": 4}
 		
 	overlay.queue_free()
 	return {"passed": true, "assertions": 4}
