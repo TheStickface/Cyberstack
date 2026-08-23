@@ -23,9 +23,9 @@ var selected_inventory_idx: int = -1
 
 @onready var field_container: HBoxContainer = $Margin/VBox/MainBody/BoardArea/FieldSection/FieldScroll/FieldContainer
 @onready var bench_container: HBoxContainer = $Margin/VBox/MainBody/BoardArea/BenchSection/BenchScroll/BenchContainer
-@onready var crew_shop_container: HBoxContainer = $Margin/VBox/MainBody/BoardArea/MarketSection/CrewShop/CrewShopScroll/CrewShopContainer
-@onready var augment_shop_container: HBoxContainer = $Margin/VBox/MainBody/BoardArea/MarketSection/AugmentShop/AugmentShopScroll/AugmentShopContainer
-@onready var reroll_btn: Button = $Margin/VBox/MainBody/BoardArea/MarketSection/CrewShop/CrewShopHeader/RerollBtn
+@onready var crew_shop_container: HBoxContainer = $Margin/VBox/MainBody/BoardArea/CrewShop/CrewShopScroll/CrewShopContainer
+@onready var augment_shop_container: HBoxContainer = $Margin/VBox/MainBody/BoardArea/AugmentShop/AugmentShopScroll/AugmentShopContainer
+@onready var reroll_btn: Button = $Margin/VBox/MainBody/BoardArea/CrewShop/CrewShopHeader/RerollBtn
 
 @onready var synergy_hud: SynergyTrackerHUD = $Margin/VBox/MainBody/Sidebar/SynergyTrackerHUD
 @onready var augment_tray: HBoxContainer = $Margin/VBox/MainBody/Sidebar/AugmentTray/AugmentScroll/AugmentContainer

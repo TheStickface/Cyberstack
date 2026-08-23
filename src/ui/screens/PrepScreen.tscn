@@ -29,16 +29,16 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 10
+theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_bottom = 8
 
 [node name="VBox" type="VBoxContainer" parent="Margin"]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 4
 
 [node name="TopBar" type="HBoxContainer" parent="Margin/VBox"]
-custom_minimum_size = Vector2(0, 34)
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
 theme_override_constants/separation = 16
 
@@ -62,7 +62,7 @@ theme_override_font_sizes/font_size = 15
 text = "CREDITS: 12"
 
 [node name="LockInBtn" type="Button" parent="Margin/VBox/TopBar"]
-custom_minimum_size = Vector2(190, 32)
+custom_minimum_size = Vector2(190, 30)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.1, 0.4, 1)
 theme_override_font_sizes/font_size = 12
@@ -76,7 +76,7 @@ theme_override_constants/separation = 12
 [node name="BoardArea" type="VBoxContainer" parent="Margin/VBox/MainBody"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 6
+theme_override_constants/separation = 4
 
 [node name="FieldSection" type="VBoxContainer" parent="Margin/VBox/MainBody/BoardArea"]
 layout_mode = 2
@@ -89,7 +89,7 @@ theme_override_font_sizes/font_size = 10
 text = "FIELDED OPERATIVES (Click slots to equip selected augment):"
 
 [node name="FieldScroll" type="ScrollContainer" parent="Margin/VBox/MainBody/BoardArea/FieldSection"]
-custom_minimum_size = Vector2(0, 165)
+custom_minimum_size = Vector2(0, 160)
 layout_mode = 2
 vertical_scroll_mode = 0
 
@@ -110,7 +110,7 @@ theme_override_font_sizes/font_size = 9
 text = "BENCH RESERVES (Standby Squad — Click DEPLOY to field):"
 
 [node name="BenchScroll" type="ScrollContainer" parent="Margin/VBox/MainBody/BoardArea/BenchSection"]
-custom_minimum_size = Vector2(0, 95)
+custom_minimum_size = Vector2(0, 85)
 layout_mode = 2
 vertical_scroll_mode = 0
 
@@ -120,71 +120,60 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 6
 
-[node name="MarketSection" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea"]
-custom_minimum_size = Vector2(0, 170)
+[node name="CrewShop" type="VBoxContainer" parent="Margin/VBox/MainBody/BoardArea"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 2
 
-[node name="CrewShop" type="VBoxContainer" parent="Margin/VBox/MainBody/BoardArea/MarketSection"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 2.0
-theme_override_constants/separation = 3
-
-[node name="CrewShopHeader" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/MarketSection/CrewShop"]
+[node name="CrewShopHeader" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/CrewShop"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Margin/VBox/MainBody/BoardArea/MarketSection/CrewShop/CrewShopHeader"]
+[node name="Label" type="Label" parent="Margin/VBox/MainBody/BoardArea/CrewShop/CrewShopHeader"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 0.85, 0, 1)
 theme_override_font_sizes/font_size = 10
-text = "OPERATIVE RECRUITMENT (4 AVAILABLE):"
+text = "OPERATIVE RECRUITMENT (4 CANDIDATES):"
 
-[node name="RerollBtn" type="Button" parent="Margin/VBox/MainBody/BoardArea/MarketSection/CrewShop/CrewShopHeader"]
-custom_minimum_size = Vector2(105, 22)
+[node name="RerollBtn" type="Button" parent="Margin/VBox/MainBody/BoardArea/CrewShop/CrewShopHeader"]
+custom_minimum_size = Vector2(105, 20)
 layout_mode = 2
 theme_override_font_sizes/font_size = 9
 text = "REROLL (2 CR)"
 
-[node name="CrewShopScroll" type="ScrollContainer" parent="Margin/VBox/MainBody/BoardArea/MarketSection/CrewShop"]
-custom_minimum_size = Vector2(0, 145)
+[node name="CrewShopScroll" type="ScrollContainer" parent="Margin/VBox/MainBody/BoardArea/CrewShop"]
+custom_minimum_size = Vector2(0, 115)
 layout_mode = 2
-size_flags_vertical = 3
 vertical_scroll_mode = 0
 
-[node name="CrewShopContainer" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/MarketSection/CrewShop/CrewShopScroll"]
+[node name="CrewShopContainer" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/CrewShop/CrewShopScroll"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/separation = 6
+theme_override_constants/separation = 8
 
-[node name="AugmentShop" type="VBoxContainer" parent="Margin/VBox/MainBody/BoardArea/MarketSection"]
+[node name="AugmentShop" type="VBoxContainer" parent="Margin/VBox/MainBody/BoardArea"]
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 1.0
-theme_override_constants/separation = 3
+theme_override_constants/separation = 2
 
-[node name="AugmentShopHeader" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/MarketSection/AugmentShop"]
+[node name="AugmentShopHeader" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/AugmentShop"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Margin/VBox/MainBody/BoardArea/MarketSection/AugmentShop/AugmentShopHeader"]
+[node name="Label" type="Label" parent="Margin/VBox/MainBody/BoardArea/AugmentShop/AugmentShopHeader"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.7, 0.4, 1, 1)
 theme_override_font_sizes/font_size = 10
-text = "BLACK MARKET ARMORY:"
+text = "BLACK MARKET ARMORY (AUGMENTS):"
 
-[node name="AugmentShopScroll" type="ScrollContainer" parent="Margin/VBox/MainBody/BoardArea/MarketSection/AugmentShop"]
-custom_minimum_size = Vector2(0, 145)
+[node name="AugmentShopScroll" type="ScrollContainer" parent="Margin/VBox/MainBody/BoardArea/AugmentShop"]
+custom_minimum_size = Vector2(0, 115)
 layout_mode = 2
-size_flags_vertical = 3
 vertical_scroll_mode = 0
 
-[node name="AugmentShopContainer" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/MarketSection/AugmentShop/AugmentShopScroll"]
+[node name="AugmentShopContainer" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/AugmentShop/AugmentShopScroll"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/separation = 6
+theme_override_constants/separation = 8
 
 [node name="Sidebar" type="VBoxContainer" parent="Margin/VBox/MainBody"]
 custom_minimum_size = Vector2(250, 0)
@@ -219,11 +208,11 @@ size_flags_vertical = 3
 theme_override_constants/separation = 6
 
 [node name="StatusLabel" type="Label" parent="Margin/VBox"]
-custom_minimum_size = Vector2(0, 20)
+custom_minimum_size = Vector2(0, 18)
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0.95, 0.83, 1)
 theme_override_font_sizes/font_size = 10
 text = "Welcome to Cyberstack Prep Phase. Assemble your crew."
 
 [connection signal="pressed" from="Margin/VBox/TopBar/LockInBtn" to="." method="_on_lock_in_pressed"]
-[connection signal="pressed" from="Margin/VBox/MainBody/BoardArea/MarketSection/CrewShop/CrewShopHeader/RerollBtn" to="." method="_on_reroll_pressed"]
+[connection signal="pressed" from="Margin/VBox/MainBody/BoardArea/CrewShop/CrewShopHeader/RerollBtn" to="." method="_on_reroll_pressed"]
