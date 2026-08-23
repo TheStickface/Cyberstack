@@ -31,6 +31,11 @@ func _on_chip_mouse_entered() -> void:
 func _on_chip_mouse_exited() -> void:
 	card_mouse_exited.emit()
 
+func _make_custom_tooltip(_for_text: String) -> Object:
+	if augment_resource:
+		return SynergyTooltip.create_augment_tooltip_node(augment_resource)
+	return null
+
 func setup(aug: AugmentResource, inv_idx: int = -1) -> void:
 	augment_resource = aug
 	inventory_index = inv_idx

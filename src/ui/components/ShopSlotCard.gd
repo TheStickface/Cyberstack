@@ -28,6 +28,17 @@ func _set_mouse_filter_recursive(node: Node) -> void:
 			child.mouse_filter = Control.MOUSE_FILTER_PASS
 			_set_mouse_filter_recursive(child)
 
+func _make_custom_tooltip(_for_text: String) -> Object:
+	var is_bought = slot_data.get("is_bought", false)
+	var res = slot_data.get("resource", null)
+	if is_bought or res == null:
+		return null
+	if res is UnitResource:
+		return SynergyTooltip.create_custom_tooltip_node(res as UnitResource, {}, 1)
+	elif res is AugmentResource:
+		return SynergyTooltip.create_augment_tooltip_node(res as AugmentResource)
+	return null
+
 func setup(p_index: int, p_data: Dictionary, player_gold: int) -> void:
 	slot_index = p_index
 	slot_data = p_data
@@ -40,6 +51,7 @@ func _update_ui(player_gold: int) -> void:
 	var res = slot_data.get("resource", null)
 	
 	if is_bought or res == null:
+		tooltip_text = ""
 		if buy_btn:
 			buy_btn.text = "[SOLD]"
 			buy_btn.disabled = true
@@ -48,6 +60,8 @@ func _update_ui(player_gold: int) -> void:
 		if details_label:
 			details_label.text = ""
 		return
+		
+	tooltip_text = "Offering Details"
 		
 	if type_label:
 		type_label.text = item_type.to_upper()

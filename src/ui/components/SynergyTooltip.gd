@@ -1,29 +1,10 @@
 class_name SynergyTooltip
 extends CanvasLayer
 
-## Cyberpunk Floating Synergy Intelligence & Operative Profile Tooltip (CanvasLayer Mounted)
+## Cyberpunk Floating Synergy Intelligence & Operative Profile Tooltip
 
-var panel: PanelContainer = PanelContainer.new()
-var title_label: Label = Label.new()
-var subtitle_label: Label = Label.new()
-var bio_label: Label = Label.new()
-var stats_label: Label = Label.new()
-var ability_header: Label = Label.new()
-var ability_desc: Label = Label.new()
-var synergy_box: VBoxContainer = VBoxContainer.new()
-var main_vbox: VBoxContainer = VBoxContainer.new()
-
-# Debug HUD Overlay
-var debug_hud: PanelContainer = PanelContainer.new()
-var debug_label: Label = Label.new()
-var is_debug_mode: bool = false
-
-func _init() -> void:
-	layer = 115
-	
-	# Root Tooltip Panel
-	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.visible = false
+static func create_custom_tooltip_node(unit_res: UnitResource, impact_info: Dictionary = {}, star_lvl: int = 1) -> PanelContainer:
+	var panel = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(290, 0)
 	
 	var style = StyleBoxFlat.new()
@@ -40,121 +21,47 @@ func _init() -> void:
 	style.shadow_color = Color(0, 0, 0, 0.85)
 	style.shadow_size = 8
 	panel.add_theme_stylebox_override("panel", style)
-	add_child(panel)
 	
 	var margin = MarginContainer.new()
-	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	margin.add_theme_constant_override("margin_left", 12)
 	margin.add_theme_constant_override("margin_right", 12)
 	margin.add_theme_constant_override("margin_top", 10)
 	margin.add_theme_constant_override("margin_bottom", 10)
 	panel.add_child(margin)
 	
-	main_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var main_vbox = VBoxContainer.new()
 	main_vbox.add_theme_constant_override("separation", 5)
 	margin.add_child(main_vbox)
 	
-	# Title
-	title_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if unit_res == null:
+		return panel
+		
+	var star_str = " ★" if star_lvl == 1 else (" ★★" if star_lvl == 2 else " ★★★")
+	var title_label = Label.new()
+	title_label.text = "%s%s" % [unit_res.display_name, star_str]
 	title_label.add_theme_font_size_override("font_size", 13)
 	title_label.add_theme_color_override("font_color", Color(0, 1, 0.9))
 	main_vbox.add_child(title_label)
 	
-	# Subtitle / Role & Faction
-	subtitle_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	subtitle_label.add_theme_font_size_override("font_size", 9)
-	subtitle_label.add_theme_color_override("font_color", Color(1, 0.85, 0.2))
-	main_vbox.add_child(subtitle_label)
-	
-	# Bio
-	bio_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bio_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	bio_label.add_theme_font_size_override("font_size", 8)
-	bio_label.add_theme_color_override("font_color", Color(0.65, 0.65, 0.75))
-	main_vbox.add_child(bio_label)
-	
-	# Stats
-	stats_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	stats_label.add_theme_font_size_override("font_size", 9)
-	stats_label.add_theme_color_override("font_color", Color(0.8, 0.85, 0.95))
-	main_vbox.add_child(stats_label)
-	
-	# Ability Section
-	ability_header.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	ability_header.add_theme_font_size_override("font_size", 10)
-	ability_header.add_theme_color_override("font_color", Color(1, 0.2, 0.6))
-	main_vbox.add_child(ability_header)
-	
-	ability_desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	ability_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	ability_desc.add_theme_font_size_override("font_size", 8)
-	ability_desc.add_theme_color_override("font_color", Color(0.75, 0.75, 0.85))
-	main_vbox.add_child(ability_desc)
-	
-	# Synergy Intel Box
-	synergy_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	main_vbox.add_child(synergy_box)
-	
-	# Setup Live Debug Overlay (Bottom-left corner)
-	_setup_debug_hud()
-
-func _setup_debug_hud() -> void:
-	debug_hud.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	debug_hud.visible = false
-	debug_hud.custom_minimum_size = Vector2(320, 60)
-	debug_hud.position = Vector2(16, 640)
-	
-	var dstyle = StyleBoxFlat.new()
-	dstyle.bg_color = Color(0.02, 0.02, 0.08, 0.9)
-	dstyle.border_width_left = 1
-	dstyle.border_width_top = 1
-	dstyle.border_width_right = 1
-	dstyle.border_width_bottom = 1
-	dstyle.border_color = Color(1, 0.2, 0.6, 0.8)
-	dstyle.corner_radius_top_left = 4
-	dstyle.corner_radius_top_right = 4
-	dstyle.corner_radius_bottom_left = 4
-	dstyle.corner_radius_bottom_right = 4
-	debug_hud.add_theme_stylebox_override("panel", dstyle)
-	add_child(debug_hud)
-	
-	var dmargin = MarginContainer.new()
-	dmargin.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	dmargin.add_theme_constant_override("margin_left", 8)
-	dmargin.add_theme_constant_override("margin_right", 8)
-	dmargin.add_theme_constant_override("margin_top", 6)
-	dmargin.add_theme_constant_override("margin_bottom", 6)
-	debug_hud.add_child(dmargin)
-	
-	debug_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	debug_label.add_theme_font_size_override("font_size", 9)
-	debug_label.add_theme_color_override("font_color", Color(1, 0.8, 0.2))
-	debug_label.text = "[DEBUG HOVER TOOL] Active. Press F3 to toggle."
-	dmargin.add_child(debug_label)
-
-func toggle_debug_hud() -> void:
-	is_debug_mode = not is_debug_mode
-	debug_hud.visible = is_debug_mode
-
-func set_debug_text(txt: String) -> void:
-	if debug_label:
-		debug_label.text = txt
-
-func show_for_unit(unit_res: UnitResource, impact_info: Dictionary = {}, star_lvl: int = 1) -> void:
-	if unit_res == null:
-		hide_tooltip()
-		return
-		
-	var star_str = " ★" if star_lvl == 1 else (" ★★" if star_lvl == 2 else " ★★★")
-	title_label.text = "%s%s" % [unit_res.display_name, star_str]
+	var subtitle_label = Label.new()
 	subtitle_label.text = "[%s] • [%s] • Cost: %d CR" % [
 		unit_res.get_role_name().to_upper(),
 		unit_res.get_faction_name().to_upper(),
 		unit_res.base_cost
 	]
-	bio_label.text = "\"%s\"" % unit_res.bio if not unit_res.bio.is_empty() else ""
-	bio_label.visible = not unit_res.bio.is_empty()
+	subtitle_label.add_theme_font_size_override("font_size", 9)
+	subtitle_label.add_theme_color_override("font_color", Color(1, 0.85, 0.2))
+	main_vbox.add_child(subtitle_label)
 	
+	if not unit_res.bio.is_empty():
+		var bio_label = Label.new()
+		bio_label.text = "\"%s\"" % unit_res.bio
+		bio_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		bio_label.add_theme_font_size_override("font_size", 8)
+		bio_label.add_theme_color_override("font_color", Color(0.65, 0.65, 0.75))
+		main_vbox.add_child(bio_label)
+		
+	var stats_label = Label.new()
 	stats_label.text = "HP: %.0f | Armor: %.0f | AD: %.0f | AP: %.0f | Spd: %.0f | Crit: %.0f%%" % [
 		unit_res.base_max_health,
 		unit_res.base_armor,
@@ -163,26 +70,33 @@ func show_for_unit(unit_res: UnitResource, impact_info: Dictionary = {}, star_lv
 		unit_res.base_speed,
 		unit_res.base_crit_chance * 100.0
 	]
+	stats_label.add_theme_font_size_override("font_size", 9)
+	stats_label.add_theme_color_override("font_color", Color(0.8, 0.85, 0.95))
+	main_vbox.add_child(stats_label)
 	
-	ability_header.text = "⚡ %s" % unit_res.ability_name
-	ability_header.visible = not unit_res.ability_name.is_empty()
-	ability_desc.text = unit_res.ability_description
-	ability_desc.visible = not unit_res.ability_description.is_empty()
-	
-	# Populate Synergy Intel Box
-	for c in synergy_box.get_children():
-		c.queue_free()
+	if not unit_res.ability_name.is_empty():
+		var ability_header = Label.new()
+		ability_header.text = "⚡ %s" % unit_res.ability_name
+		ability_header.add_theme_font_size_override("font_size", 10)
+		ability_header.add_theme_color_override("font_color", Color(1, 0.2, 0.6))
+		main_vbox.add_child(ability_header)
 		
+		var ability_desc = Label.new()
+		ability_desc.text = unit_res.ability_description
+		ability_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		ability_desc.add_theme_font_size_override("font_size", 8)
+		ability_desc.add_theme_color_override("font_color", Color(0.75, 0.75, 0.85))
+		main_vbox.add_child(ability_desc)
+		
+	# Synergy Intel Box
 	var sep = HSeparator.new()
-	sep.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	synergy_box.add_child(sep)
+	main_vbox.add_child(sep)
 	
 	var intel_header = Label.new()
-	intel_header.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	intel_header.text = "⚡ SYNERGY INTELLIGENCE"
 	intel_header.add_theme_font_size_override("font_size", 9)
 	intel_header.add_theme_color_override("font_color", Color(0, 0.95, 0.83))
-	synergy_box.add_child(intel_header)
+	main_vbox.add_child(intel_header)
 	
 	if not impact_info.is_empty():
 		var f_name = impact_info.get("faction_name", "")
@@ -192,7 +106,6 @@ func show_for_unit(unit_res: UnitResource, impact_info: Dictionary = {}, star_lv
 		var is_dup = impact_info.get("is_duplicate", false)
 		
 		var f_lbl = Label.new()
-		f_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		if will_act:
 			f_lbl.text = "• %s: [%d -> %d] ★ ACTIVATES NEW TIER!" % [f_name, prev, nxt]
 			f_lbl.add_theme_color_override("font_color", Color(0.2, 1.0, 0.4))
@@ -200,74 +113,87 @@ func show_for_unit(unit_res: UnitResource, impact_info: Dictionary = {}, star_lv
 			f_lbl.text = "• %s: Current [%d] -> With Operative [%d]" % [f_name, prev, nxt]
 			f_lbl.add_theme_color_override("font_color", Color(0.7, 0.7, 0.8))
 		f_lbl.add_theme_font_size_override("font_size", 9)
-		synergy_box.add_child(f_lbl)
+		main_vbox.add_child(f_lbl)
 		
 		if is_dup:
 			var dup_lbl = Label.new()
-			dup_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			dup_lbl.text = "★ 2-COPY MERGE: Combines toward Star Level Up!"
 			dup_lbl.add_theme_font_size_override("font_size", 9)
 			dup_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.0))
-			synergy_box.add_child(dup_lbl)
+			main_vbox.add_child(dup_lbl)
 			
 		var new_combos = impact_info.get("new_combos", [])
 		for combo in new_combos:
 			var c_lbl = Label.new()
-			c_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			c_lbl.text = "★ UNLOCKS COMBO: %s!" % combo.name
 			c_lbl.add_theme_font_size_override("font_size", 9)
 			c_lbl.add_theme_color_override("font_color", Color(1.0, 0.2, 0.6))
-			synergy_box.add_child(c_lbl)
+			main_vbox.add_child(c_lbl)
 			
-	synergy_box.visible = true
-	panel.show()
+	return panel
 
-func show_for_augment(aug_res: AugmentResource) -> void:
+static func create_augment_tooltip_node(aug_res: AugmentResource) -> PanelContainer:
+	var panel = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(280, 0)
+	
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.04, 0.03, 0.10, 0.98)
+	style.border_width_left = 2
+	style.border_width_top = 2
+	style.border_width_right = 2
+	style.border_width_bottom = 2
+	style.border_color = Color(0.7, 0.3, 1, 0.9)
+	style.corner_radius_top_left = 6
+	style.corner_radius_top_right = 6
+	style.corner_radius_bottom_left = 6
+	style.corner_radius_bottom_right = 6
+	panel.add_theme_stylebox_override("panel", style)
+	
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 12)
+	margin.add_theme_constant_override("margin_right", 12)
+	margin.add_theme_constant_override("margin_top", 10)
+	margin.add_theme_constant_override("margin_bottom", 10)
+	panel.add_child(margin)
+	
+	var main_vbox = VBoxContainer.new()
+	main_vbox.add_theme_constant_override("separation", 5)
+	margin.add_child(main_vbox)
+	
 	if aug_res == null:
-		hide_tooltip()
-		return
+		return panel
 		
+	var title_label = Label.new()
 	title_label.text = aug_res.display_name
+	title_label.add_theme_font_size_override("font_size", 12)
 	title_label.add_theme_color_override("font_color", Color(aug_res.get_tier_color_hex()))
+	main_vbox.add_child(title_label)
 	
 	var tag_names: Array[String] = []
 	for t in aug_res.tags:
 		tag_names.append(Enums.tag_to_string(t))
 		
+	var subtitle_label = Label.new()
 	subtitle_label.text = "[%s TIER] • [%s SLOT] • Cost: %d CR" % [
 		aug_res.get_tier_name().to_upper(),
 		Enums.slot_type_to_string(aug_res.slot_type).to_upper(),
 		aug_res.base_cost
 	]
+	subtitle_label.add_theme_font_size_override("font_size", 9)
+	subtitle_label.add_theme_color_override("font_color", Color(1, 0.85, 0.2))
+	main_vbox.add_child(subtitle_label)
+	
+	var bio_label = Label.new()
 	bio_label.text = "Tags: %s" % (", ".join(tag_names) if not tag_names.is_empty() else "None")
-	bio_label.visible = true
+	bio_label.add_theme_font_size_override("font_size", 8)
+	bio_label.add_theme_color_override("font_color", Color(0.65, 0.65, 0.75))
+	main_vbox.add_child(bio_label)
 	
+	var stats_label = Label.new()
 	stats_label.text = aug_res.description
-	ability_header.visible = false
-	ability_desc.visible = false
+	stats_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	stats_label.add_theme_font_size_override("font_size", 9)
+	stats_label.add_theme_color_override("font_color", Color(0.8, 0.85, 0.95))
+	main_vbox.add_child(stats_label)
 	
-	for c in synergy_box.get_children():
-		c.queue_free()
-	synergy_box.visible = false
-	panel.show()
-
-func hide_tooltip() -> void:
-	if panel:
-		panel.hide()
-
-func update_screen_position(target_pos: Vector2, vp_size: Vector2) -> void:
-	var tip_size = panel.size if panel.size.x > 50 else Vector2(290, 240)
-	var pos_x = target_pos.x + 18
-	var pos_y = target_pos.y + 12
-	
-	# Clamp within screen bounds
-	if pos_x + tip_size.x > vp_size.x - 10:
-		pos_x = target_pos.x - tip_size.x - 18
-	if pos_x < 10:
-		pos_x = 10
-	if pos_y + tip_size.y > vp_size.y - 10:
-		pos_y = vp_size.y - tip_size.y - 10
-	if pos_y < 10:
-		pos_y = 10
-		
-	panel.position = Vector2(pos_x, pos_y)
+	return panel

@@ -43,6 +43,11 @@ func _on_card_mouse_entered() -> void:
 func _on_card_mouse_exited() -> void:
 	card_mouse_exited.emit()
 
+func _make_custom_tooltip(_for_text: String) -> Object:
+	if unit_instance and unit_instance.unit_resource:
+		return SynergyTooltip.create_custom_tooltip_node(unit_instance.unit_resource, {}, unit_instance.star_level)
+	return null
+
 func setup(unit: UnitInstance, fielded: bool = true) -> void:
 	unit_instance = unit
 	is_fielded = fielded
@@ -54,6 +59,7 @@ func _update_ui() -> void:
 		return
 		
 	visible = true
+	tooltip_text = "Operative Profile"
 	var res = unit_instance.unit_resource
 	
 	if name_label:
