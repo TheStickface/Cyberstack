@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="DistrictResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/DistrictResource.gd" id="1_dist"]
+
+[resource]
+script = ExtResource("1_dist")
+id = "skyline_casino"
+display_name = "Skyline Casino"
+description = "A hot-magenta neon-and-chrome vice tower where Corp-backed bouncers guard high-stakes augmented gladiator pits."
+theme_color = Color(1, 0.1, 0.75, 1)
+is_final_boss = false
+node_sequence = Array[int]([0, 1, 0, 2, 1, 3])
+boss_unit_id = "boss_house_dealer"

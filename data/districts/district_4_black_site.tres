@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="DistrictResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/DistrictResource.gd" id="1_dist"]
+
+[resource]
+script = ExtResource("1_dist")
+id = "district_4_black_site"
+display_name = "Black Site"
+description = "Off-grid orbital research facility under red emergency lockdown. Elite security synthesis units guard the core mainframe."
+theme_color = Color(1, 0.1, 0.35, 1)
+is_final_boss = true
+node_sequence = Array[int]([0, 1, 2, 1, 3])
+boss_unit_id = "boss_nemesis_synthetic"

@@ -19,11 +19,40 @@ The name *Cyberstack* refers to the act of stacking augments, traits, and crew s
 ### Districts
 A run consists of **3–4 districts** followed by a **final boss district**. Each district has a thematic identity tied to a city faction and contains a fixed sequence of encounters: roughly 3 fights, 1–2 shops, and 1 optional event node. Encounters within a district are linear. Which districts appear and their order has roguelite variance between runs.
 
-**Example district themes:**
+To support replayability, the target is a **pool of ~20 districts** to draw from per run (plus the final boss district), so repeat runs don't see the same sequence. The roster below is split into three tiers of design maturity: the original four core examples, eight thematically-detailed additions that each close a gap in faction/tag/tone coverage, and twelve further concepts to round the pool out to 20 — these last twelve are name/enemy/aesthetic only, with shop and event mechanics intentionally left as placeholders for later design passes.
+
+#### Core district examples
 - Corporate Arcology — Corp Enforcer enemies, chrome/white aesthetic, economy-focused events
 - Slum Market — Street Runner enemies, cluttered neon aesthetic, recruitment-focused shops
 - Server Vault — Rogue AI enemies, deep blue aesthetic, augment-heavy shops
 - Black Site — Mixed elite enemies, final district, Legendary augments available
+
+#### Thematically-detailed additions
+These were designed to fill specific gaps: the Fixers faction had no home district, three of the four augment tags (`Thermal`, `Neural`, `Kinetic`) had no environmental home, and the roster leaned toward "disciplined economy" tone without a vice/risk counterweight or a lawless-ruins counterweight to Black Site.
+
+- **Contract Row** — Fixers enemies (Info Brokers, Mercenary Contractors), muted grey/amber noir aesthetic (trench-coats, rain-slicked alleys, dead neon signage). Info-focused shop: pay gold to reveal the next district's enemy comp or shop stock before committing.
+- **Thermal Foundry** — Foundry Drone / Heat-Sync Merc enemies, molten orange-red aesthetic (steam vents, sparking rail lines). Augment shop weighted toward the `Thermal` tag; optional event is a coolant-leak hazard that punishes slow fights but pays bonus gold for fast ones.
+- **Neural Exchange** — Mind Hacker / Neural Leech enemies, violet/electric-blue brainwave-hologram aesthetic. Augment shop weighted toward the `Neural` tag; event is a "memory auction" — pay gold *or* sacrifice a random augment from a benched unit for a guaranteed Rare/Legendary pick.
+- **Kinetic Yards** — Scrap Golem / Rail Brawler enemies, rust-and-magnetism industrial-yard aesthetic. Augment shop weighted toward the `Kinetic` tag; selling Common augments here refunds extra gold vs. other districts.
+- **Skyline Casino** — Corp-affiliated, vice-flavored: Bouncer Squad / Augmented Gladiator enemies, hot-magenta neon-and-chrome aesthetic. Cheaper rerolls and an optional high-roller terminal to wager credits for rare/legendary augment drops.
+- **Precinct Ruins** — abandoned law-enforcement zone squatted by Rogue Enforcer Bots and freelance Bounty Hunters; faded blue-grey aesthetic with broken evidence-locker holograms. Event node is a bounty board: optional harder mini-fight against a named elite for a guaranteed Rare+ augment.
+- **Undercity Transit** — Street Runner / smuggler-adjacent enemies, rust-orange flickering-fluorescent tunnel aesthetic. Recruitment-leaning shop like Slum Market but cheaper/riskier: units offered here have randomized hidden traits revealed only on purchase.
+
+#### Additional concepts (mechanics TBD — placeholder for later design pass)
+Rounding the pool out toward 20. Faction/enemy/aesthetic are set; shop specialization and event design are deferred until the core loop is more robust.
+
+- **Megachurch of the Machine** — AI-worshipping cult; Zealot Construct / Prophet Drone enemies; gold-and-white cathedral-like server-hall aesthetic with glowing halo lighting. Rogue AI–adjacent.
+- **Freight Docks** — cargo port smuggling zone; Dockhand / Customs Enforcer enemies; shipping-container aesthetic, sodium-orange floodlights, fog. Street Runner–adjacent.
+- **The Undernet** — deep hidden darknet space, distinct from Server Vault; Ghost Process / Corrupted Construct enemies; glitchy black-and-green matrix aesthetic with static distortion. Rogue AI.
+- **Chop Shop Row** — black-market cybernetics surgery strip; Black Clinic Guard / Augment Pirate enemies; sickly-green surgical lighting, exposed wiring, medical-industrial aesthetic. Fixers/Street Runner overlap.
+- **Skyway Overpass** — elevated highway slum built atop the city; Highway Raider / Drone Racer enemies; rain, headlight streaks, stacked vertical neon aesthetic. Street Runners.
+- **The Vault Exchange** — corporate stock-exchange trading floor; Market Enforcer / Algo-Trader Bot enemies; white-and-gold ticker-tape hologram aesthetic, glass towers. Corp Enforcers.
+- **Sunken District** — flooded lower city, post-disaster zone; Scavenger Diver / Flooded Automaton enemies; teal water reflections, rust, submerged neon signage. Neutral/Street Runner–adjacent.
+- **The Panopticon** — corp surveillance tower; Watcher Drone / Compliance Officer enemies; stark-white aesthetic with red scan-lines and one-way glass. Corp Enforcers.
+- **Graveyard Yards** — decommissioned mech scrapyard-cemetery; Reanimated Chassis / Junk Reaper enemies; foggy, rusted, tombstone-like wrecked-mech aesthetic. Rogue AI/neutral.
+- **The Bazaar of Static** — black-market tech bazaar in a dead signal zone; Static Cultist / Signal Thief enemies; broken-hologram, visual-noise, purple-haze aesthetic. Fixers.
+- **Uptown Gala** — high-society corp event and heist target; Private Security / Socialite Bodyguard enemies; opulent gold-and-white ballroom aesthetic with fireworks. Corp Enforcers.
+- **The Warrens** — dense underground tunnel slum, distinct from Slum Market's open-air chaos; Tunnel Rat / Warren Boss enemies; cramped amber-lantern-lit tunnel aesthetic with makeshift stalls. Street Runners.
 
 ### Crew Scaling
 | District | Crew Size | Total Augment Slots |
@@ -37,8 +66,9 @@ New unit slots open through the shop — the player chooses when to spend gold o
 
 ### Gold Economy
 - Fights reward gold based on performance (fast wins = more gold)
+- Flat district encounter payouts guarantee steady, spendable income each round
+- Active Spend Economy: No round interest mechanic — players are encouraged to actively spend and invest their credits each round rather than hoarding gold
 - Shops sell units and augments; rerolling costs gold
-- Interest mechanic: unspent gold at end of each shop phase earns a small bonus, rewarding disciplined economy over panic-buying
 - Late-game sell loop: selling Common augments to fund Rare/Legendary purchases is intended and encouraged
 
 ### Events
@@ -140,3 +170,5 @@ These directions are not mutually exclusive. Design begins after MVP core loop i
 - Duplicate upgrade thresholds
 - Enemy AI composition design (how enemy crews are built to counter different player strategies)
 - Win condition variants (standard boss kill only, or additional run modifiers?)
+- 3-vs-4-normal-district run-length variance: the district pool and random draw are implemented (`DataRepository.draw_run_districts`), but a run currently always draws a fixed 3 normal + 1 final district because `Constants.DISTRICT_CREW_LIMITS`/`DISTRICT_SHOP_ODDS` only define a 4-step scaling curve. A 4-normal-district run needs a 5th step designed before that variance can be turned on.
+- Mechanics (shop specialization, event design) for the 12 placeholder districts added to the pool (Megachurch of the Machine, Freight Docks, The Undernet, Chop Shop Row, Skyway Overpass, The Vault Exchange, Sunken District, The Panopticon, Graveyard Yards, The Bazaar of Static, Uptown Gala, The Warrens) and boss units for all newly-added districts (currently placeholder `boss_*`/`boss_tbd_*` ids with no matching `UnitResource`)

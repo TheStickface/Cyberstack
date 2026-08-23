@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="DistrictResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/DistrictResource.gd" id="1_dist"]
+
+[resource]
+script = ExtResource("1_dist")
+id = "the_vault_exchange"
+display_name = "The Vault Exchange"
+description = "PLACEHOLDER: A corporate stock-exchange trading floor of white-and-gold ticker-tape holograms and glass towers. Mechanics TBD."
+theme_color = Color(0.95, 0.8, 0.3, 1)
+is_final_boss = false
+node_sequence = Array[int]([0, 1, 0, 2, 1, 3])
+boss_unit_id = "boss_tbd_vault_exchange"

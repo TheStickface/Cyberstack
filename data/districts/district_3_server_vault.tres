@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="DistrictResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/DistrictResource.gd" id="1_dist"]
+
+[resource]
+script = ExtResource("1_dist")
+id = "district_3_server_vault"
+display_name = "Server Vault"
+description = "Subterranean cryogenic mainframe corridors buzzing with autonomous rogue subroutines and neural intrusion daemons."
+theme_color = Color(0.45, 0.1, 0.95, 1)
+is_final_boss = false
+node_sequence = Array[int]([0, 1, 0, 2, 1, 3])
+boss_unit_id = "boss_ai_prime_overmind"

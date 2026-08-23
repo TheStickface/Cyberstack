@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="DistrictResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/DistrictResource.gd" id="1_dist"]
+
+[resource]
+script = ExtResource("1_dist")
+id = "the_warrens"
+display_name = "The Warrens"
+description = "PLACEHOLDER: A cramped, amber-lantern-lit underground tunnel slum of makeshift stalls, denser than Slum Market. Mechanics TBD."
+theme_color = Color(0.75, 0.5, 0.2, 1)
+is_final_boss = false
+node_sequence = Array[int]([0, 1, 0, 2, 1, 3])
+boss_unit_id = "boss_tbd_the_warrens"
