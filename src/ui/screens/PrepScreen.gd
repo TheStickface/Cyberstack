@@ -63,7 +63,7 @@ func _refresh_top_bar() -> void:
 	if crew_count_label:
 		crew_count_label.text = "CREW: %d / %d" % [crew_mgr.fielded_units.size(), crew_mgr.get_max_field_units()]
 	if gold_label:
-		gold_label.text = "CREDITS: %d" % shop_mgr.gold
+		gold_label.text = "%s: %d" % [Constants.CURRENCY_NAME.to_upper(), shop_mgr.gold]
 
 func _refresh_field_and_bench() -> void:
 	if field_container:
@@ -120,7 +120,7 @@ func _refresh_shop() -> void:
 		card.buy_requested.connect(_on_shop_buy_requested)
 		
 	if reroll_btn:
-		reroll_btn.text = "REROLL (%dg)" % Constants.BASE_REROLL_COST
+		reroll_btn.text = "REROLL (%s)" % Constants.format_currency(Constants.BASE_REROLL_COST, true)
 		reroll_btn.disabled = (shop_mgr.gold < Constants.BASE_REROLL_COST)
 
 func _refresh_synergies() -> void:
@@ -141,7 +141,7 @@ func _on_reroll_pressed() -> void:
 	if shop_mgr.reroll_shop(repo):
 		_set_status("Shop refreshed.", false)
 	else:
-		_set_status("Not enough gold to reroll.", true)
+		_set_status("Not enough %s to reroll." % Constants.CURRENCY_NAME.to_lower(), true)
 	_refresh_all()
 
 func _on_augment_chip_clicked(aug: AugmentResource, inv_idx: int) -> void:
@@ -191,7 +191,7 @@ func _on_unit_toggle_field(unit: UnitInstance) -> void:
 
 func _on_unit_sell(unit: UnitInstance) -> void:
 	var refund = shop_mgr.sell_unit(unit, crew_mgr)
-	_set_status("Sold %s for +%dg." % [unit.unit_resource.display_name, refund], false)
+	_set_status("Sold %s for +%s." % [unit.unit_resource.display_name, Constants.format_currency(refund)], false)
 	_refresh_all()
 
 func _on_lock_in_pressed() -> void:

@@ -38,7 +38,7 @@ func _update_ui(player_gold: int) -> void:
 	if type_label:
 		type_label.text = item_type.to_upper()
 	if cost_label:
-		cost_label.text = "%d GOLD" % cost
+		cost_label.text = Constants.format_cost(cost)
 		cost_label.add_theme_color_override("font_color", Color(1, 0.85, 0) if player_gold >= cost else Color(0.9, 0.2, 0.2))
 		
 	if item_type == "unit":
@@ -71,7 +71,7 @@ func _update_ui(player_gold: int) -> void:
 			]
 			
 	if buy_btn:
-		buy_btn.text = "BUY (%dg)" % cost
+		buy_btn.text = "BUY (%s)" % Constants.format_currency(cost, true)
 		buy_btn.disabled = (player_gold < cost)
 
 func _on_buy_btn_pressed() -> void:

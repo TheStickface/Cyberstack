@@ -50,6 +50,18 @@ const ROLE_SLOT_SCHEMAS: Dictionary = {
 }
 
 # Economy & Shop Settings
+const CURRENCY_NAME: String = "Credits"
+const CURRENCY_NAME_SHORT: String = "CR"
+const CURRENCY_SYMBOL: String = "¢"
+
+static func format_currency(amount: int, short: bool = false) -> String:
+	if short:
+		return "%d %s" % [amount, CURRENCY_NAME_SHORT]
+	return "%d %s" % [amount, CURRENCY_NAME]
+
+static func format_cost(amount: int) -> String:
+	return "%d %s" % [amount, CURRENCY_NAME.to_upper()]
+
 const DEFAULT_STARTING_GOLD: int = 12
 const BASE_REROLL_COST: int = 2
 const SHOP_SLOTS_COUNT: int = 4

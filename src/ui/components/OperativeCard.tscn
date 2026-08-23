@@ -96,7 +96,7 @@ text = "BENCH"
 custom_minimum_size = Vector2(0, 22)
 layout_mode = 2
 theme_override_font_sizes/font_size = 9
-text = "SELL (2g)"
+text = "SELL (2 CR)"
 
 [connection signal="pressed" from="Margin/VBox/Actions/ToggleFieldBtn" to="." method="_on_toggle_field_pressed"]
 [connection signal="pressed" from="Margin/VBox/Actions/SellBtn" to="." method="_on_sell_pressed"]

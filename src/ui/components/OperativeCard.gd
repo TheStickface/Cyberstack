@@ -56,7 +56,7 @@ func _update_ui() -> void:
 		toggle_btn.text = "BENCH" if is_fielded else "DEPLOY"
 		
 	if sell_btn:
-		sell_btn.text = "SELL (%dg)" % res.base_cost
+		sell_btn.text = "SELL (%s)" % Constants.format_currency(res.base_cost, true)
 		
 	if is_fielded:
 		custom_minimum_size = Vector2(185, 205)

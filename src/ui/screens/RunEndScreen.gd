@@ -28,10 +28,11 @@ func setup(summary: Dictionary) -> void:
 		subtitle_label.text = "All city districts breached and secured." if victory else "Operative link severed in District %d." % district
 		
 	if stats_label:
-		stats_label.text = "Districts Cleared: %d / 4\nFights Won: %d\nBosses Defeated: %d\nTotal Credits Earned: %d" % [
+		stats_label.text = "Districts Cleared: %d / 4\nFights Won: %d\nBosses Defeated: %d\nTotal %s Earned: %d" % [
 			district if victory else district - 1,
 			fights,
 			bosses,
+			Constants.CURRENCY_NAME,
 			gold
 		]
 

@@ -71,6 +71,6 @@ clip_text = true
 custom_minimum_size = Vector2(0, 26)
 layout_mode = 2
 theme_override_font_sizes/font_size = 10
-text = "BUY (3g)"
+text = "BUY (3 CR)"
 
 [connection signal="pressed" from="Margin/VBox/BuyBtn" to="." method="_on_buy_btn_pressed"]

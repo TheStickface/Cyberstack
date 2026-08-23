@@ -45,7 +45,7 @@ func _refresh_header() -> void:
 	if crew_count_label:
 		crew_count_label.text = "CREW: %d / %d" % [run_mgr.crew_mgr.fielded_units.size(), run_mgr.crew_mgr.get_max_field_units()]
 	if gold_label:
-		gold_label.text = "CREDITS: %d" % run_mgr.shop_mgr.gold
+		gold_label.text = "%s: %d" % [Constants.CURRENCY_NAME.to_upper(), run_mgr.shop_mgr.gold]
 
 func _refresh_nodes() -> void:
 	if not nodes_container:
