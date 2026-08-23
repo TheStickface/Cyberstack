@@ -91,6 +91,7 @@ text = "FIELDED OPERATIVES (Click slots to equip selected augment):"
 [node name="FieldScroll" type="ScrollContainer" parent="Margin/VBox/MainBody/BoardArea/FieldSection"]
 custom_minimum_size = Vector2(0, 160)
 layout_mode = 2
+mouse_filter = 1
 vertical_scroll_mode = 0
 
 [node name="FieldContainer" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/FieldSection/FieldScroll"]
@@ -112,6 +113,7 @@ text = "BENCH RESERVES (Standby Squad — Click DEPLOY to field):"
 [node name="BenchScroll" type="ScrollContainer" parent="Margin/VBox/MainBody/BoardArea/BenchSection"]
 custom_minimum_size = Vector2(0, 85)
 layout_mode = 2
+mouse_filter = 1
 vertical_scroll_mode = 0
 
 [node name="BenchContainer" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/BenchSection/BenchScroll"]
@@ -143,6 +145,7 @@ text = "REROLL (2 CR)"
 [node name="CrewShopScroll" type="ScrollContainer" parent="Margin/VBox/MainBody/BoardArea/CrewShop"]
 custom_minimum_size = Vector2(0, 115)
 layout_mode = 2
+mouse_filter = 1
 vertical_scroll_mode = 0
 
 [node name="CrewShopContainer" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/CrewShop/CrewShopScroll"]
@@ -167,6 +170,7 @@ text = "BLACK MARKET ARMORY (AUGMENTS):"
 [node name="AugmentShopScroll" type="ScrollContainer" parent="Margin/VBox/MainBody/BoardArea/AugmentShop"]
 custom_minimum_size = Vector2(0, 115)
 layout_mode = 2
+mouse_filter = 1
 vertical_scroll_mode = 0
 
 [node name="AugmentShopContainer" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/AugmentShop/AugmentShopScroll"]
