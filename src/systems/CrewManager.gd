@@ -23,6 +23,18 @@ func get_max_field_units() -> int:
 	return Constants.DISTRICT_CREW_LIMITS.get(current_district, 2)
 
 # Unit Management
+func add_unit(unit: UnitInstance) -> bool:
+	if unit == null:
+		return false
+	if fielded_units.size() < get_max_field_units():
+		fielded_units.append(unit)
+		recalculate_synergies()
+		return true
+	elif benched_units.size() < Constants.MAX_BENCH_UNITS:
+		benched_units.append(unit)
+		return true
+	return false
+
 func add_unit_to_bench(unit: UnitInstance) -> bool:
 	if unit == null or benched_units.size() >= Constants.MAX_BENCH_UNITS:
 		return false
@@ -138,6 +150,10 @@ func recalculate_synergies() -> SynergyReport:
 
 # Combat Lock-In
 func lock_in_crew() -> Dictionary:
+	# Auto-deploy benched units into any open field slots
+	while fielded_units.size() < get_max_field_units() and not benched_units.is_empty():
+		deploy_unit_to_field(0)
+		
 	var validation = CrewValidator.validate_crew(fielded_units, current_district)
 	if not validation.valid:
 		return {

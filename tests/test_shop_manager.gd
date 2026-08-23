@@ -85,8 +85,8 @@ func test_buy_and_sell_flow() -> Dictionary:
 	var buy_unit_res = shop.buy_slot(0, crew_mgr)
 	if not buy_unit_res.success:
 		return {"passed": false, "message": "Failed to buy unit: %s" % buy_unit_res.get("error", ""), "assertions": 1}
-	if crew_mgr.benched_units.size() != 1:
-		return {"passed": false, "message": "Expected 1 benched unit after purchase", "assertions": 2}
+	if (crew_mgr.fielded_units.size() + crew_mgr.benched_units.size()) != 1:
+		return {"passed": false, "message": "Expected 1 unit in crew after purchase", "assertions": 2}
 	if shop.gold != 18:
 		return {"passed": false, "message": "Expected 18 gold after purchase, got %d" % shop.gold, "assertions": 3}
 		
@@ -99,8 +99,8 @@ func test_buy_and_sell_flow() -> Dictionary:
 	if shop.gold != 16:
 		return {"passed": false, "message": "Expected 16 gold after purchase, got %d" % shop.gold, "assertions": 6}
 		
-	# Equip Augment to benched unit, then sell unit
-	var unit: UnitInstance = crew_mgr.benched_units[0]
+	# Equip Augment to unit, then sell unit
+	var unit: UnitInstance = crew_mgr.fielded_units[0] if not crew_mgr.fielded_units.is_empty() else crew_mgr.benched_units[0]
 	var equip_ok = crew_mgr.equip_augment_from_inventory(unit, 2, 0) # Slot 2: Passive
 	if not equip_ok:
 		return {"passed": false, "message": "Failed to equip augment in passive slot", "assertions": 7}
@@ -111,8 +111,8 @@ func test_buy_and_sell_flow() -> Dictionary:
 	var refund = shop.sell_unit(unit, crew_mgr)
 	if refund != blitz_res.base_cost:
 		return {"passed": false, "message": "Expected refund %d, got %d" % [blitz_res.base_cost, refund], "assertions": 9}
-	if not crew_mgr.benched_units.is_empty():
-		return {"passed": false, "message": "Benched units should be empty after selling", "assertions": 10}
+	if not crew_mgr.fielded_units.is_empty() or not crew_mgr.benched_units.is_empty():
+		return {"passed": false, "message": "Crew should be empty after selling", "assertions": 10}
 	if crew_mgr.augment_inventory.size() != 1:
 		return {"passed": false, "message": "Equipped augment should have returned to inventory upon selling unit", "assertions": 11}
 		

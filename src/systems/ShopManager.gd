@@ -111,9 +111,14 @@ func buy_slot(slot_index: int, crew_mgr: Object) -> Dictionary:
 	if item_type == "unit":
 		var unit_res = res as UnitResource
 		var new_instance = UnitInstance.new(unit_res)
-		var added = crew_mgr.add_unit_to_bench(new_instance)
+		var added = false
+		if crew_mgr.has_method("add_unit"):
+			added = crew_mgr.add_unit(new_instance)
+		else:
+			added = crew_mgr.add_unit_to_bench(new_instance)
+			
 		if not added:
-			return {"success": false, "error": "Bench is full (Max %d units)" % Constants.MAX_BENCH_UNITS}
+			return {"success": false, "error": "Crew field and bench are full"}
 			
 		spend_gold(cost)
 		slot["is_bought"] = true
