@@ -60,6 +60,11 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 10
 text = "Inspect Crew"
 
+[node name="QuickHover" type="Button" parent="ConsolePanel/VBox/QuickButtons"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Hover Debug [F3]"
+
 [node name="OutputLog" type="RichTextLabel" parent="ConsolePanel/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
@@ -94,5 +99,6 @@ text = "EXECUTE"
 [connection signal="pressed" from="ConsolePanel/VBox/QuickButtons/QuickUnlock" to="." method="_on_quick_unlock_pressed"]
 [connection signal="pressed" from="ConsolePanel/VBox/QuickButtons/QuickCRT" to="." method="_on_quick_crt_pressed"]
 [connection signal="pressed" from="ConsolePanel/VBox/QuickButtons/QuickInspect" to="." method="_on_quick_inspect_pressed"]
+[connection signal="pressed" from="ConsolePanel/VBox/QuickButtons/QuickHover" to="." method="_on_quick_hover_pressed"]
 [connection signal="text_submitted" from="ConsolePanel/VBox/InputBar/CmdInput" to="." method="_on_cmd_input_submitted"]
 [connection signal="pressed" from="ConsolePanel/VBox/InputBar/ExecBtn" to="." method="_on_exec_btn_pressed"]

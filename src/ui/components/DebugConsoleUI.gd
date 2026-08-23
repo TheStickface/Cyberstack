@@ -97,3 +97,6 @@ func _on_quick_crt_pressed() -> void:
 
 func _on_quick_inspect_pressed() -> void:
 	_execute_text("/inspect")
+
+func _on_quick_hover_pressed() -> void:
+	_execute_text("/hoverdebug")

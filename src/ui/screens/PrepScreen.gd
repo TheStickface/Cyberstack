@@ -319,6 +319,12 @@ func _set_status(msg: String, is_error: bool = false) -> void:
 		status_label.text = msg
 		status_label.add_theme_color_override("font_color", Color(1, 0.3, 0.3) if is_error else Color(0, 0.95, 0.83))
 
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_F3:
+			if synergy_tooltip and synergy_tooltip.has_method("toggle_debug_hud"):
+				synergy_tooltip.toggle_debug_hud()
+
 func _process(_delta: float) -> void:
 	_check_hovered_card()
 
@@ -326,71 +332,90 @@ func _check_hovered_card() -> void:
 	if synergy_tooltip == null:
 		return
 		
-	var mouse_pos = get_global_mouse_position()
+	var mouse_pos = get_viewport().get_mouse_position()
+	var global_m_pos = get_global_mouse_position()
 	var vp_size = get_viewport_rect().size
+	var hovered_item_name: String = "None"
 	
 	# 1. Fielded operatives
 	if field_container:
 		for card in field_container.get_children():
-			if card is Control and card.visible and card.get_global_rect().has_point(mouse_pos):
+			if card is Control and card.visible and (card.get_global_rect().has_point(global_m_pos) or card.get_global_rect().has_point(mouse_pos)):
 				if "unit_instance" in card and card.unit_instance and card.unit_instance.unit_resource:
 					var u = card.unit_instance
+					hovered_item_name = "Fielded: " + u.unit_resource.display_name
 					var factions_dict = repo.factions if repo and "factions" in repo else {}
 					var tags_dict = repo.tags if repo and "tags" in repo else {}
 					var impact = SynergyEngine.calculate_synergy_impact(crew_mgr.fielded_units, u.unit_resource, factions_dict, tags_dict)
 					synergy_tooltip.show_for_unit(u.unit_resource, impact, u.star_level)
 					synergy_tooltip.update_screen_position(mouse_pos, vp_size)
+					if synergy_tooltip.is_debug_mode:
+						synergy_tooltip.set_debug_text("POS: (%.0f, %.0f) | ITEM: %s | STATUS: ACTIVE" % [mouse_pos.x, mouse_pos.y, hovered_item_name])
 					return
 					
 	# 2. Benched operatives
 	if bench_container:
 		for card in bench_container.get_children():
-			if card is Control and card.visible and card.get_global_rect().has_point(mouse_pos):
+			if card is Control and card.visible and (card.get_global_rect().has_point(global_m_pos) or card.get_global_rect().has_point(mouse_pos)):
 				if "unit_instance" in card and card.unit_instance and card.unit_instance.unit_resource:
 					var u = card.unit_instance
+					hovered_item_name = "Bench: " + u.unit_resource.display_name
 					var factions_dict = repo.factions if repo and "factions" in repo else {}
 					var tags_dict = repo.tags if repo and "tags" in repo else {}
 					var impact = SynergyEngine.calculate_synergy_impact(crew_mgr.fielded_units, u.unit_resource, factions_dict, tags_dict)
 					synergy_tooltip.show_for_unit(u.unit_resource, impact, u.star_level)
 					synergy_tooltip.update_screen_position(mouse_pos, vp_size)
+					if synergy_tooltip.is_debug_mode:
+						synergy_tooltip.set_debug_text("POS: (%.0f, %.0f) | ITEM: %s | STATUS: ACTIVE" % [mouse_pos.x, mouse_pos.y, hovered_item_name])
 					return
 					
 	# 3. Crew Shop candidates
 	if crew_shop_container:
 		for card in crew_shop_container.get_children():
-			if card is Control and card.visible and card.get_global_rect().has_point(mouse_pos):
+			if card is Control and card.visible and (card.get_global_rect().has_point(global_m_pos) or card.get_global_rect().has_point(mouse_pos)):
 				if "slot_data" in card and not card.slot_data.get("is_bought", false):
 					var res = card.slot_data.get("resource", null)
 					if res is UnitResource:
+						hovered_item_name = "Shop Unit: " + res.display_name
 						var factions_dict = repo.factions if repo and "factions" in repo else {}
 						var tags_dict = repo.tags if repo and "tags" in repo else {}
 						var impact = SynergyEngine.calculate_synergy_impact(crew_mgr.fielded_units, res as UnitResource, factions_dict, tags_dict)
 						synergy_tooltip.show_for_unit(res as UnitResource, impact, 1)
 						synergy_tooltip.update_screen_position(mouse_pos, vp_size)
+						if synergy_tooltip.is_debug_mode:
+							synergy_tooltip.set_debug_text("POS: (%.0f, %.0f) | ITEM: %s | STATUS: ACTIVE" % [mouse_pos.x, mouse_pos.y, hovered_item_name])
 						return
 						
 	# 4. Augment Shop offerings
 	if augment_shop_container:
 		for card in augment_shop_container.get_children():
-			if card is Control and card.visible and card.get_global_rect().has_point(mouse_pos):
+			if card is Control and card.visible and (card.get_global_rect().has_point(global_m_pos) or card.get_global_rect().has_point(mouse_pos)):
 				if "slot_data" in card and not card.slot_data.get("is_bought", false):
 					var res = card.slot_data.get("resource", null)
 					if res is AugmentResource:
+						hovered_item_name = "Shop Aug: " + res.display_name
 						synergy_tooltip.show_for_augment(res as AugmentResource)
 						synergy_tooltip.update_screen_position(mouse_pos, vp_size)
+						if synergy_tooltip.is_debug_mode:
+							synergy_tooltip.set_debug_text("POS: (%.0f, %.0f) | ITEM: %s | STATUS: ACTIVE" % [mouse_pos.x, mouse_pos.y, hovered_item_name])
 						return
 						
 	# 5. Augment Tray chips
 	if augment_tray:
 		for chip in augment_tray.get_children():
-			if chip is Control and chip.visible and chip.get_global_rect().has_point(mouse_pos):
+			if chip is Control and chip.visible and (chip.get_global_rect().has_point(global_m_pos) or chip.get_global_rect().has_point(mouse_pos)):
 				if "augment_resource" in chip and chip.augment_resource:
+					hovered_item_name = "Tray Aug: " + chip.augment_resource.display_name
 					synergy_tooltip.show_for_augment(chip.augment_resource)
 					synergy_tooltip.update_screen_position(mouse_pos, vp_size)
+					if synergy_tooltip.is_debug_mode:
+						synergy_tooltip.set_debug_text("POS: (%.0f, %.0f) | ITEM: %s | STATUS: ACTIVE" % [mouse_pos.x, mouse_pos.y, hovered_item_name])
 					return
 					
 	# If mouse is not hovering any registered card
-	synergy_tooltip.hide()
+	synergy_tooltip.hide_tooltip()
+	if synergy_tooltip.is_debug_mode:
+		synergy_tooltip.set_debug_text("POS: (%.0f, %.0f) | ITEM: None | STATUS: IDLE [F3 Toggle]" % [mouse_pos.x, mouse_pos.y])
 
 func _on_operative_card_hovered(unit: UnitInstance, card_pos: Vector2) -> void:
 	if unit == null or unit.unit_resource == null or synergy_tooltip == null:
@@ -416,4 +441,4 @@ func _on_shop_card_hovered(res: Resource, card_pos: Vector2) -> void:
 
 func _on_card_hover_exited() -> void:
 	if synergy_tooltip:
-		synergy_tooltip.hide()
+		synergy_tooltip.hide_tooltip()

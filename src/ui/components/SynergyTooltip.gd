@@ -1,8 +1,9 @@
 class_name SynergyTooltip
-extends PanelContainer
+extends CanvasLayer
 
-## Cyberpunk Floating Synergy Intelligence & Operative Profile Tooltip
+## Cyberpunk Floating Synergy Intelligence & Operative Profile Tooltip (CanvasLayer Mounted)
 
+var panel: PanelContainer = PanelContainer.new()
 var title_label: Label = Label.new()
 var subtitle_label: Label = Label.new()
 var bio_label: Label = Label.new()
@@ -12,27 +13,34 @@ var ability_desc: Label = Label.new()
 var synergy_box: VBoxContainer = VBoxContainer.new()
 var main_vbox: VBoxContainer = VBoxContainer.new()
 
+# Debug HUD Overlay
+var debug_hud: PanelContainer = PanelContainer.new()
+var debug_label: Label = Label.new()
+var is_debug_mode: bool = false
+
 func _init() -> void:
-	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	top_level = true
-	visible = false
-	z_index = 100
-	custom_minimum_size = Vector2(290, 0)
+	layer = 115
+	
+	# Root Tooltip Panel
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.visible = false
+	panel.custom_minimum_size = Vector2(290, 0)
 	
 	var style = StyleBoxFlat.new()
 	style.bg_color = Color(0.04, 0.03, 0.10, 0.98)
-	style.border_width_left = 1
-	style.border_width_top = 1
-	style.border_width_right = 1
-	style.border_width_bottom = 1
-	style.border_color = Color(0, 0.95, 0.83, 0.85)
+	style.border_width_left = 2
+	style.border_width_top = 2
+	style.border_width_right = 2
+	style.border_width_bottom = 2
+	style.border_color = Color(0, 0.95, 0.83, 0.95)
 	style.corner_radius_top_left = 6
 	style.corner_radius_top_right = 6
 	style.corner_radius_bottom_left = 6
 	style.corner_radius_bottom_right = 6
-	style.shadow_color = Color(0, 0, 0, 0.8)
-	style.shadow_size = 6
-	add_theme_stylebox_override("panel", style)
+	style.shadow_color = Color(0, 0, 0, 0.85)
+	style.shadow_size = 8
+	panel.add_theme_stylebox_override("panel", style)
+	add_child(panel)
 	
 	var margin = MarginContainer.new()
 	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -40,7 +48,7 @@ func _init() -> void:
 	margin.add_theme_constant_override("margin_right", 12)
 	margin.add_theme_constant_override("margin_top", 10)
 	margin.add_theme_constant_override("margin_bottom", 10)
-	add_child(margin)
+	panel.add_child(margin)
 	
 	main_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	main_vbox.add_theme_constant_override("separation", 5)
@@ -86,10 +94,55 @@ func _init() -> void:
 	# Synergy Intel Box
 	synergy_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	main_vbox.add_child(synergy_box)
+	
+	# Setup Live Debug Overlay (Bottom-left corner)
+	_setup_debug_hud()
+
+func _setup_debug_hud() -> void:
+	debug_hud.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	debug_hud.visible = false
+	debug_hud.custom_minimum_size = Vector2(320, 60)
+	debug_hud.position = Vector2(16, 640)
+	
+	var dstyle = StyleBoxFlat.new()
+	dstyle.bg_color = Color(0.02, 0.02, 0.08, 0.9)
+	dstyle.border_width_left = 1
+	dstyle.border_width_top = 1
+	dstyle.border_width_right = 1
+	dstyle.border_width_bottom = 1
+	dstyle.border_color = Color(1, 0.2, 0.6, 0.8)
+	dstyle.corner_radius_top_left = 4
+	dstyle.corner_radius_top_right = 4
+	dstyle.corner_radius_bottom_left = 4
+	dstyle.corner_radius_bottom_right = 4
+	debug_hud.add_theme_stylebox_override("panel", dstyle)
+	add_child(debug_hud)
+	
+	var dmargin = MarginContainer.new()
+	dmargin.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	dmargin.add_theme_constant_override("margin_left", 8)
+	dmargin.add_theme_constant_override("margin_right", 8)
+	dmargin.add_theme_constant_override("margin_top", 6)
+	dmargin.add_theme_constant_override("margin_bottom", 6)
+	debug_hud.add_child(dmargin)
+	
+	debug_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	debug_label.add_theme_font_size_override("font_size", 9)
+	debug_label.add_theme_color_override("font_color", Color(1, 0.8, 0.2))
+	debug_label.text = "[DEBUG HOVER TOOL] Active. Press F3 to toggle."
+	dmargin.add_child(debug_label)
+
+func toggle_debug_hud() -> void:
+	is_debug_mode = not is_debug_mode
+	debug_hud.visible = is_debug_mode
+
+func set_debug_text(txt: String) -> void:
+	if debug_label:
+		debug_label.text = txt
 
 func show_for_unit(unit_res: UnitResource, impact_info: Dictionary = {}, star_lvl: int = 1) -> void:
 	if unit_res == null:
-		hide()
+		hide_tooltip()
 		return
 		
 	var star_str = " ★" if star_lvl == 1 else (" ★★" if star_lvl == 2 else " ★★★")
@@ -167,11 +220,11 @@ func show_for_unit(unit_res: UnitResource, impact_info: Dictionary = {}, star_lv
 			synergy_box.add_child(c_lbl)
 			
 	synergy_box.visible = true
-	show()
+	panel.show()
 
 func show_for_augment(aug_res: AugmentResource) -> void:
 	if aug_res == null:
-		hide()
+		hide_tooltip()
 		return
 		
 	title_label.text = aug_res.display_name
@@ -196,14 +249,14 @@ func show_for_augment(aug_res: AugmentResource) -> void:
 	for c in synergy_box.get_children():
 		c.queue_free()
 	synergy_box.visible = false
-	show()
+	panel.show()
+
+func hide_tooltip() -> void:
+	if panel:
+		panel.hide()
 
 func update_screen_position(target_pos: Vector2, vp_size: Vector2) -> void:
-	var m_pos = get_global_mouse_position()
-	if m_pos.length_squared() > 10:
-		target_pos = m_pos
-		
-	var tip_size = size if size.x > 50 else Vector2(290, 240)
+	var tip_size = panel.size if panel.size.x > 50 else Vector2(290, 240)
 	var pos_x = target_pos.x + 18
 	var pos_y = target_pos.y + 12
 	
@@ -217,4 +270,4 @@ func update_screen_position(target_pos: Vector2, vp_size: Vector2) -> void:
 	if pos_y < 10:
 		pos_y = 10
 		
-	global_position = Vector2(pos_x, pos_y)
+	panel.position = Vector2(pos_x, pos_y)

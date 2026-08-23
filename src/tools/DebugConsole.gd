@@ -158,5 +158,14 @@ func execute_command(cmd_string: String, gm: Object = null, main_node: Object = 
 				return {"success": true, "message": "\n".join(lines)}
 			return {"success": false, "message": "No active crew to inspect."}
 			
+		"hover", "hoverdebug":
+			if main_node and main_node.has_node("ScreenContainer"):
+				var screen_container = main_node.get_node("ScreenContainer")
+				for child in screen_container.get_children():
+					if "synergy_tooltip" in child and child.synergy_tooltip:
+						child.synergy_tooltip.toggle_debug_hud()
+						return {"success": true, "message": "Toggled Hover Debug HUD."}
+			return {"success": false, "message": "PrepScreen with hover tooltip not currently active."}
+			
 		_:
 			return {"success": false, "message": "Unknown command '/%s'. Type /help for a list of commands." % command}
