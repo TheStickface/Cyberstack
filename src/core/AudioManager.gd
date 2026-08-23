@@ -11,7 +11,11 @@ enum SoundType {
 	REROLL,
 	LOCK_IN,
 	VICTORY,
-	DEFEAT
+	DEFEAT,
+	COMBAT_HIT,
+	COMBAT_CRIT,
+	ABILITY_CAST,
+	STAR_UPGRADE
 }
 
 var master_volume: float = 1.0
@@ -63,6 +67,18 @@ func play_victory() -> void:
 
 func play_defeat() -> void:
 	play_sound(SoundType.DEFEAT)
+
+func play_combat_hit() -> void:
+	play_sound(SoundType.COMBAT_HIT)
+
+func play_combat_crit() -> void:
+	play_sound(SoundType.COMBAT_CRIT)
+
+func play_ability_cast() -> void:
+	play_sound(SoundType.ABILITY_CAST)
+
+func play_star_upgrade() -> void:
+	play_sound(SoundType.STAR_UPGRADE)
 
 func _get_available_player() -> AudioStreamPlayer:
 	for p in sfx_players:
@@ -118,6 +134,22 @@ func _generate_synth_sound(sound_type: SoundType) -> AudioStreamWAV:
 			duration = 0.40
 			base_freq = 300.0
 			sweep_freq = 75.0
+		SoundType.COMBAT_HIT:
+			duration = 0.06
+			base_freq = 420.0
+			sweep_freq = 160.0
+		SoundType.COMBAT_CRIT:
+			duration = 0.14
+			base_freq = 880.0
+			sweep_freq = 1760.0
+		SoundType.ABILITY_CAST:
+			duration = 0.22
+			base_freq = 280.0
+			sweep_freq = 1120.0
+		SoundType.STAR_UPGRADE:
+			duration = 0.32
+			base_freq = 523.25
+			sweep_freq = 1318.50
 			
 	var sample_count = int(duration * wav.mix_rate)
 	var data = PackedByteArray()

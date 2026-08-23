@@ -148,11 +148,64 @@ func _refresh_synergies() -> void:
 func _on_crew_buy_requested(slot_index: int) -> void:
 	var result = shop_mgr.buy_unit_slot(slot_index, crew_mgr)
 	if result.success:
-		_set_status("Recruited %s." % (result.item.unit_resource.display_name if result.item else "operative"), false)
+		var combs = crew_mgr.last_combinations
+		if not combs.is_empty():
+			for c in combs:
+				AudioManager.play_star_upgrade()
+				_show_star_upgrade_banner(c["unit_name"], c["new_star_level"])
+		else:
+			_set_status("Recruited %s." % (result.item.unit_resource.display_name if result.item else "operative"), false)
 		crew_mgr.recalculate_synergies()
 	else:
 		_set_status("Recruitment failed: %s" % result.error, true)
 	_refresh_all()
+
+func _show_star_upgrade_banner(u_name: String, star_lvl: int) -> void:
+	var star_str = "★★" if star_lvl == 2 else "★★★"
+	var col_hex = "#ffd700" if star_lvl == 2 else "#ff007f"
+	_set_status("★ [color=%s]LEVEL UP! %s promoted to %s![/color] ★" % [col_hex, u_name, star_str], false)
+	
+	# Spawn floating notification across the screen
+	var banner = PanelContainer.new()
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.05, 0.04, 0.12, 0.95)
+	style.border_width_left = 2
+	style.border_width_top = 2
+	style.border_width_right = 2
+	style.border_width_bottom = 2
+	style.border_color = Color(1.0, 0.85, 0.0) if star_lvl == 2 else Color(1.0, 0.0, 0.5)
+	style.corner_radius_top_left = 6
+	style.corner_radius_top_right = 6
+	style.corner_radius_bottom_left = 6
+	style.corner_radius_bottom_right = 6
+	banner.add_theme_stylebox_override("panel", style)
+	banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	banner.top_level = true
+	
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 16)
+	margin.add_theme_constant_override("margin_right", 16)
+	margin.add_theme_constant_override("margin_top", 8)
+	margin.add_theme_constant_override("margin_bottom", 8)
+	banner.add_child(margin)
+	
+	var lbl = Label.new()
+	lbl.text = "★ LEVEL UP! %s UPGRADED TO %s ★" % [u_name.to_upper(), star_str]
+	lbl.add_theme_font_size_override("font_size", 14)
+	lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.0) if star_lvl == 2 else Color(1.0, 0.2, 0.6))
+	margin.add_child(lbl)
+	
+	var vp_size = get_viewport_rect().size
+	banner.position = Vector2((vp_size.x - 360) / 2.0, vp_size.y * 0.35)
+	banner.scale = Vector2(0.8, 0.8)
+	add_child(banner)
+	
+	var tween = create_tween()
+	tween.tween_property(banner, "scale", Vector2(1.05, 1.05), 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(banner, "scale", Vector2(1.0, 1.0), 0.1)
+	tween.tween_interval(1.2)
+	tween.tween_property(banner, "modulate:a", 0.0, 0.4)
+	tween.tween_callback(banner.queue_free)
 
 func _on_augment_buy_requested(slot_index: int) -> void:
 	var result = shop_mgr.buy_augment_slot(slot_index, crew_mgr)

@@ -275,8 +275,12 @@ func _perform_auto_attack(att: CombatantState, defenders: Array[CombatantState])
 	if target == null:
 		return
 		
-	var dmg = att.attack_damage * randf_range(0.9, 1.1)
-	_apply_damage(target, dmg, att)
+	var crit_chance = att.unit.calculate_effective_stat(Enums.StatType.CRIT_CHANCE) if att.unit else 0.05
+	var is_crit = randf() < crit_chance
+	var mult = 1.5 if is_crit else 1.0
+	var dmg = att.attack_damage * randf_range(0.9, 1.1) * mult
+	
+	_apply_damage(target, dmg, att, false, is_crit)
 	
 	# Gain Mana on attack
 	att.current_mana = minf(att.current_mana + 20.0, 100.0)
@@ -294,31 +298,39 @@ func _cast_ability(caster: CombatantState, defenders: Array[CombatantState]) -> 
 		ab_name
 	])
 	
+	AudioManager.play_ability_cast()
+	_flash_card(caster.box_panel, Color(2.0, 1.8, 0.5), 0.35)
+	_spawn_floating_combat_text(caster, "⚡ " + ab_name + "!", Color(0, 1, 0.9) if caster.is_player else Color(1, 0.2, 0.6), true)
+	
 	# Ability mechanics by role
 	var role = caster.unit.unit_resource.role if caster.unit else Enums.UnitRole.TANK
 	match role:
 		Enums.UnitRole.TANK:
-			caster.shield += 180.0 + (caster.ability_power * 1.5)
+			var added_shield = 180.0 + (caster.ability_power * 1.5)
+			caster.shield += added_shield
+			_spawn_floating_combat_text(caster, "🛡 +%.0f SHIELD" % added_shield, Color(0.2, 0.75, 1.0))
 			_log("   🛡 %s generates a %.0f kinetic barrier!" % [u_name, caster.shield])
 		Enums.UnitRole.HACKER:
 			var target = _find_target(defenders)
 			if target:
 				var ap_dmg = 120.0 + (caster.ability_power * 2.2)
-				_apply_damage(target, ap_dmg, caster, true)
+				_apply_damage(target, ap_dmg, caster, true, false)
 		Enums.UnitRole.SNIPER:
 			var weakest = _find_weakest_target(defenders)
 			if weakest:
 				var crit_dmg = (caster.attack_damage * 2.2) + caster.ability_power
-				_apply_damage(weakest, crit_dmg, caster, true)
+				_apply_damage(weakest, crit_dmg, caster, true, true)
 		Enums.UnitRole.FIXER:
+			var healed = minf(150.0 + caster.ability_power, caster.max_hp - caster.current_hp)
 			caster.current_hp = minf(caster.current_hp + 150.0 + caster.ability_power, caster.max_hp)
+			_spawn_floating_combat_text(caster, "💉 +%.0f HP" % healed, Color(0.2, 1.0, 0.5))
 			_log("   💉 %s repairs systems, recovering health!" % u_name)
 		_:
 			var target = _find_target(defenders)
 			if target:
-				_apply_damage(target, caster.attack_damage * 1.5, caster, true)
+				_apply_damage(target, caster.attack_damage * 1.5, caster, true, false)
 
-func _apply_damage(target: CombatantState, raw_dmg: float, attacker: CombatantState, is_ability: bool = false) -> void:
+func _apply_damage(target: CombatantState, raw_dmg: float, attacker: CombatantState, is_ability: bool = false, is_crit: bool = false) -> void:
 	var remaining_dmg = raw_dmg
 	
 	if target.shield > 0:
@@ -332,6 +344,20 @@ func _apply_damage(target: CombatantState, raw_dmg: float, attacker: CombatantSt
 	target.current_hp = maxf(target.current_hp - remaining_dmg, 0.0)
 	target.current_mana = minf(target.current_mana + 10.0, 100.0)
 	
+	# Spawn Floating Numbers & Visual Flash
+	if is_crit:
+		AudioManager.play_combat_crit()
+		_spawn_floating_combat_text(target, "⚡ CRIT -%.0f!" % raw_dmg, Color(1.0, 0.88, 0.2), true)
+		_flash_card(target.box_panel, Color(2.0, 0.8, 0.2), 0.2)
+	elif is_ability:
+		_spawn_floating_combat_text(target, "💥 -%.0f AP" % raw_dmg, Color(1.0, 0.2, 0.7), true)
+		_flash_card(target.box_panel, Color(1.8, 0.2, 0.8), 0.2)
+	else:
+		AudioManager.play_combat_hit()
+		var dmg_col = Color(0.9, 0.95, 1.0) if attacker.is_player else Color(1.0, 0.45, 0.45)
+		_spawn_floating_combat_text(target, "-%.0f" % raw_dmg, dmg_col, false)
+		_flash_card(target.box_panel, Color(1.3, 0.4, 0.4), 0.15)
+	
 	if attacker.is_player:
 		total_player_damage += raw_dmg
 	else:
@@ -344,6 +370,41 @@ func _apply_damage(target: CombatantState, raw_dmg: float, attacker: CombatantSt
 		target.box_panel.modulate = Color(0.4, 0.4, 0.4, 0.7)
 		var t_name = target.unit.unit_resource.display_name if target.unit else "Target"
 		_log("[color=#ff0055]💀 %s has been neutralized![/color]" % t_name)
+
+func _spawn_floating_combat_text(target: CombatantState, text: String, color: Color, is_big: bool = false) -> void:
+	if target == null or target.box_panel == null or not is_instance_valid(target.box_panel):
+		return
+		
+	var lbl = Label.new()
+	lbl.text = text
+	lbl.add_theme_font_size_override("font_size", 13 if is_big else 10)
+	lbl.add_theme_color_override("font_color", color)
+	lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.95))
+	lbl.add_theme_constant_override("shadow_offset_x", 1)
+	lbl.add_theme_constant_override("shadow_offset_y", 1)
+	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	lbl.top_level = true
+	
+	var pos = target.box_panel.global_position + Vector2(randf_range(15, 65), randf_range(20, 50))
+	lbl.global_position = pos
+	add_child(lbl)
+	
+	var tween = create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(lbl, "global_position", pos + Vector2(randf_range(-10, 10), -35), 0.6).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(lbl, "modulate:a", 0.0, 0.6).set_ease(Tween.EASE_IN)
+	if is_big:
+		lbl.scale = Vector2(1.25, 1.25)
+		tween.tween_property(lbl, "scale", Vector2(1.0, 1.0), 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.chain().tween_callback(lbl.queue_free)
+
+func _flash_card(panel: PanelContainer, flash_color: Color, duration: float = 0.2) -> void:
+	if panel == null or not is_instance_valid(panel):
+		return
+	var orig_mod = panel.modulate
+	panel.modulate = flash_color
+	var tween = create_tween()
+	tween.tween_property(panel, "modulate", orig_mod, duration)
 
 func _find_target(defenders: Array[CombatantState]) -> CombatantState:
 	for d in defenders:

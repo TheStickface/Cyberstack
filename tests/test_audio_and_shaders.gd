@@ -29,7 +29,7 @@ func test_audio_manager_synth_generation() -> Dictionary:
 	audio_mgr._ready()
 	
 	# Test all sound types generate valid audio buffers
-	for s_type in range(9):
+	for s_type in range(13):
 		var wav = audio_mgr._generate_synth_sound(s_type)
 		if wav == null:
 			return {"passed": false, "message": "Failed to generate synth sound type %d" % s_type, "assertions": 1}
@@ -46,6 +46,10 @@ func test_audio_manager_synth_generation() -> Dictionary:
 	audio_mgr.play_lock_in()
 	audio_mgr.play_victory()
 	audio_mgr.play_defeat()
+	audio_mgr.play_combat_hit()
+	audio_mgr.play_combat_crit()
+	audio_mgr.play_ability_cast()
+	audio_mgr.play_star_upgrade()
 	
 	for p in audio_mgr.sfx_players:
 		p.queue_free()

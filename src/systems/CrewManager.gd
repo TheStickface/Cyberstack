@@ -8,6 +8,7 @@ const DataRepoScript = preload("res://src/systems/DataRepository.gd")
 var fielded_units: Array[UnitInstance] = []
 var benched_units: Array[UnitInstance] = []
 var augment_inventory: Array[AugmentResource] = []
+var last_combinations: Array[Dictionary] = []
 
 var current_district: int = 1
 var active_synergy_report: SynergyReport = null
@@ -48,9 +49,10 @@ func add_unit_to_bench(unit: UnitInstance) -> bool:
 
 ## Core Star Combination Engine:
 ## 2 copies of Tier 1 combine into Tier 2 (★2)
-## 3 copies of Tier 2 combine into Tier 3 (★3)
+## 2 copies of Tier 2 combine into Tier 3 (★3)
 func check_and_execute_combinations() -> Array[Dictionary]:
 	var combinations_made: Array[Dictionary] = []
+	last_combinations.clear()
 	var keep_checking = true
 	
 	while keep_checking:
@@ -138,6 +140,7 @@ func check_and_execute_combinations() -> Array[Dictionary]:
 	if not combinations_made.is_empty():
 		recalculate_synergies()
 		
+	last_combinations = combinations_made
 	return combinations_made
 
 func deploy_unit_to_field(bench_index: int) -> bool:
