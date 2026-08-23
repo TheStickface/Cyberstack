@@ -11,6 +11,8 @@ signal unit_sell_requested(unit: UnitInstance)
 signal card_mouse_entered(unit: UnitInstance, card_pos: Vector2)
 signal card_mouse_exited()
 
+const SynergyTooltipScript = preload("res://src/ui/components/SynergyTooltip.gd")
+
 var unit_instance: UnitInstance = null
 var is_fielded: bool = true
 
@@ -45,7 +47,7 @@ func _on_card_mouse_exited() -> void:
 
 func _make_custom_tooltip(_for_text: String) -> Object:
 	if unit_instance and unit_instance.unit_resource:
-		return SynergyTooltip.create_custom_tooltip_node(unit_instance.unit_resource, {}, unit_instance.star_level)
+		return SynergyTooltipScript.create_custom_tooltip_node(unit_instance.unit_resource, {}, unit_instance.star_level)
 	return null
 
 func setup(unit: UnitInstance, fielded: bool = true) -> void:

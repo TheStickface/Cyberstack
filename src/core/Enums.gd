@@ -124,6 +124,15 @@ static func role_to_string(role: UnitRole) -> String:
 		UnitRole.FIXER: return "Fixer"
 		_: return "Any"
 
+static func slot_type_to_string(st: SlotType) -> String:
+	match st:
+		SlotType.DEFENSIVE: return "Defensive"
+		SlotType.UTILITY: return "Utility"
+		SlotType.OFFENSIVE: return "Offensive"
+		SlotType.PASSIVE: return "Passive"
+		SlotType.FLEX: return "Flex"
+		_: return "Flex"
+
 static func tier_to_string(tier: AugmentTier) -> String:
 	match tier:
 		AugmentTier.COMMON: return "Common"

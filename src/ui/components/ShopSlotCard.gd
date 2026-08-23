@@ -7,6 +7,8 @@ signal buy_requested(slot_index: int)
 signal card_mouse_entered(resource: Resource, card_pos: Vector2)
 signal card_mouse_exited()
 
+const SynergyTooltipScript = preload("res://src/ui/components/SynergyTooltip.gd")
+
 var slot_index: int = 0
 var slot_data: Dictionary = {}
 
@@ -34,9 +36,9 @@ func _make_custom_tooltip(_for_text: String) -> Object:
 	if is_bought or res == null:
 		return null
 	if res is UnitResource:
-		return SynergyTooltip.create_custom_tooltip_node(res as UnitResource, {}, 1)
+		return SynergyTooltipScript.create_custom_tooltip_node(res as UnitResource, {}, 1)
 	elif res is AugmentResource:
-		return SynergyTooltip.create_augment_tooltip_node(res as AugmentResource)
+		return SynergyTooltipScript.create_augment_tooltip_node(res as AugmentResource)
 	return null
 
 func setup(p_index: int, p_data: Dictionary, player_gold: int) -> void:

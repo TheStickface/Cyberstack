@@ -8,6 +8,8 @@ signal chip_selected(chip: AugmentChip)
 signal card_mouse_entered(augment_res: AugmentResource, card_pos: Vector2)
 signal card_mouse_exited()
 
+const SynergyTooltipScript = preload("res://src/ui/components/SynergyTooltip.gd")
+
 @export var augment_resource: AugmentResource = null
 var inventory_index: int = -1
 var is_selected: bool = false
@@ -33,7 +35,7 @@ func _on_chip_mouse_exited() -> void:
 
 func _make_custom_tooltip(_for_text: String) -> Object:
 	if augment_resource:
-		return SynergyTooltip.create_augment_tooltip_node(augment_resource)
+		return SynergyTooltipScript.create_augment_tooltip_node(augment_resource)
 	return null
 
 func setup(aug: AugmentResource, inv_idx: int = -1) -> void:
