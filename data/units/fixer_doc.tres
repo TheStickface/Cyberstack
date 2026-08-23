@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "fixer_doc"
+display_name = "Doc Sawbones"
+title = "Back-Alley Surgeon"
+bio = "A disgraced trauma surgeon who patches up wounded operatives using black-market coagulants and epinephrine needles."
+role = 3
+faction = 4
+base_cost = 2
+base_max_health = 620.0
+base_attack_damage = 32.0
+base_ability_power = 55.0
+base_attack_speed = 0.85
+base_armor = 16.0
+base_shield = 0.0
+base_starting_mana = 25.0
+base_max_mana = 70.0
+base_speed = 50.0
+base_crit_chance = 0.05
+base_evasion = 0.08
+ability_name = "Combat Stim"
+ability_description = "Injects the lowest-health ally with concentrated adrenaline, restoring 260 health and granting +25% Attack Speed."
+ability_effect_id = "doc_combat_stim"

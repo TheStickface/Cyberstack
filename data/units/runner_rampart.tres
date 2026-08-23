@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "runner_rampart"
+display_name = "Rampart"
+title = "Scrap-Armor Bouncer"
+bio = "Welded into layers of salvaged ballistic steel, Rampart turns the front line into an impenetrable wall."
+role = 0
+faction = 1
+base_cost = 3
+base_max_health = 980.0
+base_attack_damage = 42.0
+base_ability_power = 10.0
+base_attack_speed = 0.70
+base_armor = 40.0
+base_shield = 50.0
+base_starting_mana = 0.0
+base_max_mana = 90.0
+base_speed = 45.0
+base_crit_chance = 0.02
+base_evasion = 0.05
+ability_name = "Junk Fortress"
+ability_description = "Slams down a riot barrier, absorbing 350 incoming damage and reflecting 25% back as kinetic shrapnel."
+ability_effect_id = "rampart_junk_fortress"

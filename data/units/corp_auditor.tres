@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "corp_auditor"
+display_name = "Auditor"
+title = "Asset Seizure Specialist"
+bio = "A ruthless cyber-forensic accountant who freezes adversary sub-accounts and overrides bio-monitors."
+role = 1
+faction = 2
+base_cost = 2
+base_max_health = 590.0
+base_attack_damage = 28.0
+base_ability_power = 55.0
+base_attack_speed = 0.85
+base_armor = 16.0
+base_shield = 0.0
+base_starting_mana = 20.0
+base_max_mana = 70.0
+base_speed = 50.0
+base_crit_chance = 0.06
+base_evasion = 0.06
+ability_name = "Foreclosure Protocol"
+ability_description = "Freezes target enemy for 2.5s, dealing 160 AP damage and siphoning 2 credits on victory."
+ability_effect_id = "auditor_foreclosure_protocol"

@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "ai_siphon"
+display_name = "SIPHON.sys"
+title = "Code Reconstructor"
+bio = "Rebuilds damaged combat algorithms in real-time by siphoning fragmented machine code from fallen chassis."
+role = 3
+faction = 3
+base_cost = 3
+base_max_health = 660.0
+base_attack_damage = 38.0
+base_ability_power = 60.0
+base_attack_speed = 0.85
+base_armor = 16.0
+base_shield = 40.0
+base_starting_mana = 30.0
+base_max_mana = 80.0
+base_speed = 55.0
+base_crit_chance = 0.06
+base_evasion = 0.10
+ability_name = "Memory Patch"
+ability_description = "Repairs the most damaged ally for 220 health and removes all active debuffs."
+ability_effect_id = "siphon_memory_patch"

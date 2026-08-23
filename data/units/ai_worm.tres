@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "ai_worm"
+display_name = "WORM.payload"
+title = "Deep Web Parasite"
+bio = "A self-replicating polymorphic virus that burrows deep into enemy target targeting modules."
+role = 1
+faction = 3
+base_cost = 3
+base_max_health = 610.0
+base_attack_damage = 30.0
+base_ability_power = 75.0
+base_attack_speed = 0.90
+base_armor = 14.0
+base_shield = 0.0
+base_starting_mana = 30.0
+base_max_mana = 80.0
+base_speed = 60.0
+base_crit_chance = 0.10
+base_evasion = 0.12
+ability_name = "Logic Cascade"
+ability_description = "Infects 3 random enemies with a logic bomb, dealing 180 AP damage over 4s and spreading to nearby foes upon death."
+ability_effect_id = "worm_logic_cascade"

@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "ai_dreadnought"
+display_name = "DREADNOUGHT.core"
+title = "Server Core Heavy Rig"
+bio = "An industrial supercomputer chassis fitted with coolant-venting plasma exhausts and reactive plating."
+role = 0
+faction = 3
+base_cost = 4
+base_max_health = 1180.0
+base_attack_damage = 52.0
+base_ability_power = 35.0
+base_attack_speed = 0.70
+base_armor = 42.0
+base_shield = 100.0
+base_starting_mana = 20.0
+base_max_mana = 90.0
+base_speed = 40.0
+base_crit_chance = 0.05
+base_evasion = 0.05
+ability_name = "Overheat Blast"
+ability_description = "Vents superheated coolant in a 360-degree cone, dealing 240 AP damage and blinding nearby enemies for 2.5s."
+ability_effect_id = "dreadnought_overheat_blast"

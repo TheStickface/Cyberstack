@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "runner_phantom"
+display_name = "Phantom"
+title = "Holo-Mirage Infiltrator"
+bio = "Projects optical decoys while striking vital targets from the neon shadows."
+role = 2
+faction = 1
+base_cost = 4
+base_max_health = 640.0
+base_attack_damage = 72.0
+base_ability_power = 25.0
+base_attack_speed = 1.05
+base_armor = 16.0
+base_shield = 0.0
+base_starting_mana = 20.0
+base_max_mana = 70.0
+base_speed = 75.0
+base_crit_chance = 0.25
+base_evasion = 0.25
+ability_name = "Decoy Strike"
+ability_description = "Creates a holographic clone, becoming untargetable for 2s while delivering a 250% critical strike."
+ability_effect_id = "phantom_decoy_strike"

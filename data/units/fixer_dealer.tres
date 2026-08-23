@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "fixer_dealer"
+display_name = "The Dealer"
+title = "Arms Syndicate Smuggler"
+bio = "Distributes illicit prototype munitions to allies mid-combat, unlocking deadly armor penetration."
+role = 3
+faction = 4
+base_cost = 4
+base_max_health = 680.0
+base_attack_damage = 48.0
+base_ability_power = 65.0
+base_attack_speed = 0.90
+base_armor = 18.0
+base_shield = 0.0
+base_starting_mana = 30.0
+base_max_mana = 80.0
+base_speed = 55.0
+base_crit_chance = 0.15
+base_evasion = 0.12
+ability_name = "Black Market Cache"
+ability_description = "Supplies all allies with armor-piercing ammunition, granting +30% Armor Penetration and +20% Crit Chance for 5s."
+ability_effect_id = "dealer_black_market_cache"

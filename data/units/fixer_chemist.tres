@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "fixer_chemist"
+display_name = "Chemist"
+title = "Toxic Alchemist"
+bio = "Distills volatile synthetic compounds that melt cyberware plating and dissolve organic tissues."
+role = 1
+faction = 4
+base_cost = 2
+base_max_health = 570.0
+base_attack_damage = 26.0
+base_ability_power = 60.0
+base_attack_speed = 0.85
+base_armor = 12.0
+base_shield = 0.0
+base_starting_mana = 20.0
+base_max_mana = 70.0
+base_speed = 50.0
+base_crit_chance = 0.08
+base_evasion = 0.08
+ability_name = "Acid Mist"
+ability_description = "Lobs an acid flask that coats enemies in a corrosive haze, dealing 160 AP damage and reducing armor by 15 for 4s."
+ability_effect_id = "chemist_acid_mist"

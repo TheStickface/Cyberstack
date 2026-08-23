@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "corp_operative"
+display_name = "Operative"
+title = "Standard-Issue Marksman"
+bio = "Trained corporate asset equipped with a calibrated smart-carbine and optical target tracking."
+role = 2
+faction = 2
+base_cost = 1
+base_max_health = 540.0
+base_attack_damage = 44.0
+base_ability_power = 10.0
+base_attack_speed = 0.90
+base_armor = 15.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 60.0
+base_speed = 55.0
+base_crit_chance = 0.12
+base_evasion = 0.05
+ability_name = "Target Lock"
+ability_description = "Locks onto the lowest-health enemy, firing a high-velocity tracer round for 160% AD damage."
+ability_effect_id = "operative_target_lock"

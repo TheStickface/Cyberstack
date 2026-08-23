@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "corp_patrol"
+display_name = "Patrol Unit"
+title = "Riot Drone Controller"
+bio = "Automated crowd-control drone deployed to enforce curfew and suppress unauthorized street gatherings."
+role = 0
+faction = 2
+base_cost = 1
+base_max_health = 620.0
+base_attack_damage = 32.0
+base_ability_power = 15.0
+base_attack_speed = 0.80
+base_armor = 22.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 70.0
+base_speed = 50.0
+base_crit_chance = 0.04
+base_evasion = 0.04
+ability_name = "Crowd Dispersion"
+ability_description = "Fires a sonic pulse dealing 120 damage and slowing enemy attack speed by 25% for 3s."
+ability_effect_id = "patrol_crowd_dispersion"

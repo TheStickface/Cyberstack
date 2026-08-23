@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "ai_byte"
+display_name = "BYTE-01"
+title = "Sub-Routine Microdrone"
+bio = "A rogue packet-scraping daemon that swarms enemy networks and injects corrupted code segments."
+role = 1
+faction = 3
+base_cost = 1
+base_max_health = 500.0
+base_attack_damage = 22.0
+base_ability_power = 50.0
+base_attack_speed = 1.00
+base_armor = 8.0
+base_shield = 0.0
+base_starting_mana = 20.0
+base_max_mana = 50.0
+base_speed = 70.0
+base_crit_chance = 0.08
+base_evasion = 0.12
+ability_name = "Bit-Shift Burst"
+ability_description = "Fires a binary logic pulse that deals 130 AP damage and reduces the target's armor by 10 for 4s."
+ability_effect_id = "byte_bit_shift_burst"

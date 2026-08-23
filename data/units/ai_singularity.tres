@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "ai_singularity"
+display_name = "SINGULARITY.00"
+title = "Sentient Quantum Core"
+bio = "The supreme artificial entity of District 3, manipulating probabilistic quantum fields to erase hostile signatures."
+role = 2
+faction = 3
+base_cost = 5
+base_max_health = 750.0
+base_attack_damage = 95.0
+base_ability_power = 80.0
+base_attack_speed = 1.10
+base_armor = 20.0
+base_shield = 80.0
+base_starting_mana = 40.0
+base_max_mana = 100.0
+base_speed = 65.0
+base_crit_chance = 0.35
+base_evasion = 0.20
+ability_name = "Event Horizon"
+ability_description = "Creates a micro-singularity that pulls all enemies inward, dealing 350 combined AD/AP damage and preventing movement for 3s."
+ability_effect_id = "singularity_event_horizon"

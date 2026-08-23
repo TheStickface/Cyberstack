@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "runner_nexus"
+display_name = "Nexus"
+title = "Mesh-Net Pioneer"
+bio = "Weaves decentralized data networks across the city, overwhelming enemy firewalls with distributed packet floods."
+role = 1
+faction = 1
+base_cost = 4
+base_max_health = 620.0
+base_attack_damage = 30.0
+base_ability_power = 85.0
+base_attack_speed = 0.85
+base_armor = 14.0
+base_shield = 0.0
+base_starting_mana = 40.0
+base_max_mana = 90.0
+base_speed = 60.0
+base_crit_chance = 0.10
+base_evasion = 0.10
+ability_name = "Bandwidth Jam"
+ability_description = "Broadcasts a sensory overload wave dealing 220 AP damage to all enemies and silencing their abilities for 3s."
+ability_effect_id = "nexus_bandwidth_jam"

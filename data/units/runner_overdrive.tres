@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "runner_overdrive"
+display_name = "Overdrive"
+title = "Apex Alley Warlord"
+bio = "The supreme street boss of District 1, powered by a militarized adrenaline matrix and dual thermic cleavers."
+role = 0
+faction = 1
+base_cost = 5
+base_max_health = 1350.0
+base_attack_damage = 85.0
+base_ability_power = 40.0
+base_attack_speed = 1.00
+base_armor = 45.0
+base_shield = 100.0
+base_starting_mana = 30.0
+base_max_mana = 100.0
+base_speed = 70.0
+base_crit_chance = 0.15
+base_evasion = 0.15
+ability_name = "Overdrive Berserk"
+ability_description = "Enters maximum overdrive for 6s: gains +60% Attack Speed, +40 Armor, and heals for 30% of all damage dealt."
+ability_effect_id = "overdrive_berserk"

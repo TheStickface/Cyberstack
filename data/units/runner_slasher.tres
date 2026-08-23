@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "runner_slasher"
+display_name = "Slasher"
+title = "Monomolecular Blade-Dancer"
+bio = "A rogue cyber-ninja who slices through reinforced armor with twin vibrating nano-daggers."
+role = 2
+faction = 1
+base_cost = 2
+base_max_health = 580.0
+base_attack_damage = 54.0
+base_ability_power = 15.0
+base_attack_speed = 1.15
+base_armor = 14.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 70.0
+base_speed = 70.0
+base_crit_chance = 0.20
+base_evasion = 0.18
+ability_name = "Sonic Flurry"
+ability_description = "Unleashes 3 rapid strikes dealing 85% AD each with a guaranteed critical hit on the final slash."
+ability_effect_id = "slasher_sonic_flurry"

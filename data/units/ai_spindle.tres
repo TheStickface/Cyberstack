@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "ai_spindle"
+display_name = "SPINDLE.v2"
+title = "Laser Threader"
+bio = "A precision fiber-optic weaver that focuses ultraviolet laser filaments across combat lanes."
+role = 2
+faction = 3
+base_cost = 1
+base_max_health = 510.0
+base_attack_damage = 42.0
+base_ability_power = 20.0
+base_attack_speed = 1.05
+base_armor = 10.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 60.0
+base_speed = 60.0
+base_crit_chance = 0.15
+base_evasion = 0.08
+ability_name = "Coherent Beam"
+ability_description = "Focuses an ultraviolet laser dealing 170% AD damage and burning the target for 40 thermal damage."
+ability_effect_id = "spindle_coherent_beam"

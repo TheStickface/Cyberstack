@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "corp_director"
+display_name = "Director"
+title = "Boardroom Sovereign"
+bio = "The supreme corporate oligarch of District 2 whose commands reconfigure global stock indexes and automated kill-sats."
+role = 1
+faction = 2
+base_cost = 5
+base_max_health = 1100.0
+base_attack_damage = 45.0
+base_ability_power = 110.0
+base_attack_speed = 0.90
+base_armor = 35.0
+base_shield = 120.0
+base_starting_mana = 50.0
+base_max_mana = 110.0
+base_speed = 50.0
+base_crit_chance = 0.12
+base_evasion = 0.08
+ability_name = "Hostile Takeover"
+ability_description = "Dominates the highest-damage enemy, forcing them to attack their own allies for 4s while taking 300 AP damage."
+ability_effect_id = "director_hostile_takeover"

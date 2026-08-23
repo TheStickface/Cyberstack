@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "fixer_scav"
+display_name = "Scav"
+title = "Junkyard Scavenger"
+bio = "Cobbles together lethal scrap-guns from rusted industrial machinery and high-voltage capacitors."
+role = 2
+faction = 4
+base_cost = 1
+base_max_health = 530.0
+base_attack_damage = 46.0
+base_ability_power = 10.0
+base_attack_speed = 0.90
+base_armor = 12.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 60.0
+base_speed = 55.0
+base_crit_chance = 0.14
+base_evasion = 0.06
+ability_name = "Scrap Shrapnel"
+ability_description = "Fires a canister of rusted ball-bearings dealing 150% AD damage to the primary target and 50% to adjacent enemies."
+ability_effect_id = "scav_scrap_shrapnel"

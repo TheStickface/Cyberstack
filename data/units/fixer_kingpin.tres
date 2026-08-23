@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "fixer_kingpin"
+display_name = "The Kingpin"
+title = "Underworld Sovereign"
+bio = "The undisputed criminal boss of the neon underworld who commands syndicate hit squads and corrupt police chiefs."
+role = 0
+faction = 4
+base_cost = 5
+base_max_health = 1300.0
+base_attack_damage = 75.0
+base_ability_power = 60.0
+base_attack_speed = 0.85
+base_armor = 45.0
+base_shield = 100.0
+base_starting_mana = 40.0
+base_max_mana = 100.0
+base_speed = 50.0
+base_crit_chance = 0.15
+base_evasion = 0.10
+ability_name = "Syndicate Retaliation"
+ability_description = "Commands a syndicate drive-by strike, dealing 300 combined damage to all enemies and granting 2 credits per enemy eliminated."
+ability_effect_id = "kingpin_syndicate_retaliation"

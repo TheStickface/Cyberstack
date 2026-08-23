@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "fixer_bouncer"
+display_name = "Bouncer"
+title = "Club Enforcer"
+bio = "A hulking cyber-enhanced heavyweight who breaks bones and ejects unruly targets through neon glass windows."
+role = 0
+faction = 4
+base_cost = 3
+base_max_health = 1020.0
+base_attack_damage = 44.0
+base_ability_power = 10.0
+base_attack_speed = 0.70
+base_armor = 38.0
+base_shield = 60.0
+base_starting_mana = 0.0
+base_max_mana = 80.0
+base_speed = 45.0
+base_crit_chance = 0.04
+base_evasion = 0.04
+ability_name = "Heavy Haymaker"
+ability_description = "Lands a brutal kinetic punch that knocks back the target, stunning them for 2s and dealing 220% AD damage."
+ability_effect_id = "bouncer_heavy_haymaker"

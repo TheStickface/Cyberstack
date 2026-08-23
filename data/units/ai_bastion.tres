@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "ai_bastion"
+display_name = "BASTION.core"
+title = "Adaptive Firewall Golem"
+bio = "A hulking crystalline synthetic constructed from hard-light firewall projectors and recursive parity checks."
+role = 0
+faction = 3
+base_cost = 2
+base_max_health = 820.0
+base_attack_damage = 34.0
+base_ability_power = 25.0
+base_attack_speed = 0.75
+base_armor = 30.0
+base_shield = 80.0
+base_starting_mana = 0.0
+base_max_mana = 80.0
+base_speed = 45.0
+base_crit_chance = 0.03
+base_evasion = 0.05
+ability_name = "Zero-Day Shield"
+ability_description = "Projects an encrypted dome providing 240 Shield to itself and 100 Shield to adjacent allies for 4s."
+ability_effect_id = "bastion_zero_day_shield"

@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "corp_tactician"
+display_name = "Tactician"
+title = "Field Logistics Officer"
+bio = "Coordinates combat squads via high-bandwidth neural uplink, supplying armor buffs and tactical targeting feeds."
+role = 3
+faction = 2
+base_cost = 3
+base_max_health = 700.0
+base_attack_damage = 36.0
+base_ability_power = 50.0
+base_attack_speed = 0.85
+base_armor = 22.0
+base_shield = 0.0
+base_starting_mana = 20.0
+base_max_mana = 80.0
+base_speed = 55.0
+base_crit_chance = 0.08
+base_evasion = 0.06
+ability_name = "Supply Drop"
+ability_description = "Calls down a corporate supply beam granting all allies +15 Armor and 150 Shield for 5s."
+ability_effect_id = "tactician_supply_drop"
