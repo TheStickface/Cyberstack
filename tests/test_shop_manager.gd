@@ -129,3 +129,34 @@ func test_buy_and_sell_flow() -> Dictionary:
 		return {"passed": false, "message": "Augment inventory should be empty after selling augment", "assertions": 13}
 		
 	return {"passed": true, "assertions": 13}
+
+func test_shop_freeze_and_lock() -> Dictionary:
+	var shop = ShopManager.new(20)
+	shop.generate_shop_offerings(1, repo)
+	
+	var initial_unit_res = shop.unit_slots[0].get("resource", null)
+	if initial_unit_res == null:
+		return {"passed": false, "message": "Expected valid unit in slot 0", "assertions": 1}
+		
+	# 1. Toggle Lock ON
+	var is_locked = shop.toggle_lock()
+	if not is_locked or not shop.is_locked:
+		return {"passed": false, "message": "Shop should be locked after toggle_lock", "assertions": 2}
+		
+	# 2. Simulate District round advancement (generate offerings with locked shop)
+	var preserved_slots = shop.generate_shop_offerings(2, repo)
+	var preserved_unit_res = shop.unit_slots[0].get("resource", null)
+	if preserved_unit_res != initial_unit_res:
+		return {"passed": false, "message": "Locked shop should preserve offerings across rounds", "assertions": 3}
+		
+	# 3. Verify lock is consumed/auto-unlocked for the subsequent round
+	if shop.is_locked:
+		return {"passed": false, "message": "Lock should be automatically consumed after round transition", "assertions": 4}
+		
+	# 4. Manual reroll should force new offerings even if locked
+	shop.toggle_lock()
+	var reroll_ok = shop.reroll_shop(repo)
+	if not reroll_ok or shop.is_locked:
+		return {"passed": false, "message": "Reroll should clear lock state and generate fresh offerings", "assertions": 5}
+		
+	return {"passed": true, "assertions": 5}

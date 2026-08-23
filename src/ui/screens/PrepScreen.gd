@@ -25,6 +25,7 @@ var selected_inventory_idx: int = -1
 @onready var bench_container: HBoxContainer = $Margin/VBox/MainBody/BoardArea/BenchSection/BenchScroll/BenchContainer
 @onready var crew_shop_container: HBoxContainer = $Margin/VBox/MainBody/BoardArea/CrewShop/CrewShopScroll/CrewShopContainer
 @onready var augment_shop_container: HBoxContainer = $Margin/VBox/MainBody/BoardArea/AugmentShop/AugmentShopScroll/AugmentShopContainer
+@onready var freeze_btn: Button = $Margin/VBox/MainBody/BoardArea/CrewShop/CrewShopHeader/FreezeBtn
 @onready var reroll_btn: Button = $Margin/VBox/MainBody/BoardArea/CrewShop/CrewShopHeader/RerollBtn
 
 @onready var synergy_hud: SynergyTrackerHUD = $Margin/VBox/MainBody/Sidebar/SynergyTrackerHUD
@@ -138,9 +139,33 @@ func _refresh_shop() -> void:
 			card.setup(i, slot_data, shop_mgr.gold)
 			card.buy_requested.connect(_on_augment_buy_requested)
 		
+	if freeze_btn:
+		if shop_mgr.is_locked:
+			freeze_btn.text = "🔓 UNFREEZE"
+			freeze_btn.add_theme_color_override("font_color", Color(0.2, 1.0, 0.85))
+		else:
+			freeze_btn.text = "🔒 FREEZE (FREE)"
+			freeze_btn.add_theme_color_override("font_color", Color(0.7, 0.7, 0.85))
+			
 	if reroll_btn:
 		reroll_btn.text = "REROLL (%s)" % Constants.format_currency(Constants.BASE_REROLL_COST, true)
 		reroll_btn.disabled = (shop_mgr.gold < Constants.BASE_REROLL_COST)
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_F:
+			_on_freeze_pressed()
+		elif event.keycode == KEY_D:
+			_on_reroll_pressed()
+
+func _on_freeze_pressed() -> void:
+	var locked = shop_mgr.toggle_lock()
+	if locked:
+		_set_status("Shop FROZEN 🔒 — Current offerings will be saved across rounds.", false)
+	else:
+		_set_status("Shop UNLOCKED 🔓 — Offerings will auto-refresh on next round.", false)
+	AudioManager.play_ui_click()
+	_refresh_shop()
 
 func _refresh_synergies() -> void:
 	if synergy_hud:

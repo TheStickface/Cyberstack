@@ -7,12 +7,20 @@ const DataRepoScript = preload("res://src/systems/DataRepository.gd")
 
 var gold: int = Constants.DEFAULT_STARTING_GOLD
 var current_district: int = 1
+var is_locked: bool = false
 var unit_slots: Array[Dictionary] = [] # Array of 4 (expandable to 6) pure operative slots
 var augment_slots: Array[Dictionary] = [] # Array of 2 (expandable to 5) pure augment slots
 var shop_slots: Array[Dictionary] = [] # Unified array [unit_slots + augment_slots]
 
 func _init(p_starting_gold: int = Constants.DEFAULT_STARTING_GOLD) -> void:
 	gold = p_starting_gold
+
+func toggle_lock() -> bool:
+	is_locked = !is_locked
+	return is_locked
+
+func set_locked(locked: bool) -> void:
+	is_locked = locked
 
 func add_gold(amount: int) -> void:
 	if amount <= 0:
@@ -43,7 +51,12 @@ func collect_round_income(base_income: int = 5, win_bonus: int = 0) -> Dictionar
 		"new_balance": gold
 	}
 
-func generate_shop_offerings(district_id: int = 1, repo_instance: Object = null, num_crew: int = Constants.DEFAULT_CREW_SHOP_SLOTS, num_augments: int = Constants.DEFAULT_AUGMENT_SHOP_SLOTS) -> Array[Dictionary]:
+func generate_shop_offerings(district_id: int = 1, repo_instance: Object = null, num_crew: int = Constants.DEFAULT_CREW_SHOP_SLOTS, num_augments: int = Constants.DEFAULT_AUGMENT_SHOP_SLOTS, force_refresh: bool = false) -> Array[Dictionary]:
+	if is_locked and not force_refresh and not unit_slots.is_empty():
+		current_district = district_id
+		is_locked = false # Consumed for this round transition
+		return shop_slots
+		
 	current_district = district_id
 	var repo = repo_instance if repo_instance != null else _get_default_repo()
 	var aug_odds = Constants.DISTRICT_SHOP_ODDS.get(district_id, Constants.DISTRICT_SHOP_ODDS[1])
@@ -122,7 +135,8 @@ func reroll_shop(repo_instance: Object = null, free_reroll: bool = false) -> boo
 		if not spend_gold(Constants.BASE_REROLL_COST):
 			return false
 			
-	generate_shop_offerings(current_district, repo_instance)
+	is_locked = false
+	generate_shop_offerings(current_district, repo_instance, Constants.DEFAULT_CREW_SHOP_SLOTS, Constants.DEFAULT_AUGMENT_SHOP_SLOTS, true)
 	return true
 
 func buy_unit_slot(slot_index: int, crew_mgr: Object) -> Dictionary:

@@ -128,6 +128,7 @@ theme_override_constants/separation = 2
 
 [node name="CrewShopHeader" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/CrewShop"]
 layout_mode = 2
+theme_override_constants/separation = 8
 
 [node name="Label" type="Label" parent="Margin/VBox/MainBody/BoardArea/CrewShop/CrewShopHeader"]
 layout_mode = 2
@@ -135,6 +136,12 @@ size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 0.85, 0, 1)
 theme_override_font_sizes/font_size = 10
 text = "OPERATIVE RECRUITMENT (4 CANDIDATES):"
+
+[node name="FreezeBtn" type="Button" parent="Margin/VBox/MainBody/BoardArea/CrewShop/CrewShopHeader"]
+custom_minimum_size = Vector2(105, 20)
+layout_mode = 2
+theme_override_font_sizes/font_size = 9
+text = "🔒 FREEZE SHOP"
 
 [node name="RerollBtn" type="Button" parent="Margin/VBox/MainBody/BoardArea/CrewShop/CrewShopHeader"]
 custom_minimum_size = Vector2(105, 20)
@@ -219,4 +226,5 @@ theme_override_font_sizes/font_size = 10
 text = "Welcome to Cyberstack Prep Phase. Assemble your crew."
 
 [connection signal="pressed" from="Margin/VBox/TopBar/LockInBtn" to="." method="_on_lock_in_pressed"]
+[connection signal="pressed" from="Margin/VBox/MainBody/BoardArea/CrewShop/CrewShopHeader/FreezeBtn" to="." method="_on_freeze_pressed"]
 [connection signal="pressed" from="Margin/VBox/MainBody/BoardArea/CrewShop/CrewShopHeader/RerollBtn" to="." method="_on_reroll_pressed"]
