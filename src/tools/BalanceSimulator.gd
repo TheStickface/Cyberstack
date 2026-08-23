@@ -7,14 +7,15 @@ extends SceneTree
 const DataRepoScript = preload("res://src/systems/DataRepository.gd")
 
 func _init() -> void:
+	var total_runs = _parse_runs_from_args(10000)
+	
 	print("========================================================")
-	print("    CYBERSTACK 10,000 FULL-RUN MONTE CARLO SIMULATOR    ")
+	print("    CYBERSTACK MONTE CARLO BALANCE SIMULATOR (%d RUNS)  " % total_runs)
 	print("========================================================\n")
 	
 	var repo = DataRepoScript.new()
 	repo.load_all_data("res://data")
 	
-	var total_runs = 10000
 	var report_data = run_10k_full_runs_matrix(repo, total_runs)
 	
 	var md_report = generate_full_runs_markdown_report(report_data)
@@ -24,11 +25,37 @@ func _init() -> void:
 	if file:
 		file.store_string(md_report)
 		file.close()
-		print("\n[SUCCESS] Exported 10,000 full-run simulation report to %s\n" % output_path)
+		print("\n[SUCCESS] Exported %d full-run simulation report to %s\n" % [total_runs, output_path])
 		quit(0)
 	else:
 		printerr("\n[ERROR] Failed to save simulation report to %s\n" % output_path)
 		quit(1)
+
+func _parse_runs_from_args(default_runs: int = 10000) -> int:
+	var all_args: Array[String] = []
+	all_args.append_array(OS.get_cmdline_user_args())
+	all_args.append_array(OS.get_cmdline_args())
+	
+	for i in range(all_args.size()):
+		var arg = all_args[i]
+		if arg.begins_with("--runs="):
+			var val = arg.substr(7).to_int()
+			if val > 0:
+				return val
+		elif arg.begins_with("-runs="):
+			var val = arg.substr(6).to_int()
+			if val > 0:
+				return val
+		elif arg.begins_with("-n="):
+			var val = arg.substr(3).to_int()
+			if val > 0:
+				return val
+		elif arg == "--runs" or arg == "-runs" or arg == "-n" or arg == "--n":
+			if i + 1 < all_args.size():
+				var val = all_args[i + 1].to_int()
+				if val > 0:
+					return val
+	return default_runs
 
 static func run_10k_full_runs_matrix(repo: Object, total_runs: int = 10000) -> Dictionary:
 	var starters = [
@@ -495,7 +522,7 @@ static func _instantiate_crew(templates: Array, repo: Object) -> Array[UnitInsta
 
 static func generate_full_runs_markdown_report(report_data: Dictionary) -> String:
 	var lines: Array[String] = []
-	lines.append("# Cyberstack — 10,000 Full-Run Monte Carlo Simulation Report")
+	lines.append("# Cyberstack — %d Full-Run Monte Carlo Simulation Report" % report_data["total_runs"])
 	lines.append("**Generated Date:** %s | **Total Complete Runs Simulated:** %d" % [
 		Time.get_date_string_from_system(),
 		report_data["total_runs"]
