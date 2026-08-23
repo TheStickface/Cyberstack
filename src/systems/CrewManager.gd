@@ -26,20 +26,124 @@ func get_max_field_units() -> int:
 func add_unit(unit: UnitInstance) -> bool:
 	if unit == null:
 		return false
+	var added = false
 	if fielded_units.size() < get_max_field_units():
 		fielded_units.append(unit)
 		recalculate_synergies()
-		return true
+		added = true
 	elif benched_units.size() < Constants.MAX_BENCH_UNITS:
 		benched_units.append(unit)
-		return true
-	return false
+		added = true
+		
+	if added:
+		check_and_execute_combinations()
+	return added
 
 func add_unit_to_bench(unit: UnitInstance) -> bool:
 	if unit == null or benched_units.size() >= Constants.MAX_BENCH_UNITS:
 		return false
 	benched_units.append(unit)
+	check_and_execute_combinations()
 	return true
+
+## Core Star Combination Engine:
+## 2 copies of Tier 1 combine into Tier 2 (★2)
+## 3 copies of Tier 2 combine into Tier 3 (★3)
+func check_and_execute_combinations() -> Array[Dictionary]:
+	var combinations_made: Array[Dictionary] = []
+	var keep_checking = true
+	
+	while keep_checking:
+		keep_checking = false
+		var all_units = fielded_units + benched_units
+		
+		# Group units by resource ID
+		var units_by_id: Dictionary = {}
+		for u in all_units:
+			if u == null or u.unit_resource == null:
+				continue
+			var u_id = u.unit_resource.id
+			if not units_by_id.has(u_id):
+				units_by_id[u_id] = {
+					1: [], # Tier 1 copies
+					2: [], # Tier 2 copies
+					3: []  # Tier 3 copies
+				}
+			var lvl = u.star_level
+			if units_by_id[u_id].has(lvl):
+				units_by_id[u_id][lvl].append(u)
+				
+		for u_id in units_by_id:
+			var tiers = units_by_id[u_id]
+			
+			# Check Tier 1 -> Tier 2 (2 copies of Tier 1)
+			if tiers[1].size() >= 2:
+				var copy1: UnitInstance = tiers[1][0]
+				var copy2: UnitInstance = tiers[1][1]
+				
+				var primary: UnitInstance = copy1
+				var secondary: UnitInstance = copy2
+				if fielded_units.has(copy2) and not fielded_units.has(copy1):
+					primary = copy2
+					secondary = copy1
+					
+				primary.star_level = 2
+				primary.level = 2
+				
+				# Recover augments from secondary
+				for i in range(secondary.equipped_augments.size()):
+					var aug = secondary.unequip_augment(i)
+					if aug != null:
+						add_augment_to_inventory(aug)
+						
+				remove_unit(secondary)
+				
+				combinations_made.append({
+					"unit": primary,
+					"unit_name": primary.unit_resource.display_name,
+					"new_star_level": 2
+				})
+				keep_checking = true
+				break
+				
+			# Check Tier 2 -> Tier 3 (3 copies of Tier 2)
+			if tiers[2].size() >= 3:
+				var c1: UnitInstance = tiers[2][0]
+				var c2: UnitInstance = tiers[2][1]
+				var c3: UnitInstance = tiers[2][2]
+				
+				var primary: UnitInstance = c1
+				var secondaries: Array[UnitInstance] = [c2, c3]
+				if fielded_units.has(c2) and not fielded_units.has(c1):
+					primary = c2
+					secondaries = [c1, c3]
+				elif fielded_units.has(c3) and not fielded_units.has(c1):
+					primary = c3
+					secondaries = [c1, c2]
+					
+				primary.star_level = 3
+				primary.level = 3
+				
+				# Recover augments from secondaries
+				for sec in secondaries:
+					for i in range(sec.equipped_augments.size()):
+						var aug = sec.unequip_augment(i)
+						if aug != null:
+							add_augment_to_inventory(aug)
+					remove_unit(sec)
+					
+				combinations_made.append({
+					"unit": primary,
+					"unit_name": primary.unit_resource.display_name,
+					"new_star_level": 3
+				})
+				keep_checking = true
+				break
+				
+	if not combinations_made.is_empty():
+		recalculate_synergies()
+		
+	return combinations_made
 
 func deploy_unit_to_field(bench_index: int) -> bool:
 	if bench_index < 0 or bench_index >= benched_units.size():

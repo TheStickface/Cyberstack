@@ -5,10 +5,18 @@ extends RefCounted
 
 var unit_resource: UnitResource = null
 var instance_id: String = ""
-var level: int = 1 # Tier / veteran level (1 = Standard, 2 = Veteran, etc.)
+var level: int = 1 # Legacy alias for tier
+var star_level: int = 1 # 1 = Tier 1 (★), 2 = Tier 2 (★★), 3 = Tier 3 (★★★)
 
 ## 3 Augment slots: index 0 (Primary), index 1 (Secondary), index 2 (Passive)
 var equipped_augments: Array[AugmentResource] = [null, null, null]
+
+func get_star_string() -> String:
+	match star_level:
+		1: return "★"
+		2: return "★★"
+		3: return "★★★"
+		_: return "★%d" % star_level
 
 func _init(p_unit_res: UnitResource = null) -> void:
 	unit_resource = p_unit_res
@@ -76,6 +84,17 @@ func calculate_effective_stat(stat_type: Enums.StatType, global_modifiers: Dicti
 		Enums.StatType.SPEED: base_val = unit_resource.base_speed
 		Enums.StatType.CRIT_CHANCE: base_val = unit_resource.base_crit_chance
 		Enums.StatType.EVASION: base_val = unit_resource.base_evasion
+	
+	# Scale core base stats by star level (Tier 1: 1.0x, Tier 2: 1.8x, Tier 3: 3.2x)
+	var star_mult: float = 1.0
+	match star_level:
+		1: star_mult = 1.0
+		2: star_mult = 1.8
+		3: star_mult = 3.2
+		_: star_mult = 1.0 + (float(star_level - 1) * 0.8)
+		
+	if stat_type == Enums.StatType.MAX_HEALTH or stat_type == Enums.StatType.ATTACK_DAMAGE or stat_type == Enums.StatType.ABILITY_POWER:
+		base_val *= star_mult
 	
 	# Apply equipped augment modifiers
 	var flat_mod: float = 0.0

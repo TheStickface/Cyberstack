@@ -161,9 +161,14 @@ func _create_combatant(unit: UnitInstance, is_player: bool) -> CombatantState:
 	margin.add_child(vbox)
 	
 	var name_lbl = Label.new()
-	name_lbl.text = unit.unit_resource.display_name if (unit and unit.unit_resource) else "Enforcer"
+	var stars = unit.get_star_string() if (unit and unit.star_level > 1) else ""
+	var disp_name = unit.unit_resource.display_name if (unit and unit.unit_resource) else "Enforcer"
+	name_lbl.text = "%s %s" % [stars, disp_name] if not stars.is_empty() else disp_name
 	name_lbl.add_theme_font_size_override("font_size", 11)
-	name_lbl.add_theme_color_override("font_color", Color(0, 0.95, 0.83) if is_player else Color(1, 0.3, 0.5))
+	if is_player:
+		name_lbl.add_theme_color_override("font_color", Color(1, 0.85, 0.1) if (unit and unit.star_level == 2) else (Color(1, 0.2, 0.8) if (unit and unit.star_level >= 3) else Color(0, 0.95, 0.83)))
+	else:
+		name_lbl.add_theme_color_override("font_color", Color(1, 0.3, 0.5))
 	name_lbl.clip_text = true
 	vbox.add_child(name_lbl)
 	

@@ -111,3 +111,38 @@ func test_auto_synergies_and_lock_in() -> Dictionary:
 		return {"passed": false, "message": "Expected 2 units in locked payload", "assertions": 6}
 		
 	return {"passed": true, "assertions": 6}
+
+func test_unit_star_combination() -> Dictionary:
+	var crew_mgr = CrewManager.new(2, repo) # District 2: max 4 units
+	var dash_res = repo.get_unit("runner_blitz")
+	
+	var copy1 = UnitInstance.new(dash_res)
+	var copy2 = UnitInstance.new(dash_res)
+	
+	crew_mgr.add_unit(copy1)
+	if crew_mgr.fielded_units.size() != 1 or copy1.star_level != 1:
+		return {"passed": false, "message": "First unit should be 1-star", "assertions": 1}
+		
+	# Add 2nd copy -> MUST COMBINE into Tier 2 (★2)
+	crew_mgr.add_unit(copy2)
+	if crew_mgr.fielded_units.size() != 1:
+		return {"passed": false, "message": "2 copies should combine into 1 unit, got %d" % crew_mgr.fielded_units.size(), "assertions": 2}
+		
+	var upgraded = crew_mgr.fielded_units[0]
+	if upgraded.star_level != 2:
+		return {"passed": false, "message": "Unit should be star_level 2, got %d" % upgraded.star_level, "assertions": 3}
+	if upgraded.calculate_effective_stat(Enums.StatType.MAX_HEALTH) <= dash_res.base_max_health:
+		return {"passed": false, "message": "Tier 2 unit should have boosted effective max health", "assertions": 4}
+		
+	# Now add 4 more copies to create 2 more Tier 2s -> which combine into 1 Tier 3 (★3)
+	for i in range(4):
+		crew_mgr.add_unit(UnitInstance.new(dash_res))
+		
+	if crew_mgr.fielded_units.size() != 1:
+		return {"passed": false, "message": "3 Tier 2 copies should combine into 1 Tier 3 unit, got %d" % crew_mgr.fielded_units.size(), "assertions": 5}
+		
+	var tier3_unit = crew_mgr.fielded_units[0]
+	if tier3_unit.star_level != 3:
+		return {"passed": false, "message": "Unit should be star_level 3, got %d" % tier3_unit.star_level, "assertions": 6}
+		
+	return {"passed": true, "assertions": 6}

@@ -36,7 +36,16 @@ func _update_ui() -> void:
 	var res = unit_instance.unit_resource
 	
 	if name_label:
-		name_label.text = res.display_name
+		if unit_instance.star_level == 1:
+			name_label.text = res.display_name
+			name_label.add_theme_color_override("font_color", Color(0, 0.95, 0.83))
+		elif unit_instance.star_level == 2:
+			name_label.text = "★★ %s" % res.display_name
+			name_label.add_theme_color_override("font_color", Color(1, 0.85, 0.1))
+		elif unit_instance.star_level >= 3:
+			name_label.text = "★★★ %s" % res.display_name
+			name_label.add_theme_color_override("font_color", Color(1, 0.2, 0.8))
+			
 	if role_badge:
 		role_badge.text = res.get_role_name().to_upper()
 	if faction_badge:
@@ -56,7 +65,8 @@ func _update_ui() -> void:
 		toggle_btn.text = "BENCH" if is_fielded else "DEPLOY"
 		
 	if sell_btn:
-		sell_btn.text = "SELL (%s)" % Constants.format_currency(res.base_cost, true)
+		var sell_val = res.base_cost * (2 if unit_instance.star_level == 2 else (6 if unit_instance.star_level >= 3 else 1))
+		sell_btn.text = "SELL (%s)" % Constants.format_currency(sell_val, true)
 		
 	if is_fielded:
 		custom_minimum_size = Vector2(185, 205)
