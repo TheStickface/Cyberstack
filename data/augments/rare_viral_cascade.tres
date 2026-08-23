@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="AugmentResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/AugmentResource.gd" id="1_aug"]
+
+[resource]
+script = ExtResource("1_aug")
+id = "rare_viral_cascade"
+display_name = "Viral Cascade Overdrive"
+description = "Carries Viral tag; when any Viral effect fires on your crew, this unit gains +15% attack speed for 2s."
+tier = 1
+slot_type = 3
+tags = Array[int]([1])
+base_cost = 4
+stat_modifiers = {
+3: 0.12
+}
+trigger_type = 6
+trigger_effect_id = "viral_ally_trigger_as_burst"
+trigger_params = {"duration": 2.0, "attack_speed_bonus": 0.15}

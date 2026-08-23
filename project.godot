@@ -1,0 +1,32 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; but since you are here, please note that the values are parsed in the order they appear.
+
+config_version=5
+
+[application]
+
+config/name="Cyberstack"
+config/description="A singleplayer cyberpunk autobattler game."
+config/version="0.1.0"
+run/main_scene="res://src/ui/screens/Main.tscn"
+config/features=PackedStringArray("4.3", "4.6", "Forward Plus")
+config/icon="res://icon.svg"
+
+[autoload]
+
+EventBus="*res://src/core/EventBus.gd"
+DataRepository="*res://src/systems/DataRepository.gd"
+GameManager="*res://src/core/GameManager.gd"
+AudioManager="*res://src/core/AudioManager.gd"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
+[rendering]
+
+renderer/rendering_method="forward_plus"

@@ -1,0 +1,54 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/ui/components/ShopSlotCard.gd" id="1_slot"]
+
+[node name="ShopSlotCard" type="PanelContainer"]
+custom_minimum_size = Vector2(170, 150)
+offset_right = 170.0
+offset_bottom = 150.0
+mouse_filter = 0
+script = ExtResource("1_slot")
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Header" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+
+[node name="TypeLabel" type="Label" parent="VBox/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+theme_override_font_sizes/font_size = 9
+text = "OPERATIVE"
+
+[node name="CostLabel" type="Label" parent="VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.85, 0, 1)
+theme_override_font_sizes/font_size = 9
+text = "3 GOLD"
+horizontal_alignment = 2
+
+[node name="NameLabel" type="Label" parent="VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Blitz"
+clip_text = true
+
+[node name="DetailsLabel" type="Label" parent="VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.75, 0.75, 0.8, 1)
+theme_override_font_sizes/font_size = 8
+text = "[TANK | RUNNERS]
+HP: 750 | AD: 38"
+autowrap_mode = 2
+clip_text = true
+
+[node name="BuyBtn" type="Button" parent="VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "BUY (3g)"
+
+[connection signal="pressed" from="VBox/BuyBtn" to="." method="_on_buy_btn_pressed"]

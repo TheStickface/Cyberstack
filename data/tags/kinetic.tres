@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="TagResource" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/TagResource.gd" id="1_tag"]
+[ext_resource type="Script" path="res://src/data/resources/SynergyBonus.gd" id="2_syn"]
+
+[sub_resource type="Resource" id="Resource_kinetic_2"]
+script = ExtResource("2_syn")
+id = "kinetic_chain_2"
+name = "Impact Force I"
+description = "Basic attacks gain +12 Attack Damage and have a 15% chance to interrupt enemy basic attack."
+required_count = 2
+stat_modifiers = {
+1: 12.0
+}
+trigger_effect_id = "kinetic_interrupt_1"
+
+[sub_resource type="Resource" id="Resource_kinetic_4"]
+script = ExtResource("2_syn")
+id = "kinetic_chain_4"
+name = "Impact Force II"
+description = "Basic attacks gain +30 Attack Damage and 20% Critical Strike Chance."
+required_count = 4
+stat_modifiers = {
+1: 30.0,
+8: 0.20
+}
+trigger_effect_id = "kinetic_concussion_2"
+
+[resource]
+script = ExtResource("1_tag")
+tag_type = 4
+id = "kinetic"
+display_name = "Kinetic"
+description = "Heavy railgun slugs, hydraulic servos, and concussive impacts delivering devastating physical force."
+theme_color = Color(0, 0.65, 1, 1)
+chain_bonuses = [SubResource("Resource_kinetic_2"), SubResource("Resource_kinetic_4")]

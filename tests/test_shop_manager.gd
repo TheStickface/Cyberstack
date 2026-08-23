@@ -1,0 +1,126 @@
+class_name TestShopManager
+extends RefCounted
+
+const DataRepoScript = preload("res://src/systems/DataRepository.gd")
+
+var repo: Object
+
+func _init() -> void:
+	repo = DataRepoScript.new()
+	repo.load_all_data("res://data")
+
+func test_gold_transactions() -> Dictionary:
+	var shop = ShopManager.new(10)
+	
+	if shop.gold != 10:
+		return {"passed": false, "message": "Expected starting gold 10, got %d" % shop.gold, "assertions": 1}
+		
+	shop.add_gold(5)
+	if shop.gold != 15:
+		return {"passed": false, "message": "Expected 15 gold after adding 5, got %d" % shop.gold, "assertions": 2}
+		
+	var spend_ok = shop.spend_gold(10)
+	if not spend_ok or shop.gold != 5:
+		return {"passed": false, "message": "Expected 5 gold after spending 10", "assertions": 3}
+		
+	var spend_fail = shop.spend_gold(20)
+	if spend_fail or shop.gold != 5:
+		return {"passed": false, "message": "Should not allow spending more gold than available", "assertions": 4}
+		
+	return {"passed": true, "assertions": 4}
+
+func test_flat_encounter_income_and_no_interest() -> Dictionary:
+	var shop = ShopManager.new(0)
+	
+	# Verify hoarding credits gives 0 interest
+	if shop.calculate_interest(0) != 0:
+		return {"passed": false, "message": "0 gold should yield 0 interest", "assertions": 1}
+	if shop.calculate_interest(50) != 0:
+		return {"passed": false, "message": "50 gold should yield 0 interest in active spend economy", "assertions": 2}
+		
+	# Verify flat income collection (base payout + win bonus)
+	var income_0g = shop.collect_round_income(5, 1)
+	if income_0g.total != 6 or income_0g.interest != 0:
+		return {"passed": false, "message": "Income collection mismatch", "assertions": 3}
+		
+	return {"passed": true, "assertions": 3}
+
+func test_shop_generation_and_reroll() -> Dictionary:
+	var shop = ShopManager.new(10)
+	var slots = shop.generate_shop_offerings(1, repo)
+	
+	if slots.size() != Constants.SHOP_SLOTS_COUNT:
+		return {"passed": false, "message": "Expected %d shop slots, got %d" % [Constants.SHOP_SLOTS_COUNT, slots.size()], "assertions": 1}
+		
+	# In District 1, all augments should be Common
+	for slot in slots:
+		if slot.get("type", "") == "augment":
+			var aug: AugmentResource = slot.get("resource", null)
+			if aug and aug.tier != Enums.AugmentTier.COMMON:
+				return {"passed": false, "message": "District 1 should only produce Common augments", "assertions": 2}
+				
+	# Test Reroll
+	var prev_gold = shop.gold
+	var reroll_ok = shop.reroll_shop(repo)
+	if not reroll_ok or shop.gold != (prev_gold - Constants.BASE_REROLL_COST):
+		return {"passed": false, "message": "Reroll should cost %d gold" % Constants.BASE_REROLL_COST, "assertions": 3}
+		
+	return {"passed": true, "assertions": 3}
+
+func test_buy_and_sell_flow() -> Dictionary:
+	var shop = ShopManager.new(20)
+	var crew_mgr = CrewManager.new(1, repo)
+	
+	# Manually setup shop slots for deterministic testing
+	var blitz_res = repo.get_unit("runner_blitz")
+	var aug_res = repo.get_augment("common_viral_nanites")
+	
+	var custom_slots: Array[Dictionary] = [
+		{"type": "unit", "resource": blitz_res, "cost": 2, "is_bought": false},
+		{"type": "augment", "resource": aug_res, "cost": 2, "is_bought": false}
+	]
+	shop.shop_slots = custom_slots
+	
+	# Buy Unit
+	var buy_unit_res = shop.buy_slot(0, crew_mgr)
+	if not buy_unit_res.success:
+		return {"passed": false, "message": "Failed to buy unit: %s" % buy_unit_res.get("error", ""), "assertions": 1}
+	if crew_mgr.benched_units.size() != 1:
+		return {"passed": false, "message": "Expected 1 benched unit after purchase", "assertions": 2}
+	if shop.gold != 18:
+		return {"passed": false, "message": "Expected 18 gold after purchase, got %d" % shop.gold, "assertions": 3}
+		
+	# Buy Augment
+	var buy_aug_res = shop.buy_slot(1, crew_mgr)
+	if not buy_aug_res.success:
+		return {"passed": false, "message": "Failed to buy augment: %s" % buy_aug_res.get("error", ""), "assertions": 4}
+	if crew_mgr.augment_inventory.size() != 1:
+		return {"passed": false, "message": "Expected 1 augment in inventory after purchase", "assertions": 5}
+	if shop.gold != 16:
+		return {"passed": false, "message": "Expected 16 gold after purchase, got %d" % shop.gold, "assertions": 6}
+		
+	# Equip Augment to benched unit, then sell unit
+	var unit: UnitInstance = crew_mgr.benched_units[0]
+	var equip_ok = crew_mgr.equip_augment_from_inventory(unit, 2, 0) # Slot 2: Passive
+	if not equip_ok:
+		return {"passed": false, "message": "Failed to equip augment in passive slot", "assertions": 7}
+	if not crew_mgr.augment_inventory.is_empty():
+		return {"passed": false, "message": "Inventory should be empty after equipping", "assertions": 8}
+		
+	# Sell Unit (should return equipped augment to inventory)
+	var refund = shop.sell_unit(unit, crew_mgr)
+	if refund != blitz_res.base_cost:
+		return {"passed": false, "message": "Expected refund %d, got %d" % [blitz_res.base_cost, refund], "assertions": 9}
+	if not crew_mgr.benched_units.is_empty():
+		return {"passed": false, "message": "Benched units should be empty after selling", "assertions": 10}
+	if crew_mgr.augment_inventory.size() != 1:
+		return {"passed": false, "message": "Equipped augment should have returned to inventory upon selling unit", "assertions": 11}
+		
+	# Sell Augment
+	var aug_refund = shop.sell_augment(0, crew_mgr)
+	if aug_refund != 1: # Common augment sell value is 1
+		return {"passed": false, "message": "Expected 1 gold refund for common augment, got %d" % aug_refund, "assertions": 12}
+	if not crew_mgr.augment_inventory.is_empty():
+		return {"passed": false, "message": "Augment inventory should be empty after selling augment", "assertions": 13}
+		
+	return {"passed": true, "assertions": 13}

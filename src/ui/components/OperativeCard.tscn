@@ -1,0 +1,77 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/ui/components/OperativeCard.gd" id="1_card"]
+
+[node name="OperativeCard" type="PanelContainer"]
+custom_minimum_size = Vector2(230, 240)
+offset_right = 230.0
+offset_bottom = 240.0
+mouse_filter = 0
+script = ExtResource("1_card")
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Header" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0, 0.95, 0.83, 1)
+theme_override_font_sizes/font_size = 13
+text = "Blitz"
+
+[node name="RoleBadge" type="Label" parent="VBox/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0.7, 0.9, 1)
+theme_override_font_sizes/font_size = 10
+text = "TANK"
+
+[node name="FactionBadge" type="Label" parent="VBox/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.4, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "RUNNERS"
+
+[node name="StatsLabel" type="Label" parent="VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+theme_override_font_sizes/font_size = 9
+text = "HP: 750 | AD: 38 | AP: 20 | SPD: 60"
+
+[node name="AbilityLabel" type="Label" parent="VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+theme_override_font_sizes/font_size = 9
+text = "Ability: Nitro Rush (Dashes forward)"
+autowrap_mode = 2
+
+[node name="SlotsHeader" type="Label" parent="VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.5, 0.6, 1)
+theme_override_font_sizes/font_size = 9
+text = "AUGMENT SLOTS (3):"
+
+[node name="SlotsContainer" type="VBoxContainer" parent="VBox"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Actions" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+size_flags_vertical = 10
+
+[node name="ToggleFieldBtn" type="Button" parent="VBox/Actions"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 10
+text = "BENCH"
+
+[node name="SellBtn" type="Button" parent="VBox/Actions"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "SELL (2g)"
+
+[connection signal="pressed" from="VBox/Actions/ToggleFieldBtn" to="." method="_on_toggle_field_pressed"]
+[connection signal="pressed" from="VBox/Actions/SellBtn" to="." method="_on_sell_pressed"]

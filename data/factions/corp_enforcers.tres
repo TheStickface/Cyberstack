@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="FactionResource" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/FactionResource.gd" id="1_fac"]
+[ext_resource type="Script" path="res://src/data/resources/SynergyBonus.gd" id="2_syn"]
+
+[sub_resource type="Resource" id="Resource_bonus_2"]
+script = ExtResource("2_syn")
+id = "corp_2"
+name = "Aegis Protocol I"
+description = "Corp Enforcers start combat with +150 Shield and +15 Armor."
+required_count = 2
+stat_modifiers = {
+4: 15.0,
+5: 150.0
+}
+trigger_effect_id = ""
+
+[sub_resource type="Resource" id="Resource_bonus_4"]
+script = ExtResource("2_syn")
+id = "corp_4"
+name = "Aegis Protocol II"
+description = "Corp Enforcers start combat with +350 Shield, +35 Armor, and reflect 10% damage taken."
+required_count = 4
+stat_modifiers = {
+4: 35.0,
+5: 350.0
+}
+trigger_effect_id = "corp_shield_reflect"
+
+[resource]
+script = ExtResource("1_fac")
+faction_type = 2
+id = "corp_enforcers"
+display_name = "Corp Enforcers"
+description = "Heavily armored corporate security personnel equipped with riot shielding and lethal crowd control."
+theme_color = Color(0, 0.70, 0.85, 1)
+threshold_bonuses = [SubResource("Resource_bonus_2"), SubResource("Resource_bonus_4")]

@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="AugmentResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/AugmentResource.gd" id="1_aug"]
+
+[resource]
+script = ExtResource("1_aug")
+id = "rare_kinetic_rail"
+display_name = "Hyper-Velocity Rail Mod"
+description = "Carries Kinetic tag; attacks deal 25 bonus damage and pierce 20% of target armor."
+tier = 1
+slot_type = 2
+tags = Array[int]([4])
+base_cost = 4
+stat_modifiers = {
+1: 32.0,
+8: 0.15
+}
+trigger_type = 2
+trigger_effect_id = "kinetic_armor_pierce"
+trigger_params = {"armor_pierce_pct": 0.20}

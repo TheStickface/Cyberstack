@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="AugmentResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/AugmentResource.gd" id="1_aug"]
+
+[resource]
+script = ExtResource("1_aug")
+id = "rare_viral_siphon"
+display_name = "Corrosive Viral Siphon"
+description = "Bio-weaponized claws that strip organic armor and accelerate physical attacks."
+tier = 1
+slot_type = 2
+tags = Array[int]([1])
+base_cost = 4
+stat_modifiers = {
+1: 22.0,
+3: 0.15
+}
+trigger_type = 0
+trigger_effect_id = ""
+trigger_params = {}

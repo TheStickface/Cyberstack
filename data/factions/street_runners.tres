@@ -1,0 +1,38 @@
+[gd_resource type="Resource" script_class="FactionResource" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/FactionResource.gd" id="1_fac"]
+[ext_resource type="Script" path="res://src/data/resources/SynergyBonus.gd" id="2_syn"]
+
+[sub_resource type="Resource" id="Resource_bonus_2"]
+script = ExtResource("2_syn")
+id = "runners_2"
+name = "Adrenaline Surge I"
+description = "Street Runners gain +20% Attack Speed and +10 Speed."
+required_count = 2
+stat_modifiers = {
+3: 0.20,
+9: 10.0
+}
+trigger_effect_id = ""
+
+[sub_resource type="Resource" id="Resource_bonus_4"]
+script = ExtResource("2_syn")
+id = "runners_4"
+name = "Adrenaline Surge II"
+description = "Street Runners gain +45% Attack Speed and +15% Evasion."
+required_count = 4
+stat_modifiers = {
+3: 0.45,
+9: 25.0,
+10: 0.15
+}
+trigger_effect_id = ""
+
+[resource]
+script = ExtResource("1_fac")
+faction_type = 1
+id = "street_runners"
+display_name = "Street Runners"
+description = "Agile outlaws and courier-ninjas who thrive on raw velocity and hit-and-run tactics."
+theme_color = Color(0, 0.96, 0.83, 1)
+threshold_bonuses = [SubResource("Resource_bonus_2"), SubResource("Resource_bonus_4")]

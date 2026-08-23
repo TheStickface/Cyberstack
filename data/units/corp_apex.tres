@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "corp_apex"
+display_name = "Apex"
+title = "Corporate Heavy Marksman"
+bio = "Elite black-ops sniper armed with an armor-piercing anti-materiel cannon funded by MegaCorp defense grants."
+role = 2
+faction = 2
+base_cost = 4
+base_max_health = 520.0
+base_attack_damage = 85.0
+base_ability_power = 15.0
+base_attack_speed = 0.70
+base_armor = 30.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 90.0
+base_speed = 45.0
+base_crit_chance = 0.20
+base_evasion = 0.05
+ability_name = "Target Locked: Annihilation"
+ability_description = "Charges a railgun beam penetrating all enemies in a line for 250% Attack Damage."
+ability_effect_id = "apex_rail_beam"

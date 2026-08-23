@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "fixer_bruiser"
+display_name = "Chrome Bruiser"
+title = "Underground Enforcer"
+bio = "Heavy underworld muscle equipped with hydraulic piston knuckles that shatter corporate armor."
+role = 0
+faction = 4
+base_cost = 2
+base_max_health = 780.0
+base_attack_damage = 42.0
+base_ability_power = 10.0
+base_attack_speed = 0.80
+base_armor = 28.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 75.0
+base_speed = 45.0
+base_crit_chance = 0.10
+base_evasion = 0.05
+ability_name = "Piston Slam"
+ability_description = "Strikes the ground with hydraulic force, stunning the target for 1.5s and dealing 100 Physical Damage."
+ability_effect_id = "bruiser_piston_slam"

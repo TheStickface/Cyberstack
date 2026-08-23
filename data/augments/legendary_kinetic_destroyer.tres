@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="AugmentResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/AugmentResource.gd" id="1_aug"]
+
+[resource]
+script = ExtResource("1_aug")
+id = "legendary_kinetic_destroyer"
+display_name = "Singularity Rail Destroyer"
+description = "Heavy antimatter magnetic cannon delivering catastrophic impact that bursts to nearby enemies on kill."
+tier = 2
+slot_type = 2
+tags = Array[int]([4])
+base_cost = 7
+stat_modifiers = {
+1: 45.0,
+8: 0.15
+}
+trigger_type = 4
+trigger_effect_id = "kinetic_destroyer"
+trigger_params = {}

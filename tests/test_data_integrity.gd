@@ -31,31 +31,33 @@ func test_all_tags_loaded() -> Dictionary:
 
 func test_unit_queries() -> Dictionary:
 	var all_units = repo.get_all_units()
-	if all_units.size() < 5:
-		return {"passed": false, "message": "Expected at least 5 units, got %d" % all_units.size(), "assertions": 1}
+	if all_units.size() != 12:
+		return {"passed": false, "message": "Expected 12 total units, got %d" % all_units.size(), "assertions": 1}
 		
-	var runners = repo.get_units_by_faction(Enums.Faction.STREET_RUNNERS)
-	if runners.size() < 2:
-		return {"passed": false, "message": "Expected at least 2 Street Runners, got %d" % runners.size(), "assertions": 2}
+	for f in [Enums.Faction.STREET_RUNNERS, Enums.Faction.CORP_ENFORCERS, Enums.Faction.ROGUE_AIS, Enums.Faction.FIXERS]:
+		var fac_units = repo.get_units_by_faction(f)
+		if fac_units.size() != 3:
+			return {"passed": false, "message": "Expected 3 units for faction %d, got %d" % [f, fac_units.size()], "assertions": 2}
 		
 	var tanks = repo.get_units_by_role(Enums.UnitRole.TANK)
-	if tanks.size() < 2:
-		return {"passed": false, "message": "Expected at least 2 Tanks, got %d" % tanks.size(), "assertions": 3}
+	if tanks.size() != 4:
+		return {"passed": false, "message": "Expected 4 Tanks (1 per faction), got %d" % tanks.size(), "assertions": 3}
 		
 	return {"passed": true, "assertions": 3}
 
 func test_augment_queries() -> Dictionary:
 	var all_augments = repo.get_all_augments()
-	if all_augments.size() < 7:
-		return {"passed": false, "message": "Expected at least 7 augments, got %d" % all_augments.size(), "assertions": 1}
+	if all_augments.size() != 20:
+		return {"passed": false, "message": "Expected 20 total augments, got %d" % all_augments.size(), "assertions": 1}
 		
-	var viral_augments = repo.get_augments_by_tag(Enums.AugmentTag.VIRAL)
-	if viral_augments.size() < 2:
-		return {"passed": false, "message": "Expected at least 2 Viral augments, got %d" % viral_augments.size(), "assertions": 2}
+	for t in [Enums.AugmentTag.VIRAL, Enums.AugmentTag.THERMAL, Enums.AugmentTag.NEURAL, Enums.AugmentTag.KINETIC]:
+		var tag_augs = repo.get_augments_by_tag(t)
+		if tag_augs.size() != 5:
+			return {"passed": false, "message": "Expected 5 augments for tag %d, got %d" % [t, tag_augs.size()], "assertions": 2}
 		
-	var legendary = repo.get_augments_by_tier(Enums.AugmentTier.LEGENDARY)
-	if legendary.is_empty():
-		return {"passed": false, "message": "Expected at least 1 Legendary augment", "assertions": 3}
+	var legendaries = repo.get_augments_by_tier(Enums.AugmentTier.LEGENDARY)
+	if legendaries.size() != 4:
+		return {"passed": false, "message": "Expected 4 Legendary augments (1 per tag), got %d" % legendaries.size(), "assertions": 3}
 
 	return {"passed": true, "assertions": 3}
 

@@ -1,0 +1,9 @@
+# Godot 4+ .gitignore
+.godot/
+*.translation
+*.import
+
+# OS generated
+.DS_Store
+Thumbs.db
+.superpowers/

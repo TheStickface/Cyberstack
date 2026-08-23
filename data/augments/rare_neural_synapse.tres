@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="AugmentResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/AugmentResource.gd" id="1_aug"]
+
+[resource]
+script = ExtResource("1_aug")
+id = "rare_neural_synapse"
+display_name = "Hyper-Synaptic Relay"
+description = "Accelerates cranial calculations, drastically boosting spellpower and attack speed."
+tier = 1
+slot_type = 1
+tags = Array[int]([3])
+base_cost = 4
+stat_modifiers = {
+2: 35.0,
+3: 0.15
+}
+trigger_type = 0
+trigger_effect_id = ""
+trigger_params = {}

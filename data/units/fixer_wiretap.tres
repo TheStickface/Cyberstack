@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "fixer_wiretap"
+display_name = "Wiretap"
+title = "Black-Market Signal Hijacker"
+bio = "Specializes in intercepting corporate transaction packets and siphon-draining enemy cybernetics."
+role = 1
+faction = 4
+base_cost = 3
+base_max_health = 500.0
+base_attack_damage = 32.0
+base_ability_power = 50.0
+base_attack_speed = 1.05
+base_armor = 15.0
+base_shield = 0.0
+base_starting_mana = 20.0
+base_max_mana = 70.0
+base_speed = 65.0
+base_crit_chance = 0.10
+base_evasion = 0.12
+ability_name = "Signal Siphon"
+ability_description = "Siphons 30 mana from the highest mana enemy, dealing 110 AP damage and generating 1 bonus credit on kill."
+ability_effect_id = "wiretap_siphon"

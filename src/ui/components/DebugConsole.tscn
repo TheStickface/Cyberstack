@@ -1,0 +1,98 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/ui/components/DebugConsoleUI.gd" id="1_ui"]
+
+[node name="DebugConsole" type="CanvasLayer"]
+layer = 120
+script = ExtResource("1_ui")
+
+[node name="ConsolePanel" type="PanelContainer" parent="."]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 320.0
+grow_horizontal = 2
+
+[node name="VBox" type="VBoxContainer" parent="ConsolePanel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="HeaderBar" type="HBoxContainer" parent="ConsolePanel/VBox"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="ConsolePanel/VBox/HeaderBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0, 0.95, 0.83, 1)
+theme_override_font_sizes/font_size = 11
+text = "CYBERSTACK // DEVELOPER DEBUG TERMINAL [~ / F12 to close]"
+
+[node name="QuickButtons" type="HBoxContainer" parent="ConsolePanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="QuickGold" type="Button" parent="ConsolePanel/VBox/QuickButtons"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "+15 Credits"
+
+[node name="QuickD2" type="Button" parent="ConsolePanel/VBox/QuickButtons"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Jump D2"
+
+[node name="QuickD4" type="Button" parent="ConsolePanel/VBox/QuickButtons"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Jump D4 (Boss)"
+
+[node name="QuickUnlock" type="Button" parent="ConsolePanel/VBox/QuickButtons"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Unlock All"
+
+[node name="QuickCRT" type="Button" parent="ConsolePanel/VBox/QuickButtons"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Toggle CRT"
+
+[node name="QuickInspect" type="Button" parent="ConsolePanel/VBox/QuickButtons"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "Inspect Crew"
+
+[node name="OutputLog" type="RichTextLabel" parent="ConsolePanel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 10
+bbcode_enabled = true
+scroll_following = true
+
+[node name="InputBar" type="HBoxContainer" parent="ConsolePanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Prompt" type="Label" parent="ConsolePanel/VBox/InputBar"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.2, 1, 1)
+text = "cmd>"
+
+[node name="CmdInput" type="LineEdit" parent="ConsolePanel/VBox/InputBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+placeholder_text = "Type command here (e.g. /gold 20, /district 3, /spawn runner_blitz)..."
+
+[node name="ExecBtn" type="Button" parent="ConsolePanel/VBox/InputBar"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "EXECUTE"
+
+[connection signal="pressed" from="ConsolePanel/VBox/QuickButtons/QuickGold" to="." method="_on_quick_gold_pressed"]
+[connection signal="pressed" from="ConsolePanel/VBox/QuickButtons/QuickD2" to="." method="_on_quick_d2_pressed"]
+[connection signal="pressed" from="ConsolePanel/VBox/QuickButtons/QuickD4" to="." method="_on_quick_d4_pressed"]
+[connection signal="pressed" from="ConsolePanel/VBox/QuickButtons/QuickUnlock" to="." method="_on_quick_unlock_pressed"]
+[connection signal="pressed" from="ConsolePanel/VBox/QuickButtons/QuickCRT" to="." method="_on_quick_crt_pressed"]
+[connection signal="pressed" from="ConsolePanel/VBox/QuickButtons/QuickInspect" to="." method="_on_quick_inspect_pressed"]
+[connection signal="text_submitted" from="ConsolePanel/VBox/InputBar/CmdInput" to="." method="_on_cmd_input_submitted"]
+[connection signal="pressed" from="ConsolePanel/VBox/InputBar/ExecBtn" to="." method="_on_exec_btn_pressed"]

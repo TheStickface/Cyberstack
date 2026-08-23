@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="NarrativeEventResource" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/NarrativeEventResource.gd" id="1_ev"]
+[ext_resource type="Script" path="res://src/data/resources/EventChoiceResource.gd" id="2_choice"]
+[ext_resource type="Resource" path="res://data/augments/rare_kinetic_overdrive.tres" id="3_aug"]
+
+[sub_resource type="Resource" id="Resource_chop_1"]
+script = ExtResource("2_choice")
+text = "Commission custom welded actuator (-4 Credits)"
+outcome_description = "The mechanic welds high-grade hydraulic pistons, rewarding a Rare Piston Overdrive Actuator."
+required_gold = 4
+required_role = 4
+required_faction = 0
+reward_type = 1
+reward_gold = 0
+reward_augment = ExtResource("3_aug")
+penalty_gold = 0
+penalty_health_cost = 0.0
+triggers_combat = false
+
+[sub_resource type="Resource" id="Resource_chop_2"]
+script = ExtResource("2_choice")
+text = "Barter scrap components [Requires FIXER]"
+outcome_description = "Your Fixer negotiates a trade using salvaged circuit boards, obtaining the Rare augment for 0 Credits."
+required_gold = 0
+required_role = 3
+required_faction = 0
+reward_type = 1
+reward_gold = 0
+reward_augment = ExtResource("3_aug")
+penalty_gold = 0
+penalty_health_cost = 0.0
+triggers_combat = false
+
+[resource]
+script = ExtResource("1_ev")
+id = "event_chop_shop_salvage"
+title = "Scrap Yard Overdrive"
+story_text = "Sparks shower from an oxy-plasma torch as an underground chop-shop mechanic strips down decommissioned corporate enforcer mechs into custom aftermarket weapon systems."
+theme_color = Color(1, 0.4, 0, 1)
+choices = [SubResource("Resource_chop_1"), SubResource("Resource_chop_2")]

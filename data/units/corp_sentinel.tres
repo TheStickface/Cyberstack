@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "corp_sentinel"
+display_name = "Sentinel-09"
+title = "Heavy Arcology Enforcer"
+bio = "Exoskeleton-clad frontline shock unit equipped with portable fortress barriers."
+role = 0
+faction = 2
+base_cost = 3
+base_max_health = 760.0
+base_attack_damage = 32.0
+base_ability_power = 10.0
+base_attack_speed = 0.65
+base_armor = 26.0
+base_shield = 30.0
+base_starting_mana = 0.0
+base_max_mana = 90.0
+base_speed = 40.0
+base_crit_chance = 0.0
+base_evasion = 0.0
+ability_name = "Bulwark Lockdown"
+ability_description = "Plants heavy energy shield, reducing incoming crew damage by 25% for 5s."
+ability_effect_id = "sentinel_bulwark_lockdown"

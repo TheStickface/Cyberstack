@@ -50,7 +50,7 @@ const ROLE_SLOT_SCHEMAS: Dictionary = {
 }
 
 # Economy & Shop Settings
-const DEFAULT_STARTING_GOLD: int = 10
+const DEFAULT_STARTING_GOLD: int = 12
 const BASE_REROLL_COST: int = 2
 const SHOP_SLOTS_COUNT: int = 4
 

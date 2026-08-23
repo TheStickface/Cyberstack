@@ -1,0 +1,124 @@
+class_name DistrictMapScreen
+extends Control
+
+## Visual overview map displaying district node progression and routing encounters
+
+const DistrictNodeWidgetScene = preload("res://src/ui/components/DistrictNodeWidget.tscn")
+const DataRepoScript = preload("res://src/systems/DataRepository.gd")
+
+var repo: Object = null
+var run_mgr: RunManager = null
+
+@onready var district_title: Label = $VBox/TopBar/DistrictTitle
+@onready var crew_count_label: Label = $VBox/TopBar/CrewCountLabel
+@onready var gold_label: Label = $VBox/TopBar/GoldLabel
+@onready var nodes_container: HBoxContainer = $VBox/CenterArea/MapScroll/NodesContainer
+@onready var action_btn: Button = $VBox/BottomBar/ActionBtn
+@onready var status_label: Label = $VBox/BottomBar/StatusLabel
+@onready var event_modal: EventModal = $EventModal
+
+func _ready() -> void:
+	repo = DataRepoScript.new()
+	repo.load_all_data("res://data")
+	
+	run_mgr = RunManager.new(repo)
+	run_mgr.start_new_run()
+	
+	if event_modal:
+		event_modal.visible = false
+		event_modal.event_resolved.connect(_on_event_resolved)
+		
+	_refresh_map()
+
+func _refresh_map() -> void:
+	_refresh_header()
+	_refresh_nodes()
+	_refresh_action_button()
+
+func _refresh_header() -> void:
+	if district_title and run_mgr.current_district:
+		district_title.text = "DISTRICT %d: %s" % [run_mgr.current_district_index, run_mgr.current_district.display_name.to_upper()]
+	if crew_count_label:
+		crew_count_label.text = "CREW: %d / %d" % [run_mgr.crew_mgr.fielded_units.size(), run_mgr.crew_mgr.get_max_field_units()]
+	if gold_label:
+		gold_label.text = "CREDITS: %d" % run_mgr.shop_mgr.gold
+
+func _refresh_nodes() -> void:
+	if not nodes_container:
+		return
+		
+	for c in nodes_container.get_children():
+		c.queue_free()
+		
+	for node in run_mgr.district_nodes:
+		var widget: DistrictNodeWidget = DistrictNodeWidgetScene.instantiate()
+		nodes_container.add_child(widget)
+		widget.setup(
+			node["index"],
+			node["type"],
+			node["visited"],
+			node["current"]
+		)
+		widget.node_clicked.connect(_on_node_clicked)
+
+func _refresh_action_button() -> void:
+	if not action_btn:
+		return
+		
+	var enc_type = run_mgr.get_current_encounter_type()
+	match enc_type:
+		Enums.EncounterType.FIGHT:
+			action_btn.text = "ENTER COMBAT [⚔ FIGHT]"
+			action_btn.add_theme_color_override("font_color", Color(1, 0.2, 0.4))
+		Enums.EncounterType.SHOP:
+			action_btn.text = "OPEN SHOP / PREP PHASE [$]"
+			action_btn.add_theme_color_override("font_color", Color(1, 0.85, 0))
+		Enums.EncounterType.EVENT:
+			action_btn.text = "INVESTIGATE SIGNAL [? EVENT]"
+			action_btn.add_theme_color_override("font_color", Color(0, 0.95, 0.83))
+		Enums.EncounterType.BOSS:
+			action_btn.text = "ENGAGE DISTRICT BOSS [★ BOSS]"
+			action_btn.add_theme_color_override("font_color", Color(1, 0.1, 0.2))
+
+func _on_action_btn_pressed() -> void:
+	var enc_type = run_mgr.get_current_encounter_type()
+	match enc_type:
+		Enums.EncounterType.EVENT:
+			var random_ev = repo.get_random_event()
+			if random_ev and event_modal:
+				event_modal.setup(random_ev, run_mgr.shop_mgr, run_mgr.crew_mgr)
+			else:
+				# Fallback complete
+				_complete_current_encounter()
+		Enums.EncounterType.FIGHT, Enums.EncounterType.BOSS:
+			# Mock / trigger encounter completion
+			_complete_current_encounter(true)
+		Enums.EncounterType.SHOP:
+			# Advance shop encounter
+			_complete_current_encounter(true)
+
+func _on_event_resolved(outcome: Dictionary) -> void:
+	if outcome.get("combat_triggered", false):
+		status_label.text = "Event triggered combat encounter!"
+	else:
+		status_label.text = "Event concluded. Moving forward."
+	_complete_current_encounter(true)
+
+func _complete_current_encounter(victory: bool = true) -> void:
+	var result = run_mgr.complete_encounter(victory)
+	var status = result.get("status", "")
+	
+	if status == "district_advanced":
+		status_label.text = "DISTRICT CLEARED! Advanced to District %d. Crew cap increased to %d." % [
+			result.get("new_district", 1),
+			result.get("new_crew_cap", 2)
+		]
+	elif status == "victory":
+		status_label.text = "VICTORY! All 4 city districts conquered!"
+	elif status == "game_over":
+		status_label.text = "MISSION FAILED. Run terminated."
+		
+	_refresh_map()
+
+func _on_node_clicked(node_idx: int) -> void:
+	pass

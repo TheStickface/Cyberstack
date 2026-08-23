@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="AugmentResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/AugmentResource.gd" id="1_aug"]
+
+[resource]
+script = ExtResource("1_aug")
+id = "rare_neural_daemon"
+display_name = "Leech Daemon Subroutine"
+description = "Autonomous parasitic process that drains 15 mana from the enemy on attack."
+tier = 1
+slot_type = 1
+tags = Array[int]([3])
+base_cost = 4
+stat_modifiers = {
+2: 30.0,
+6: 20.0
+}
+trigger_type = 2
+trigger_effect_id = "neural_daemon"
+trigger_params = {}

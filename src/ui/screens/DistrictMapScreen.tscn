@@ -1,0 +1,105 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/ui/screens/DistrictMapScreen.gd" id="1_map"]
+[ext_resource type="PackedScene" path="res://src/ui/components/EventModal.tscn" id="2_event"]
+
+[node name="DistrictMapScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_map")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.02, 0.015, 0.06, 1)
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 20.0
+offset_right = -24.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+
+[node name="TopBar" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="DistrictTitle" type="Label" parent="VBox/TopBar"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0.95, 0.83, 1)
+theme_override_font_sizes/font_size = 18
+text = "DISTRICT 1: SLUM MARKET"
+
+[node name="CrewCountLabel" type="Label" parent="VBox/TopBar"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.3, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "CREW: 1 / 2"
+
+[node name="GoldLabel" type="Label" parent="VBox/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.85, 0, 1)
+theme_override_font_sizes/font_size = 14
+text = "CREDITS: 10"
+horizontal_alignment = 2
+
+[node name="CenterArea" type="VBoxContainer" parent="VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
+
+[node name="MapLabel" type="Label" parent="VBox/CenterArea"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+theme_override_font_sizes/font_size = 12
+text = "DISTRICT ENCOUNTER SEQUENCE:"
+
+[node name="MapScroll" type="ScrollContainer" parent="VBox/CenterArea"]
+custom_minimum_size = Vector2(0, 160)
+layout_mode = 2
+vertical_scroll_mode = 0
+
+[node name="NodesContainer" type="HBoxContainer" parent="VBox/CenterArea/MapScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="BottomBar" type="VBoxContainer" parent="VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ActionBtn" type="Button" parent="VBox/BottomBar"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "ENTER COMBAT [⚔ FIGHT]"
+
+[node name="StatusLabel" type="Label" parent="VBox/BottomBar"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 11
+text = "Select action to proceed through the district."
+horizontal_alignment = 1
+
+[node name="EventModal" parent="." instance=ExtResource("2_event")]
+visible = false
+layout_mode = 1
+
+[connection signal="pressed" from="VBox/BottomBar/ActionBtn" to="." method="_on_action_btn_pressed"]

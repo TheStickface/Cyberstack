@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="TagResource" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/TagResource.gd" id="1_tag"]
+[ext_resource type="Script" path="res://src/data/resources/SynergyBonus.gd" id="2_syn"]
+
+[sub_resource type="Resource" id="Resource_thermal_2"]
+script = ExtResource("2_syn")
+id = "thermal_chain_2"
+name = "Overheat I"
+description = "Attacks apply Thermal stacks. At 5 stacks, deal 40 bonus burst damage."
+required_count = 2
+stat_modifiers = {
+1: 5.0
+}
+trigger_effect_id = "thermal_burn_1"
+
+[sub_resource type="Resource" id="Resource_thermal_4"]
+script = ExtResource("2_syn")
+id = "thermal_chain_4"
+name = "Meltdown II"
+description = "Thermal explosions shred 25% of target's Armor for 5 seconds."
+required_count = 4
+stat_modifiers = {
+1: 15.0
+}
+trigger_effect_id = "thermal_meltdown_2"
+
+[resource]
+script = ExtResource("1_tag")
+tag_type = 2
+id = "thermal"
+display_name = "Thermal"
+description = "Superheated plasma channels that burn armor and trigger explosive heat detonations."
+theme_color = Color(1, 0.35, 0, 1)
+chain_bonuses = [SubResource("Resource_thermal_2"), SubResource("Resource_thermal_4")]

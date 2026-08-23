@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="AugmentResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/AugmentResource.gd" id="1_aug"]
+
+[resource]
+script = ExtResource("1_aug")
+id = "rare_thermal_exhaust"
+display_name = "Thermal Exhaust Vents"
+description = "Vents excess heat into a defensive plasma cloud, providing barrier shielding and armor."
+tier = 1
+slot_type = 0
+tags = Array[int]([2])
+base_cost = 4
+stat_modifiers = {
+4: 10.0,
+5: 150.0
+}
+trigger_type = 0
+trigger_effect_id = ""
+trigger_params = {}

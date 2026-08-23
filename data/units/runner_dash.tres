@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "runner_dash"
+display_name = "Dash"
+title = "Grid Sprinter"
+bio = "Hyper-overclocked courier specialized in breaking enemy network ICE at lightning velocities."
+role = 1
+faction = 1
+base_cost = 3
+base_max_health = 480.0
+base_attack_damage = 30.0
+base_ability_power = 45.0
+base_attack_speed = 1.25
+base_armor = 10.0
+base_shield = 0.0
+base_starting_mana = 20.0
+base_max_mana = 60.0
+base_speed = 90.0
+base_crit_chance = 0.15
+base_evasion = 0.20
+ability_name = "Overclock Protocol"
+ability_description = "Surges with electrical current, delivering a shockwave dealing 120 AP damage to 2 nearby enemies."
+ability_effect_id = "dash_overclock"

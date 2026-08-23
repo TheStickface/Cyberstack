@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "ai_glitch"
+display_name = "GLITCH.exe"
+title = "Autonomous Intrusion Daemon"
+bio = "A rogue cyberwarfare subprocess that broke free from an orbital server bank."
+role = 1
+faction = 3
+base_cost = 3
+base_max_health = 520.0
+base_attack_damage = 34.0
+base_ability_power = 65.0
+base_attack_speed = 0.95
+base_armor = 12.0
+base_shield = 0.0
+base_starting_mana = 30.0
+base_max_mana = 50.0
+base_speed = 55.0
+base_crit_chance = 0.05
+base_evasion = 0.05
+ability_name = "Buffer Overflow"
+ability_description = "Detonates digital logic bomb dealing 180 AP damage and draining 30 mana from targets."
+ability_effect_id = "glitch_buffer_overflow"

@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "ai_cipher"
+display_name = "CIPHER"
+title = "Quantum Vector Daemon"
+bio = "An anomalous calculation loop that calculates trajectory vectors and fires devastating concentrated laser pulses."
+role = 2
+faction = 3
+base_cost = 4
+base_max_health = 440.0
+base_attack_damage = 65.0
+base_ability_power = 60.0
+base_attack_speed = 0.95
+base_armor = 10.0
+base_shield = 0.0
+base_starting_mana = 25.0
+base_max_mana = 65.0
+base_speed = 60.0
+base_crit_chance = 0.18
+base_evasion = 0.15
+ability_name = "Quantum Cascade"
+ability_description = "Fires 3 laser bursts that prioritize the lowest-health enemy for 140 AP damage each."
+ability_effect_id = "cipher_quantum_cascade"

@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="TagResource" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/TagResource.gd" id="1_tag"]
+[ext_resource type="Script" path="res://src/data/resources/SynergyBonus.gd" id="2_syn"]
+
+[sub_resource type="Resource" id="Resource_neural_2"]
+script = ExtResource("2_syn")
+id = "neural_chain_2"
+name = "Synaptic Acceleration I"
+description = "Operatives gain +15 Ability Power and generate +2 Mana per basic attack."
+required_count = 2
+stat_modifiers = {
+2: 15.0
+}
+trigger_effect_id = "neural_mana_gen_1"
+
+[sub_resource type="Resource" id="Resource_neural_4"]
+script = ExtResource("2_syn")
+id = "neural_chain_4"
+name = "Synaptic Acceleration II"
+description = "Signature abilities cast 25% faster and reduce remaining cooldowns/mana cost."
+required_count = 4
+stat_modifiers = {
+2: 35.0
+}
+trigger_effect_id = "neural_overdrive_2"
+
+[resource]
+script = ExtResource("1_tag")
+tag_type = 3
+id = "neural"
+display_name = "Neural"
+description = "Brain-computer interface links accelerating psychic throughput and mana generation."
+theme_color = Color(0.5, 0.2, 0.95, 1)
+chain_bonuses = [SubResource("Resource_neural_2"), SubResource("Resource_neural_4")]

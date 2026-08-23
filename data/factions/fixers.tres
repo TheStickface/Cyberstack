@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="FactionResource" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/FactionResource.gd" id="1_fac"]
+[ext_resource type="Script" path="res://src/data/resources/SynergyBonus.gd" id="2_syn"]
+
+[sub_resource type="Resource" id="Resource_bonus_2"]
+script = ExtResource("2_syn")
+id = "fixers_2"
+name = "Underworld Network I"
+description = "Fixers grant the crew +10% Attack Damage and gain +1 bonus gold after combat."
+required_count = 2
+stat_modifiers = {
+1: 10.0
+}
+trigger_effect_id = "fixer_bonus_gold_1"
+
+[sub_resource type="Resource" id="Resource_bonus_4"]
+script = ExtResource("2_syn")
+id = "fixers_4"
+name = "Underworld Network II"
+description = "Fixers grant the crew +25% Attack Damage, +2 bonus gold, and free shop reroll every district."
+required_count = 4
+stat_modifiers = {
+1: 25.0
+}
+trigger_effect_id = "fixer_bonus_gold_2"
+
+[resource]
+script = ExtResource("1_fac")
+faction_type = 4
+id = "fixers"
+display_name = "Fixers"
+description = "Connected information brokers and black-market dealmakers who manipulate battlefield economy."
+theme_color = Color(1, 0.75, 0, 1)
+threshold_bonuses = [SubResource("Resource_bonus_2"), SubResource("Resource_bonus_4")]

@@ -1,0 +1,65 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/ui/components/EventModal.gd" id="1_modal"]
+
+[node name="EventModal" type="PanelContainer"]
+custom_minimum_size = Vector2(480, 320)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -240.0
+offset_top = -160.0
+offset_right = 240.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+script = ExtResource("1_modal")
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Header" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0, 0.95, 0.83, 1)
+theme_override_font_sizes/font_size = 14
+text = "CORRUPTED DATA COURIER"
+
+[node name="StoryLabel" type="Label" parent="VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+theme_override_font_sizes/font_size = 11
+text = "In a steam-vented alleyway, you find a wounded street courier clutching a smoking cyberdeck."
+autowrap_mode = 2
+
+[node name="ChoicesContainer" type="VBoxContainer" parent="VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="OutcomeContainer" type="VBoxContainer" parent="VBox"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="OutcomeLabel" type="Label" parent="VBox/OutcomeContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0.95, 0.83, 1)
+theme_override_font_sizes/font_size = 11
+text = "The courier hands over the encrypted cache."
+autowrap_mode = 2
+
+[node name="ContinueBtn" type="Button" parent="VBox/OutcomeContainer"]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "CONTINUE RUN"
+
+[connection signal="pressed" from="VBox/OutcomeContainer/ContinueBtn" to="." method="_on_continue_pressed"]

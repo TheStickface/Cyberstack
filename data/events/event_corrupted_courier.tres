@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="NarrativeEventResource" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/NarrativeEventResource.gd" id="1_ev"]
+[ext_resource type="Script" path="res://src/data/resources/EventChoiceResource.gd" id="2_choice"]
+[ext_resource type="Resource" path="res://data/augments/rare_viral_cascade.tres" id="3_aug"]
+
+[sub_resource type="Resource" id="Resource_choice_1"]
+script = ExtResource("2_choice")
+text = "Purchase decrypted drive (-4 Gold)"
+outcome_description = "The courier hands over the encrypted cache containing a Rare Viral Cascade Overdrive augment."
+required_gold = 4
+required_role = 4
+required_faction = 0
+reward_type = 1
+reward_gold = 0
+reward_augment = ExtResource("3_aug")
+penalty_gold = 0
+penalty_health_cost = 0.0
+triggers_combat = false
+
+[sub_resource type="Resource" id="Resource_choice_2"]
+script = ExtResource("2_choice")
+text = "Hack credentials bypass [Requires HACKER]"
+outcome_description = "Your Hacker effortlessly overrides the security locks, extracting the Rare augment and 3 bonus gold."
+required_gold = 0
+required_role = 1
+required_faction = 0
+reward_type = 1
+reward_gold = 3
+reward_augment = ExtResource("3_aug")
+penalty_gold = 0
+penalty_health_cost = 0.0
+triggers_combat = false
+
+[resource]
+script = ExtResource("1_ev")
+id = "event_corrupted_courier"
+title = "Corrupted Data Courier"
+story_text = "In a steam-vented alleyway, you find a wounded street courier clutching a smoking cyberdeck. Corporate bounty hunters are closing in, and the courier offers to offload hot contraband."
+theme_color = Color(0, 0.95, 0.83, 1)
+choices = [SubResource("Resource_choice_1"), SubResource("Resource_choice_2")]

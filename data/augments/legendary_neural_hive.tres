@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="AugmentResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/AugmentResource.gd" id="1_aug"]
+
+[resource]
+script = ExtResource("1_aug")
+id = "legendary_neural_hive"
+display_name = "Neural Singularity Daemon"
+description = "Carries Neural tag; all operatives share mana pools and triggers execute across the entire crew simultaneously."
+tier = 2
+slot_type = 1
+tags = Array[int]([3])
+base_cost = 7
+stat_modifiers = {
+2: 50.0,
+6: 30.0
+}
+trigger_type = 5
+trigger_effect_id = "neural_singularity_synchronize"
+trigger_params = {"shared_mana_pct": 0.35}

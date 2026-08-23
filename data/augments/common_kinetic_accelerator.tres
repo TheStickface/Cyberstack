@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="AugmentResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/AugmentResource.gd" id="1_aug"]
+
+[resource]
+script = ExtResource("1_aug")
+id = "common_kinetic_accelerator"
+display_name = "Kinetic Barrel Accelerator"
+description = "Magnetic induction coil that increases ballistic muzzle velocity."
+tier = 0
+slot_type = 2
+tags = Array[int]([4])
+base_cost = 2
+stat_modifiers = {
+1: 12.0
+}
+trigger_type = 0
+trigger_effect_id = ""
+trigger_params = {}

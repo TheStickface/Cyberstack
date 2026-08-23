@@ -1,0 +1,129 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/ui/screens/CombatMockArena.gd" id="1_arena"]
+
+[node name="CombatMockArena" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_arena")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.02, 0.015, 0.06, 1)
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 16.0
+offset_right = -20.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="TopBar" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="DistrictLabel" type="Label" parent="VBox/TopBar"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0.95, 0.83, 1)
+theme_override_font_sizes/font_size = 14
+text = "DISTRICT 1 COMBAT ARENA"
+
+[node name="CombatTypeLabel" type="Label" parent="VBox/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.2, 0.4, 1)
+theme_override_font_sizes/font_size = 14
+text = "⚔ SECURITY PATROL CLASH"
+horizontal_alignment = 2
+
+[node name="Arena" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 24
+
+[node name="PlayerSide" type="VBoxContainer" parent="VBox/Arena"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="PlayerHeader" type="Label" parent="VBox/Arena/PlayerSide"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0.95, 0.83, 1)
+theme_override_font_sizes/font_size = 12
+text = "PLAYER CREW (AUTO-ATTACK & MANA CAST)"
+
+[node name="PlayerContainer" type="HBoxContainer" parent="VBox/Arena/PlayerSide"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="EnemySide" type="VBoxContainer" parent="VBox/Arena"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="EnemyHeader" type="Label" parent="VBox/Arena/EnemySide"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.2, 0.4, 1)
+theme_override_font_sizes/font_size = 12
+text = "HOSTILE SQUAD"
+horizontal_alignment = 2
+
+[node name="EnemyContainer" type="HBoxContainer" parent="VBox/Arena/EnemySide"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+alignment = 2
+
+[node name="BottomBar" type="VBoxContainer" parent="VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CombatLog" type="RichTextLabel" parent="VBox/BottomBar"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 10
+bbcode_enabled = true
+text = "[color=#00f5d4][SYSTEM][/color] Combat subroutines active..."
+
+[node name="Controls" type="HBoxContainer" parent="VBox/BottomBar"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ResolveVictoryBtn" type="Button" parent="VBox/BottomBar/Controls"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0, 0.95, 0.83, 1)
+theme_override_font_sizes/font_size = 12
+text = "RESOLVE COMBAT (VICTORY)"
+
+[node name="ResolveDefeatBtn" type="Button" parent="VBox/BottomBar/Controls"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.2, 0.3, 1)
+theme_override_font_sizes/font_size = 12
+text = "RESOLVE COMBAT (DEFEAT)"
+
+[node name="AutoResolveTimer" type="Timer" parent="."]
+wait_time = 5.0
+one_shot = true
+
+[connection signal="pressed" from="VBox/BottomBar/Controls/ResolveVictoryBtn" to="." method="_on_resolve_victory_pressed"]
+[connection signal="pressed" from="VBox/BottomBar/Controls/ResolveDefeatBtn" to="." method="_on_resolve_defeat_pressed"]

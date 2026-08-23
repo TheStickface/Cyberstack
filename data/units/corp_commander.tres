@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "corp_commander"
+display_name = "Commander Vance"
+title = "Enforcer Tactical Coordinator"
+bio = "Field officer orchestrating riot barriers and directing squad suppression fire with corporate efficiency."
+role = 3
+faction = 2
+base_cost = 4
+base_max_health = 600.0
+base_attack_damage = 40.0
+base_ability_power = 30.0
+base_attack_speed = 0.90
+base_armor = 28.0
+base_shield = 60.0
+base_starting_mana = 30.0
+base_max_mana = 80.0
+base_speed = 50.0
+base_crit_chance = 0.10
+base_evasion = 0.05
+ability_name = "Defensive Perimeter"
+ability_description = "Broadcasts tactical telemetry, deploying a 200 HP barrier to all adjacent allies."
+ability_effect_id = "vance_defensive_perimeter"

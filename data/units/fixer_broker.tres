@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "fixer_broker"
+display_name = "Madame Vane"
+title = "High-Rise Information Dealer"
+bio = "Arms broker and combat coordinator who optimizes operative weapon harmonics."
+role = 3
+faction = 4
+base_cost = 4
+base_max_health = 580.0
+base_attack_damage = 42.0
+base_ability_power = 45.0
+base_attack_speed = 0.80
+base_armor = 15.0
+base_shield = 0.0
+base_starting_mana = 10.0
+base_max_mana = 75.0
+base_speed = 48.0
+base_crit_chance = 0.10
+base_evasion = 0.05
+ability_name = "Black Market Surplus"
+ability_description = "Supplies the lowest health ally with 250 shield and hypercharges highest DPS ally with +40% attack speed."
+ability_effect_id = "fixer_black_market_surplus"

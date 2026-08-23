@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "runner_blitz"
+display_name = "Blitz"
+title = "Frontline Alley-Vanguard"
+bio = "A modified street racer with reinforced subdermal plating who charges headfirst into corporate security."
+role = 0
+faction = 1
+base_cost = 2
+base_max_health = 750.0
+base_attack_damage = 38.0
+base_ability_power = 20.0
+base_attack_speed = 0.85
+base_armor = 25.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 80.0
+base_speed = 60.0
+base_crit_chance = 0.05
+base_evasion = 0.10
+ability_name = "Nitro Rush"
+ability_description = "Dashes forward, taunting nearby enemies and granting a 200 HP kinetic shield for 4s."
+ability_effect_id = "blitz_nitro_rush"

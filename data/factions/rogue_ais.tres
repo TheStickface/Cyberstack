@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="FactionResource" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/FactionResource.gd" id="1_fac"]
+[ext_resource type="Script" path="res://src/data/resources/SynergyBonus.gd" id="2_syn"]
+
+[sub_resource type="Resource" id="Resource_bonus_2"]
+script = ExtResource("2_syn")
+id = "ai_2"
+name = "Subnet Sync I"
+description = "Rogue AIs start with +20 Starting Mana and gain +15 Ability Power."
+required_count = 2
+stat_modifiers = {
+2: 15.0,
+6: 20.0
+}
+trigger_effect_id = ""
+
+[sub_resource type="Resource" id="Resource_bonus_4"]
+script = ExtResource("2_syn")
+id = "ai_4"
+name = "Subnet Sync II"
+description = "Rogue AIs gain +40 Ability Power and restore 15 Mana to an ally upon casting signature ability."
+required_count = 4
+stat_modifiers = {
+2: 40.0,
+6: 40.0
+}
+trigger_effect_id = "rogue_ai_mana_battery"
+
+[resource]
+script = ExtResource("1_fac")
+faction_type = 3
+id = "rogue_ais"
+display_name = "Rogue AIs"
+description = "Sentient synthetic entities and daemon programs executing parallel subroutines in combat."
+theme_color = Color(0.43, 0, 1, 1)
+threshold_bonuses = [SubResource("Resource_bonus_2"), SubResource("Resource_bonus_4")]

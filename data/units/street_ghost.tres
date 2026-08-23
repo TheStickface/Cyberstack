@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "street_ghost"
+display_name = "Ghost"
+title = "Rooftop Rail-Sniper"
+bio = "Silent street assassin with an overclocked railgun, taking targets down from the neon shadows."
+role = 2
+faction = 1
+base_cost = 3
+base_max_health = 460.0
+base_attack_damage = 72.0
+base_ability_power = 15.0
+base_attack_speed = 0.60
+base_armor = 10.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 70.0
+base_speed = 45.0
+base_crit_chance = 0.25
+base_evasion = 0.05
+ability_name = "Plasma Penetrator"
+ability_description = "Fires high-velocity piercing round dealing 280 physical damage in a straight line."
+ability_effect_id = "ghost_plasma_penetrator"

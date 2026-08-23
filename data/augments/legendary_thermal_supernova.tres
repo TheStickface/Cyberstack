@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="AugmentResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/AugmentResource.gd" id="1_aug"]
+
+[resource]
+script = ExtResource("1_aug")
+id = "legendary_thermal_supernova"
+display_name = "Supernova Fusion Core"
+description = "Micro-fusion reactor that melts 40% of target armor on ability cast."
+tier = 2
+slot_type = 4
+tags = Array[int]([2])
+base_cost = 7
+stat_modifiers = {
+2: 60.0
+}
+trigger_type = 5
+trigger_effect_id = "thermal_supernova"
+trigger_params = {}

@@ -1,0 +1,130 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/ui/screens/CodexScreen.gd" id="1_codex"]
+
+[node name="CodexScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_codex")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.02, 0.015, 0.06, 1)
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 16.0
+offset_right = -20.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="TopBar" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="VBox/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0, 0.95, 0.83, 1)
+theme_override_font_sizes/font_size = 16
+text = "CYBERSTACK // CYBER-CODEX & OPERATIVE ARCHIVES"
+
+[node name="ReturnBtn" type="Button" parent="VBox/TopBar"]
+custom_minimum_size = Vector2(160, 32)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "RETURN TO TERMINAL"
+
+[node name="TabContainer" type="TabContainer" parent="VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+current_tab = 0
+
+[node name="Operatives" type="MarginContainer" parent="VBox/TabContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="Scroll" type="ScrollContainer" parent="VBox/TabContainer/Operatives"]
+layout_mode = 2
+
+[node name="OperativesGrid" type="GridContainer" parent="VBox/TabContainer/Operatives/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12
+columns = 3
+
+[node name="Augments" type="MarginContainer" parent="VBox/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="Scroll" type="ScrollContainer" parent="VBox/TabContainer/Augments"]
+layout_mode = 2
+
+[node name="AugmentsGrid" type="GridContainer" parent="VBox/TabContainer/Augments/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12
+columns = 3
+
+[node name="FactionRep" type="MarginContainer" parent="VBox/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="FactionsList" type="VBoxContainer" parent="VBox/TabContainer/FactionRep"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="CareerRecords" type="MarginContainer" parent="VBox/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBox" type="VBoxContainer" parent="VBox/TabContainer/CareerRecords"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Header" type="Label" parent="VBox/TabContainer/CareerRecords/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0.95, 0.83, 1)
+theme_override_font_sizes/font_size = 14
+text = "CAREER LIFETIME METRICS"
+
+[node name="StatsSummaryLabel" type="Label" parent="VBox/TabContainer/CareerRecords/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
+theme_override_font_sizes/font_size = 12
+text = "Loading metrics..."
+
+[connection signal="pressed" from="VBox/TopBar/ReturnBtn" to="." method="_on_return_btn_pressed"]

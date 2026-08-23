@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "ai_null_construct"
+display_name = "NULL-Construct"
+title = "Autonomous Hard-Light Wall"
+bio = "A sentient subroutine manifested into physical space as a crystalline chassis absorbing kinetic impact."
+role = 0
+faction = 3
+base_cost = 3
+base_max_health = 740.0
+base_attack_damage = 28.0
+base_ability_power = 35.0
+base_attack_speed = 0.75
+base_armor = 30.0
+base_shield = 40.0
+base_starting_mana = 10.0
+base_max_mana = 85.0
+base_speed = 40.0
+base_crit_chance = 0.05
+base_evasion = 0.05
+ability_name = "Nullify Matrix"
+ability_description = "Creates a 300 HP refractive barrier absorbing incoming damage and reflecting 20% back to attackers."
+ability_effect_id = "null_barrier"
