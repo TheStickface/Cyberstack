@@ -35,10 +35,15 @@ func test_game_manager_state_flow() -> Dictionary:
 	if gm.active_combat_payload.is_empty():
 		return {"passed": false, "message": "active_combat_payload should be populated", "assertions": 6}
 		
-	# Finish Combat with Victory -> should return to MAP
+	# Finish Combat with Victory -> Next node is SHOP, so routes to PREP (2)
 	gm.finish_combat_encounter(true, {"duration": 10.0})
+	if gm.current_state != 2: # GameState.PREP (SHOP node reached)
+		return {"passed": false, "message": "Victory reaching SHOP node should route to PREP (2), got %d" % gm.current_state, "assertions": 7}
+		
+	# Lock in / Return to Map from Shop
+	gm.open_map()
 	if gm.current_state != 1: # GameState.MAP
-		return {"passed": false, "message": "Victory in non-final district should return to MAP (1), got %d" % gm.current_state, "assertions": 7}
+		return {"passed": false, "message": "open_map should route to MAP (1), got %d" % gm.current_state, "assertions": 8}
 		
 	# Complete shop node to reach next FIGHT node
 	gm.active_run_manager.complete_encounter(true)

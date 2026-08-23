@@ -140,14 +140,16 @@ func complete_encounter(victory: bool = true, battle_stats: Dictionary = {}) -> 
 		else:
 			# Advance to Next District
 			_load_district(current_district_index + 1)
+			shop_mgr.generate_shop_offerings(current_district_index, _repo)
 			return {
 				"status": "district_advanced",
 				"new_district": current_district_index,
 				"new_crew_cap": crew_mgr.get_max_field_units()
 			}
 			
-	# Next node in same district
+	# Next node in same district -> Auto-refresh shop offerings
 	district_nodes[current_node_index]["current"] = true
+	shop_mgr.generate_shop_offerings(current_district_index, _repo)
 	return {
 		"status": "node_advanced",
 		"next_node_index": current_node_index,
