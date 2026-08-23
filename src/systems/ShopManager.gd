@@ -7,7 +7,9 @@ const DataRepoScript = preload("res://src/systems/DataRepository.gd")
 
 var gold: int = Constants.DEFAULT_STARTING_GOLD
 var current_district: int = 1
-var shop_slots: Array[Dictionary] = [] # Array of {type, resource, cost, is_bought}
+var unit_slots: Array[Dictionary] = [] # Array of 4 (expandable to 6) pure operative slots
+var augment_slots: Array[Dictionary] = [] # Array of 2 (expandable to 5) pure augment slots
+var shop_slots: Array[Dictionary] = [] # Unified array [unit_slots + augment_slots]
 
 func _init(p_starting_gold: int = Constants.DEFAULT_STARTING_GOLD) -> void:
 	gold = p_starting_gold
@@ -41,46 +43,55 @@ func collect_round_income(base_income: int = 5, win_bonus: int = 0) -> Dictionar
 		"new_balance": gold
 	}
 
-func generate_shop_offerings(district_id: int = 1, repo_instance: Object = null) -> Array[Dictionary]:
+func generate_shop_offerings(district_id: int = 1, repo_instance: Object = null, num_crew: int = Constants.DEFAULT_CREW_SHOP_SLOTS, num_augments: int = Constants.DEFAULT_AUGMENT_SHOP_SLOTS) -> Array[Dictionary]:
 	current_district = district_id
 	var repo = repo_instance if repo_instance != null else _get_default_repo()
-	
 	var odds = Constants.DISTRICT_SHOP_ODDS.get(district_id, Constants.DISTRICT_SHOP_ODDS[1])
+	
+	unit_slots.clear()
+	augment_slots.clear()
 	shop_slots.clear()
 	
-	for i in range(Constants.SHOP_SLOTS_COUNT):
-		var is_unit = (randf() < 0.5) # 50% chance unit, 50% chance augment
-		var chosen_tier = _roll_tier(odds)
-		
-		if is_unit:
-			var units_pool = repo.get_all_units()
-			if not units_pool.is_empty():
-				var unit_res: UnitResource = units_pool[randi() % units_pool.size()]
-				shop_slots.append({
-					"type": "unit",
-					"resource": unit_res,
-					"cost": unit_res.base_cost,
-					"is_bought": false
-				})
-			else:
-				# Fallback if no units
-				shop_slots.append(_create_empty_slot())
+	# 1. Generate Pure Operative / Crew Slots (4 to start, expandable to 6)
+	var units_pool = repo.get_all_units()
+	for i in range(num_crew):
+		if not units_pool.is_empty():
+			var unit_res: UnitResource = units_pool[randi() % units_pool.size()]
+			var slot_data = {
+				"type": "unit",
+				"resource": unit_res,
+				"cost": unit_res.base_cost,
+				"is_bought": false
+			}
+			unit_slots.append(slot_data)
+			shop_slots.append(slot_data)
 		else:
-			var aug_pool = repo.get_augments_by_tier(chosen_tier)
-			if aug_pool.is_empty():
-				aug_pool = repo.get_all_augments()
-				
-			if not aug_pool.is_empty():
-				var aug_res: AugmentResource = aug_pool[randi() % aug_pool.size()]
-				shop_slots.append({
-					"type": "augment",
-					"resource": aug_res,
-					"cost": aug_res.base_cost,
-					"is_bought": false
-				})
-			else:
-				shop_slots.append(_create_empty_slot())
-				
+			var empty_slot = _create_empty_slot()
+			unit_slots.append(empty_slot)
+			shop_slots.append(empty_slot)
+			
+	# 2. Generate Pure Augment Slots (2 to start, expandable to 5)
+	for i in range(num_augments):
+		var chosen_tier = _roll_tier(odds)
+		var aug_pool = repo.get_augments_by_tier(chosen_tier)
+		if aug_pool.is_empty():
+			aug_pool = repo.get_all_augments()
+			
+		if not aug_pool.is_empty():
+			var aug_res: AugmentResource = aug_pool[randi() % aug_pool.size()]
+			var slot_data = {
+				"type": "augment",
+				"resource": aug_res,
+				"cost": aug_res.base_cost,
+				"is_bought": false
+			}
+			augment_slots.append(slot_data)
+			shop_slots.append(slot_data)
+		else:
+			var empty_slot = _create_empty_slot()
+			augment_slots.append(empty_slot)
+			shop_slots.append(empty_slot)
+			
 	return shop_slots
 
 func reroll_shop(repo_instance: Object = null, free_reroll: bool = false) -> bool:
@@ -91,17 +102,28 @@ func reroll_shop(repo_instance: Object = null, free_reroll: bool = false) -> boo
 	generate_shop_offerings(current_district, repo_instance)
 	return true
 
+func buy_unit_slot(slot_index: int, crew_mgr: Object) -> Dictionary:
+	if slot_index < 0 or slot_index >= unit_slots.size():
+		return {"success": false, "error": "Invalid unit slot index"}
+	return _execute_purchase(unit_slots[slot_index], crew_mgr)
+
+func buy_augment_slot(slot_index: int, crew_mgr: Object) -> Dictionary:
+	if slot_index < 0 or slot_index >= augment_slots.size():
+		return {"success": false, "error": "Invalid augment slot index"}
+	return _execute_purchase(augment_slots[slot_index], crew_mgr)
+
 func buy_slot(slot_index: int, crew_mgr: Object) -> Dictionary:
 	if slot_index < 0 or slot_index >= shop_slots.size():
 		return {"success": false, "error": "Invalid slot index"}
-		
-	var slot = shop_slots[slot_index]
+	return _execute_purchase(shop_slots[slot_index], crew_mgr)
+
+func _execute_purchase(slot: Dictionary, crew_mgr: Object) -> Dictionary:
 	if slot.get("is_bought", false):
 		return {"success": false, "error": "Item already purchased"}
 		
 	var cost: int = slot.get("cost", 0)
 	if gold < cost:
-		return {"success": false, "error": "Not enough gold (Cost: %d, Current: %d)" % [cost, gold]}
+		return {"success": false, "error": "Not enough credits (Cost: %d, Current: %d)" % [cost, gold]}
 		
 	var item_type: String = slot.get("type", "")
 	var res: Resource = slot.get("resource", null)
@@ -128,7 +150,7 @@ func buy_slot(slot_index: int, crew_mgr: Object) -> Dictionary:
 		var aug_res = res as AugmentResource
 		var added = crew_mgr.add_augment_to_inventory(aug_res)
 		if not added:
-			return {"success": false, "error": "Augment inventory is full (Max %d items)" % Constants.MAX_BENCH_AUGMENTS}
+			return {"success": false, "error": "Augment bag is full (Max %d items)" % Constants.MAX_BENCH_AUGMENTS}
 			
 		spend_gold(cost)
 		slot["is_bought"] = true

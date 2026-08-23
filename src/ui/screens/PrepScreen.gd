@@ -23,8 +23,9 @@ var selected_inventory_idx: int = -1
 
 @onready var field_container: HBoxContainer = $Margin/VBox/MainBody/BoardArea/FieldSection/FieldScroll/FieldContainer
 @onready var bench_container: HBoxContainer = $Margin/VBox/MainBody/BoardArea/BenchSection/BenchScroll/BenchContainer
-@onready var shop_container: HBoxContainer = $Margin/VBox/MainBody/BoardArea/ShopSection/ShopScroll/ShopContainer
-@onready var reroll_btn: Button = $Margin/VBox/MainBody/BoardArea/ShopSection/ShopControls/RerollBtn
+@onready var crew_shop_container: HBoxContainer = $Margin/VBox/MainBody/BoardArea/MarketSection/CrewShop/CrewShopScroll/CrewShopContainer
+@onready var augment_shop_container: HBoxContainer = $Margin/VBox/MainBody/BoardArea/MarketSection/AugmentShop/AugmentShopScroll/AugmentShopContainer
+@onready var reroll_btn: Button = $Margin/VBox/MainBody/BoardArea/MarketSection/CrewShop/CrewShopHeader/RerollBtn
 
 @onready var synergy_hud: SynergyTrackerHUD = $Margin/VBox/MainBody/Sidebar/SynergyTrackerHUD
 @onready var augment_tray: HBoxContainer = $Margin/VBox/MainBody/Sidebar/AugmentTray/AugmentScroll/AugmentContainer
@@ -113,18 +114,27 @@ func _refresh_augment_tray() -> void:
 		chip.chip_clicked.connect(_on_augment_chip_clicked)
 
 func _refresh_shop() -> void:
-	if not shop_container:
-		return
-		
-	for c in shop_container.get_children():
-		c.queue_free()
-		
-	for i in range(shop_mgr.shop_slots.size()):
-		var slot_data = shop_mgr.shop_slots[i]
-		var card: ShopSlotCard = ShopSlotCardScene.instantiate()
-		shop_container.add_child(card)
-		card.setup(i, slot_data, shop_mgr.gold)
-		card.buy_requested.connect(_on_shop_buy_requested)
+	# 1. Operative Recruitment Shelf (Pure Units)
+	if crew_shop_container:
+		for c in crew_shop_container.get_children():
+			c.queue_free()
+		for i in range(shop_mgr.unit_slots.size()):
+			var slot_data = shop_mgr.unit_slots[i]
+			var card: ShopSlotCard = ShopSlotCardScene.instantiate()
+			crew_shop_container.add_child(card)
+			card.setup(i, slot_data, shop_mgr.gold)
+			card.buy_requested.connect(_on_crew_buy_requested)
+			
+	# 2. Black Market Armory Shelf (Pure Augments)
+	if augment_shop_container:
+		for c in augment_shop_container.get_children():
+			c.queue_free()
+		for i in range(shop_mgr.augment_slots.size()):
+			var slot_data = shop_mgr.augment_slots[i]
+			var card: ShopSlotCard = ShopSlotCardScene.instantiate()
+			augment_shop_container.add_child(card)
+			card.setup(i, slot_data, shop_mgr.gold)
+			card.buy_requested.connect(_on_augment_buy_requested)
 		
 	if reroll_btn:
 		reroll_btn.text = "REROLL (%s)" % Constants.format_currency(Constants.BASE_REROLL_COST, true)
@@ -135,10 +145,28 @@ func _refresh_synergies() -> void:
 		synergy_hud.update_synergies(crew_mgr.active_synergy_report)
 
 # Event Handlers
+func _on_crew_buy_requested(slot_index: int) -> void:
+	var result = shop_mgr.buy_unit_slot(slot_index, crew_mgr)
+	if result.success:
+		_set_status("Recruited %s." % (result.item.unit_resource.display_name if result.item else "operative"), false)
+		crew_mgr.recalculate_synergies()
+	else:
+		_set_status("Recruitment failed: %s" % result.error, true)
+	_refresh_all()
+
+func _on_augment_buy_requested(slot_index: int) -> void:
+	var result = shop_mgr.buy_augment_slot(slot_index, crew_mgr)
+	if result.success:
+		_set_status("Purchased %s augment chip." % (result.item.display_name if result.item else ""), false)
+		crew_mgr.recalculate_synergies()
+	else:
+		_set_status("Armory purchase failed: %s" % result.error, true)
+	_refresh_all()
+
 func _on_shop_buy_requested(slot_index: int) -> void:
 	var result = shop_mgr.buy_slot(slot_index, crew_mgr)
 	if result.success:
-		_set_status("Purchased %s." % result.type, false)
+		_set_status("Purchased item.", false)
 		crew_mgr.recalculate_synergies()
 	else:
 		_set_status("Purchase failed: %s" % result.error, true)

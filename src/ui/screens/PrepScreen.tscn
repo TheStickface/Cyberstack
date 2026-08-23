@@ -120,37 +120,71 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 6
 
-[node name="ShopSection" type="VBoxContainer" parent="Margin/VBox/MainBody/BoardArea"]
+[node name="MarketSection" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea"]
 custom_minimum_size = Vector2(0, 170)
 layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="CrewShop" type="VBoxContainer" parent="Margin/VBox/MainBody/BoardArea/MarketSection"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
 theme_override_constants/separation = 3
 
-[node name="ShopControls" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/ShopSection"]
+[node name="CrewShopHeader" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/MarketSection/CrewShop"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Margin/VBox/MainBody/BoardArea/ShopSection/ShopControls"]
+[node name="Label" type="Label" parent="Margin/VBox/MainBody/BoardArea/MarketSection/CrewShop/CrewShopHeader"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 0.85, 0, 1)
 theme_override_font_sizes/font_size = 10
-text = "BLACK MARKET RECRUITMENT & SHOP:"
+text = "OPERATIVE RECRUITMENT (4 AVAILABLE):"
 
-[node name="RerollBtn" type="Button" parent="Margin/VBox/MainBody/BoardArea/ShopSection/ShopControls"]
-custom_minimum_size = Vector2(100, 22)
+[node name="RerollBtn" type="Button" parent="Margin/VBox/MainBody/BoardArea/MarketSection/CrewShop/CrewShopHeader"]
+custom_minimum_size = Vector2(105, 22)
 layout_mode = 2
 theme_override_font_sizes/font_size = 9
 text = "REROLL (2 CR)"
 
-[node name="ShopScroll" type="ScrollContainer" parent="Margin/VBox/MainBody/BoardArea/ShopSection"]
+[node name="CrewShopScroll" type="ScrollContainer" parent="Margin/VBox/MainBody/BoardArea/MarketSection/CrewShop"]
 custom_minimum_size = Vector2(0, 145)
 layout_mode = 2
+size_flags_vertical = 3
 vertical_scroll_mode = 0
 
-[node name="ShopContainer" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/ShopSection/ShopScroll"]
+[node name="CrewShopContainer" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/MarketSection/CrewShop/CrewShopScroll"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/separation = 8
+theme_override_constants/separation = 6
+
+[node name="AugmentShop" type="VBoxContainer" parent="Margin/VBox/MainBody/BoardArea/MarketSection"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.0
+theme_override_constants/separation = 3
+
+[node name="AugmentShopHeader" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/MarketSection/AugmentShop"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Margin/VBox/MainBody/BoardArea/MarketSection/AugmentShop/AugmentShopHeader"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.4, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "BLACK MARKET ARMORY:"
+
+[node name="AugmentShopScroll" type="ScrollContainer" parent="Margin/VBox/MainBody/BoardArea/MarketSection/AugmentShop"]
+custom_minimum_size = Vector2(0, 145)
+layout_mode = 2
+size_flags_vertical = 3
+vertical_scroll_mode = 0
+
+[node name="AugmentShopContainer" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/MarketSection/AugmentShop/AugmentShopScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 6
 
 [node name="Sidebar" type="VBoxContainer" parent="Margin/VBox/MainBody"]
 custom_minimum_size = Vector2(250, 0)
@@ -192,4 +226,4 @@ theme_override_font_sizes/font_size = 10
 text = "Welcome to Cyberstack Prep Phase. Assemble your crew."
 
 [connection signal="pressed" from="Margin/VBox/TopBar/LockInBtn" to="." method="_on_lock_in_pressed"]
-[connection signal="pressed" from="Margin/VBox/MainBody/BoardArea/ShopSection/ShopControls/RerollBtn" to="." method="_on_reroll_pressed"]
+[connection signal="pressed" from="Margin/VBox/MainBody/BoardArea/MarketSection/CrewShop/CrewShopHeader/RerollBtn" to="." method="_on_reroll_pressed"]

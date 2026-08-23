@@ -64,7 +64,11 @@ static func format_cost(amount: int) -> String:
 
 const DEFAULT_STARTING_GOLD: int = 12
 const BASE_REROLL_COST: int = 2
-const SHOP_SLOTS_COUNT: int = 4
+const DEFAULT_CREW_SHOP_SLOTS: int = 4
+const MAX_CREW_SHOP_SLOTS: int = 6
+const DEFAULT_AUGMENT_SHOP_SLOTS: int = 2
+const MAX_AUGMENT_SHOP_SLOTS: int = 5
+const SHOP_SLOTS_COUNT: int = 6
 
 # Base Encounter Credit Payouts per District (Active Spend Economy - No Interest)
 const DISTRICT_ENCOUNTER_PAYOUTS: Dictionary = {

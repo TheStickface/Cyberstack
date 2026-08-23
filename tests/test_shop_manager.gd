@@ -52,20 +52,25 @@ func test_shop_generation_and_reroll() -> Dictionary:
 	if slots.size() != Constants.SHOP_SLOTS_COUNT:
 		return {"passed": false, "message": "Expected %d shop slots, got %d" % [Constants.SHOP_SLOTS_COUNT, slots.size()], "assertions": 1}
 		
+	if shop.unit_slots.size() != Constants.DEFAULT_CREW_SHOP_SLOTS:
+		return {"passed": false, "message": "Expected %d pure crew slots, got %d" % [Constants.DEFAULT_CREW_SHOP_SLOTS, shop.unit_slots.size()], "assertions": 2}
+		
+	if shop.augment_slots.size() != Constants.DEFAULT_AUGMENT_SHOP_SLOTS:
+		return {"passed": false, "message": "Expected %d pure augment slots, got %d" % [Constants.DEFAULT_AUGMENT_SHOP_SLOTS, shop.augment_slots.size()], "assertions": 3}
+		
 	# In District 1, all augments should be Common
-	for slot in slots:
-		if slot.get("type", "") == "augment":
-			var aug: AugmentResource = slot.get("resource", null)
-			if aug and aug.tier != Enums.AugmentTier.COMMON:
-				return {"passed": false, "message": "District 1 should only produce Common augments", "assertions": 2}
+	for slot in shop.augment_slots:
+		var aug: AugmentResource = slot.get("resource", null)
+		if aug and aug.tier != Enums.AugmentTier.COMMON:
+			return {"passed": false, "message": "District 1 should only produce Common augments", "assertions": 4}
 				
 	# Test Reroll
 	var prev_gold = shop.gold
 	var reroll_ok = shop.reroll_shop(repo)
 	if not reroll_ok or shop.gold != (prev_gold - Constants.BASE_REROLL_COST):
-		return {"passed": false, "message": "Reroll should cost %d gold" % Constants.BASE_REROLL_COST, "assertions": 3}
+		return {"passed": false, "message": "Reroll should cost %d gold" % Constants.BASE_REROLL_COST, "assertions": 5}
 		
-	return {"passed": true, "assertions": 3}
+	return {"passed": true, "assertions": 5}
 
 func test_buy_and_sell_flow() -> Dictionary:
 	var shop = ShopManager.new(20)
