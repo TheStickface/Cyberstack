@@ -61,7 +61,14 @@ func _refresh_top_bar() -> void:
 	if district_label:
 		district_label.text = "DISTRICT %d" % crew_mgr.current_district
 	if crew_count_label:
-		crew_count_label.text = "CREW: %d / %d" % [crew_mgr.fielded_units.size(), crew_mgr.get_max_field_units()]
+		var max_units = crew_mgr.get_max_field_units()
+		var cur_units = crew_mgr.fielded_units.size()
+		if cur_units >= max_units:
+			crew_count_label.text = "CREW: %d / %d (DISTRICT MAX)" % [cur_units, max_units]
+			crew_count_label.add_theme_color_override("font_color", Color(1, 0.85, 0))
+		else:
+			crew_count_label.text = "CREW: %d / %d" % [cur_units, max_units]
+			crew_count_label.add_theme_color_override("font_color", Color(0, 0.95, 0.83))
 	if gold_label:
 		gold_label.text = "%s: %d" % [Constants.CURRENCY_NAME.to_upper(), shop_mgr.gold]
 
@@ -186,7 +193,11 @@ func _on_unit_toggle_field(unit: UnitInstance) -> void:
 			if success:
 				_set_status("Deployed %s to field." % unit.unit_resource.display_name, false)
 			else:
-				_set_status("Field is full for District %d." % crew_mgr.current_district, true)
+				_set_status("Field is full (%d/%d for District %d). Bench an active unit to swap!" % [
+					crew_mgr.fielded_units.size(),
+					crew_mgr.get_max_field_units(),
+					crew_mgr.current_district
+				], true)
 	_refresh_all()
 
 func _on_unit_sell(unit: UnitInstance) -> void:

@@ -73,6 +73,12 @@ func _setup_arena() -> void:
 		combat_type_label.text = "★ DISTRICT BOSS CLASH" if is_boss else "⚔ SECURITY PATROL ENCOUNTER"
 		combat_type_label.add_theme_color_override("font_color", Color(1, 0.1, 0.2) if is_boss else Color(1, 0.3, 0.5))
 		
+	var crew_size = combat_payload.get("player_crew", []).size()
+	var max_cap = Constants.DISTRICT_CREW_LIMITS.get(dist_id, 2)
+	var player_header: Label = get_node_or_null("Margin/VBox/Arena/PlayerSide/PlayerHeader")
+	if player_header:
+		player_header.text = "PLAYER SQUAD (%d / %d FIELDED IN COMBAT):" % [crew_size, max_cap]
+		
 	_initialize_squads()
 	battle_time = 0.0
 	battle_active = true
