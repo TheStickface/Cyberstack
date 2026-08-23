@@ -6,12 +6,13 @@ extends Control
 const OperativeCardScene = preload("res://src/ui/components/OperativeCard.tscn")
 const AugmentChipScene = preload("res://src/ui/components/AugmentChip.tscn")
 const ShopSlotCardScene = preload("res://src/ui/components/ShopSlotCard.tscn")
+const SynergyTooltipScript = preload("res://src/ui/components/SynergyTooltip.gd")
 const DataRepoScript = preload("res://src/systems/DataRepository.gd")
 
 var repo: Object = null
 var shop_mgr: ShopManager = null
 var crew_mgr: CrewManager = null
-var synergy_tooltip: SynergyTooltip = null
+var synergy_tooltip: Object = null
 
 # Selection state for slotting
 var selected_inventory_aug: AugmentResource = null
@@ -33,7 +34,7 @@ var selected_inventory_idx: int = -1
 @onready var status_label: Label = $Margin/VBox/StatusLabel
 
 func _ready() -> void:
-	synergy_tooltip = SynergyTooltip.new()
+	synergy_tooltip = SynergyTooltipScript.new()
 	add_child(synergy_tooltip)
 	
 	if get_node_or_null("/root/GameManager") and get_node("/root/GameManager").active_run_manager:
