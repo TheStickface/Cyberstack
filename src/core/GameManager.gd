@@ -31,8 +31,9 @@ func change_state(new_state: GameState) -> void:
 func start_new_game(starter_unit_id: String = "runner_blitz", repo_instance: Object = null) -> void:
 	active_run_manager = RunManager.new(repo_instance)
 	active_run_manager.start_new_run(starter_unit_id)
+	active_run_manager.shop_mgr.generate_shop_offerings(1, active_run_manager._repo)
 	SaveManager.save_active_run(active_run_manager)
-	change_state(GameState.MAP)
+	change_state(GameState.PREP)
 
 func resume_active_run(repo_instance: Object = null) -> bool:
 	if not SaveManager.has_active_run():

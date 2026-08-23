@@ -9,20 +9,24 @@ const DataRepoScript = preload("res://src/systems/DataRepository.gd")
 var repo: Object = null
 var run_mgr: RunManager = null
 
-@onready var district_title: Label = $VBox/TopBar/DistrictTitle
-@onready var crew_count_label: Label = $VBox/TopBar/CrewCountLabel
-@onready var gold_label: Label = $VBox/TopBar/GoldLabel
-@onready var nodes_container: HBoxContainer = $VBox/CenterArea/MapScroll/NodesContainer
-@onready var action_btn: Button = $VBox/BottomBar/ActionBtn
-@onready var status_label: Label = $VBox/BottomBar/StatusLabel
+@onready var district_title: Label = $Margin/VBox/TopBar/DistrictTitle
+@onready var crew_count_label: Label = $Margin/VBox/TopBar/CrewCountLabel
+@onready var gold_label: Label = $Margin/VBox/TopBar/GoldLabel
+@onready var nodes_container: HBoxContainer = $Margin/VBox/CenterArea/MapScroll/NodesContainer
+@onready var action_btn: Button = $Margin/VBox/BottomBar/ActionBtn
+@onready var status_label: Label = $Margin/VBox/BottomBar/StatusLabel
 @onready var event_modal: EventModal = $EventModal
 
 func _ready() -> void:
-	repo = DataRepoScript.new()
-	repo.load_all_data("res://data")
-	
-	run_mgr = RunManager.new(repo)
-	run_mgr.start_new_run()
+	if get_node_or_null("/root/GameManager") and get_node("/root/GameManager").active_run_manager:
+		var gm = get_node("/root/GameManager")
+		run_mgr = gm.active_run_manager
+		repo = run_mgr._repo if run_mgr._repo else DataRepoScript.new()
+	else:
+		repo = DataRepoScript.new()
+		repo.load_all_data("res://data")
+		run_mgr = RunManager.new(repo)
+		run_mgr.start_new_run()
 	
 	if event_modal:
 		event_modal.visible = false
@@ -80,29 +84,43 @@ func _refresh_action_button() -> void:
 			action_btn.text = "ENGAGE DISTRICT BOSS [★ BOSS]"
 			action_btn.add_theme_color_override("font_color", Color(1, 0.1, 0.2))
 
+func _on_manage_crew_btn_pressed() -> void:
+	if get_node_or_null("/root/GameManager"):
+		get_node("/root/GameManager").open_prep_phase()
+
 func _on_action_btn_pressed() -> void:
 	var enc_type = run_mgr.get_current_encounter_type()
 	match enc_type:
+		Enums.EncounterType.FIGHT:
+			if get_node_or_null("/root/GameManager"):
+				get_node("/root/GameManager").start_combat_encounter(false, repo)
+			else:
+				_complete_current_encounter(true)
+		Enums.EncounterType.BOSS:
+			if get_node_or_null("/root/GameManager"):
+				get_node("/root/GameManager").start_combat_encounter(true, repo)
+			else:
+				_complete_current_encounter(true)
+		Enums.EncounterType.SHOP:
+			if get_node_or_null("/root/GameManager"):
+				get_node("/root/GameManager").open_prep_phase()
+			else:
+				_complete_current_encounter(true)
 		Enums.EncounterType.EVENT:
 			var random_ev = repo.get_random_event()
 			if random_ev and event_modal:
 				event_modal.setup(random_ev, run_mgr.shop_mgr, run_mgr.crew_mgr)
 			else:
-				# Fallback complete
-				_complete_current_encounter()
-		Enums.EncounterType.FIGHT, Enums.EncounterType.BOSS:
-			# Mock / trigger encounter completion
-			_complete_current_encounter(true)
-		Enums.EncounterType.SHOP:
-			# Advance shop encounter
-			_complete_current_encounter(true)
+				_complete_current_encounter(true)
 
 func _on_event_resolved(outcome: Dictionary) -> void:
-	if outcome.get("combat_triggered", false):
+	if outcome.get("triggers_combat", false):
 		status_label.text = "Event triggered combat encounter!"
+		if get_node_or_null("/root/GameManager"):
+			get_node("/root/GameManager").start_combat_encounter(false, repo)
 	else:
 		status_label.text = "Event concluded. Moving forward."
-	_complete_current_encounter(true)
+		_complete_current_encounter(true)
 
 func _complete_current_encounter(victory: bool = true) -> void:
 	var result = run_mgr.complete_encounter(victory)
@@ -117,6 +135,9 @@ func _complete_current_encounter(victory: bool = true) -> void:
 		status_label.text = "VICTORY! All 4 city districts conquered!"
 	elif status == "game_over":
 		status_label.text = "MISSION FAILED. Run terminated."
+		
+	if get_node_or_null("/root/SaveManager") and run_mgr:
+		SaveManager.save_active_run(run_mgr)
 		
 	_refresh_map()
 

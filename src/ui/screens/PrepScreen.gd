@@ -31,22 +31,23 @@ var selected_inventory_idx: int = -1
 @onready var status_label: Label = $Margin/VBox/StatusLabel
 
 func _ready() -> void:
-	repo = DataRepoScript.new()
-	repo.load_all_data("res://data")
-	
-	shop_mgr = ShopManager.new(10)
-	crew_mgr = CrewManager.new(1, repo)
-	
-	# Give starter unit for District 1
-	var starter_unit = repo.get_unit("runner_blitz")
-	if starter_unit:
-		var instance = UnitInstance.new(starter_unit)
-		crew_mgr.fielded_units.append(instance)
+	if get_node_or_null("/root/GameManager") and get_node("/root/GameManager").active_run_manager:
+		var gm = get_node("/root/GameManager")
+		var rm = gm.active_run_manager
+		repo = rm._repo if rm._repo else DataRepoScript.new()
+		shop_mgr = rm.shop_mgr
+		crew_mgr = rm.crew_mgr
+	else:
+		repo = DataRepoScript.new()
+		repo.load_all_data("res://data")
+		shop_mgr = ShopManager.new(12)
+		crew_mgr = CrewManager.new(1, repo)
+		var starter_unit = repo.get_unit("runner_blitz")
+		if starter_unit:
+			crew_mgr.fielded_units.append(UnitInstance.new(starter_unit))
+		shop_mgr.generate_shop_offerings(1, repo)
 		
-	# Initial roll
-	shop_mgr.generate_shop_offerings(1, repo)
 	crew_mgr.recalculate_synergies()
-	
 	_refresh_all()
 
 func _refresh_all() -> void:
@@ -196,7 +197,12 @@ func _on_unit_sell(unit: UnitInstance) -> void:
 func _on_lock_in_pressed() -> void:
 	var result = crew_mgr.lock_in_crew()
 	if result.valid:
-		_set_status("CREW LOCKED! Handing off payload to Combat...", false)
+		_set_status("CREW LOCKED! Deploying to District Map...", false)
+		if get_node_or_null("/root/GameManager"):
+			var gm = get_node("/root/GameManager")
+			if gm.active_run_manager:
+				SaveManager.save_active_run(gm.active_run_manager)
+			gm.open_map()
 	else:
 		var err_msg = ", ".join(result.errors)
 		_set_status("Lock-in failed: %s" % err_msg, true)

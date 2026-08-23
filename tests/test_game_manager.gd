@@ -16,17 +16,17 @@ func test_game_manager_state_flow() -> Dictionary:
 	if gm.current_state != 0: # GameState.TITLE
 		return {"passed": false, "message": "Initial state should be TITLE (0), got %d" % gm.current_state, "assertions": 1}
 		
-	# Start Game
+	# Start Game -> Routes to PREP for initial crew drafting & shop
 	gm.start_new_game("runner_blitz", repo)
-	if gm.current_state != 1: # GameState.MAP
-		return {"passed": false, "message": "State after start_new_game should be MAP (1), got %d" % gm.current_state, "assertions": 2}
+	if gm.current_state != 2: # GameState.PREP
+		return {"passed": false, "message": "State after start_new_game should be PREP (2), got %d" % gm.current_state, "assertions": 2}
 	if gm.active_run_manager == null:
 		return {"passed": false, "message": "active_run_manager should be initialized", "assertions": 3}
 		
-	# Open Prep
-	gm.open_prep_phase()
-	if gm.current_state != 2: # GameState.PREP
-		return {"passed": false, "message": "State should be PREP (2), got %d" % gm.current_state, "assertions": 4}
+	# Open Map after Prep
+	gm.open_map()
+	if gm.current_state != 1: # GameState.MAP
+		return {"passed": false, "message": "State should be MAP (1), got %d" % gm.current_state, "assertions": 4}
 		
 	# Start Combat
 	gm.start_combat_encounter(false, repo)
