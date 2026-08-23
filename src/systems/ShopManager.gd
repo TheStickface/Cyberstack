@@ -140,7 +140,7 @@ func sell_unit(unit: UnitInstance, crew_mgr: Object) -> int:
 	if unit == null or unit.unit_resource == null:
 		return 0
 		
-	var mult = 2 if unit.star_level == 2 else (6 if unit.star_level >= 3 else 1)
+	var mult = 2 if unit.star_level == 2 else (4 if unit.star_level >= 3 else 1)
 	var refund_gold = unit.unit_resource.base_cost * mult
 	# Return equipped augments to inventory if space allows
 	for i in range(unit.equipped_augments.size()):

@@ -65,7 +65,7 @@ func _update_ui() -> void:
 		toggle_btn.text = "BENCH" if is_fielded else "DEPLOY"
 		
 	if sell_btn:
-		var sell_val = res.base_cost * (2 if unit_instance.star_level == 2 else (6 if unit_instance.star_level >= 3 else 1))
+		var sell_val = res.base_cost * (2 if unit_instance.star_level == 2 else (4 if unit_instance.star_level >= 3 else 1))
 		sell_btn.text = "SELL (%s)" % Constants.format_currency(sell_val, true)
 		
 	if is_fielded:

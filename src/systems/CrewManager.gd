@@ -106,31 +106,26 @@ func check_and_execute_combinations() -> Array[Dictionary]:
 				keep_checking = true
 				break
 				
-			# Check Tier 2 -> Tier 3 (3 copies of Tier 2)
-			if tiers[2].size() >= 3:
-				var c1: UnitInstance = tiers[2][0]
-				var c2: UnitInstance = tiers[2][1]
-				var c3: UnitInstance = tiers[2][2]
+			# Check Tier 2 -> Tier 3 (2 copies of Tier 2)
+			if tiers[2].size() >= 2:
+				var copy1: UnitInstance = tiers[2][0]
+				var copy2: UnitInstance = tiers[2][1]
 				
-				var primary: UnitInstance = c1
-				var secondaries: Array[UnitInstance] = [c2, c3]
-				if fielded_units.has(c2) and not fielded_units.has(c1):
-					primary = c2
-					secondaries = [c1, c3]
-				elif fielded_units.has(c3) and not fielded_units.has(c1):
-					primary = c3
-					secondaries = [c1, c2]
+				var primary: UnitInstance = copy1
+				var secondary: UnitInstance = copy2
+				if fielded_units.has(copy2) and not fielded_units.has(copy1):
+					primary = copy2
+					secondary = copy1
 					
 				primary.star_level = 3
 				primary.level = 3
 				
-				# Recover augments from secondaries
-				for sec in secondaries:
-					for i in range(sec.equipped_augments.size()):
-						var aug = sec.unequip_augment(i)
-						if aug != null:
-							add_augment_to_inventory(aug)
-					remove_unit(sec)
+				# Recover augments from secondary
+				for i in range(secondary.equipped_augments.size()):
+					var aug = secondary.unequip_augment(i)
+					if aug != null:
+						add_augment_to_inventory(aug)
+				remove_unit(secondary)
 					
 				combinations_made.append({
 					"unit": primary,

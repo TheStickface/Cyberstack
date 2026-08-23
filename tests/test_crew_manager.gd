@@ -134,12 +134,12 @@ func test_unit_star_combination() -> Dictionary:
 	if upgraded.calculate_effective_stat(Enums.StatType.MAX_HEALTH) <= dash_res.base_max_health:
 		return {"passed": false, "message": "Tier 2 unit should have boosted effective max health", "assertions": 4}
 		
-	# Now add 4 more copies to create 2 more Tier 2s -> which combine into 1 Tier 3 (★3)
-	for i in range(4):
-		crew_mgr.add_unit(UnitInstance.new(dash_res))
+	# Now add 2 more copies to create a 2nd Tier 2 -> which immediately combines into 1 Tier 3 (★3)
+	crew_mgr.add_unit(UnitInstance.new(dash_res))
+	crew_mgr.add_unit(UnitInstance.new(dash_res))
 		
 	if crew_mgr.fielded_units.size() != 1:
-		return {"passed": false, "message": "3 Tier 2 copies should combine into 1 Tier 3 unit, got %d" % crew_mgr.fielded_units.size(), "assertions": 5}
+		return {"passed": false, "message": "2 Tier 2 copies should combine into 1 Tier 3 unit, got %d" % crew_mgr.fielded_units.size(), "assertions": 5}
 		
 	var tier3_unit = crew_mgr.fielded_units[0]
 	if tier3_unit.star_level != 3:
