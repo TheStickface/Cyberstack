@@ -17,6 +17,7 @@ var is_fielded: bool = true
 @onready var faction_badge: Label = $Margin/VBox/Header/FactionBadge
 @onready var stats_label: Label = $Margin/VBox/StatsLabel
 @onready var ability_label: Label = $Margin/VBox/AbilityLabel
+@onready var slots_header: Label = $Margin/VBox/SlotsHeader
 @onready var slots_container: VBoxContainer = $Margin/VBox/SlotsContainer
 @onready var toggle_btn: Button = $Margin/VBox/Actions/ToggleFieldBtn
 @onready var sell_btn: Button = $Margin/VBox/Actions/SellBtn
@@ -42,15 +43,14 @@ func _update_ui() -> void:
 		faction_badge.text = res.get_faction_name().to_upper()
 		
 	if stats_label:
-		stats_label.text = "HP: %.0f | AD: %.0f | AP: %.0f | SPD: %.0f" % [
+		stats_label.text = "HP: %.0f | AD: %.0f | AP: %.0f" % [
 			unit_instance.calculate_effective_stat(Enums.StatType.MAX_HEALTH),
 			unit_instance.calculate_effective_stat(Enums.StatType.ATTACK_DAMAGE),
-			unit_instance.calculate_effective_stat(Enums.StatType.ABILITY_POWER),
-			unit_instance.calculate_effective_stat(Enums.StatType.SPEED)
+			unit_instance.calculate_effective_stat(Enums.StatType.ABILITY_POWER)
 		]
 		
 	if ability_label:
-		ability_label.text = "Ability: %s (%s)" % [res.ability_name, res.ability_description]
+		ability_label.text = res.ability_name
 		
 	if toggle_btn:
 		toggle_btn.text = "BENCH" if is_fielded else "DEPLOY"
@@ -58,7 +58,19 @@ func _update_ui() -> void:
 	if sell_btn:
 		sell_btn.text = "SELL (%dg)" % res.base_cost
 		
-	_refresh_slots()
+	if is_fielded:
+		custom_minimum_size = Vector2(185, 205)
+		if slots_header:
+			slots_header.visible = true
+		if slots_container:
+			slots_container.visible = true
+		_refresh_slots()
+	else:
+		custom_minimum_size = Vector2(175, 95)
+		if slots_header:
+			slots_header.visible = false
+		if slots_container:
+			slots_container.visible = false
 
 func _refresh_slots() -> void:
 	if not slots_container or unit_instance == null:
@@ -73,17 +85,17 @@ func _refresh_slots() -> void:
 		var aug = unit_instance.equipped_augments[i]
 		
 		var slot_btn = Button.new()
-		slot_btn.custom_minimum_size = Vector2(0, 26)
+		slot_btn.custom_minimum_size = Vector2(0, 24)
 		slot_btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		slot_btn.add_theme_font_size_override("font_size", 10)
+		slot_btn.add_theme_font_size_override("font_size", 9)
 		
 		if aug != null:
-			slot_btn.text = "  [%s] %s" % [aug.get_tier_name().substr(0, 1), aug.display_name]
+			slot_btn.text = " [%s] %s" % [aug.get_tier_name().substr(0, 1), aug.display_name]
 			var tier_col = Color(aug.get_tier_color_hex())
 			slot_btn.add_theme_color_override("font_color", tier_col)
 			slot_btn.tooltip_text = "%s\nRight-click to unequip" % aug.description
 		else:
-			slot_btn.text = "  + Slot %d [%s]" % [i + 1, _slot_type_name(slot_type)]
+			slot_btn.text = " + Slot %d [%s]" % [i + 1, _slot_type_name(slot_type)]
 			slot_btn.add_theme_color_override("font_color", Color(0.4, 0.4, 0.5))
 			slot_btn.tooltip_text = "Empty %s slot. Click with augment selected to equip." % _slot_type_name(slot_type)
 			
