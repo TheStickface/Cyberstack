@@ -17,8 +17,16 @@ var slot_data: Dictionary = {}
 @onready var buy_btn: Button = $Margin/VBox/BuyBtn
 
 func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_PASS
 	mouse_entered.connect(_on_mouse_entered)
 	mouse_exited.connect(_on_mouse_exited)
+	_set_mouse_filter_recursive(self)
+
+func _set_mouse_filter_recursive(node: Node) -> void:
+	for child in node.get_children():
+		if child is Control and not child is Button:
+			child.mouse_filter = Control.MOUSE_FILTER_PASS
+			_set_mouse_filter_recursive(child)
 
 func setup(p_index: int, p_data: Dictionary, player_gold: int) -> void:
 	slot_index = p_index

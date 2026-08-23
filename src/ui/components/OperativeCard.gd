@@ -25,8 +25,16 @@ var is_fielded: bool = true
 @onready var sell_btn: Button = $Margin/VBox/Actions/SellBtn
 
 func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_PASS
 	mouse_entered.connect(_on_card_mouse_entered)
 	mouse_exited.connect(_on_card_mouse_exited)
+	_set_mouse_filter_recursive(self)
+
+func _set_mouse_filter_recursive(node: Node) -> void:
+	for child in node.get_children():
+		if child is Control and not child is Button:
+			child.mouse_filter = Control.MOUSE_FILTER_PASS
+			_set_mouse_filter_recursive(child)
 
 func _on_card_mouse_entered() -> void:
 	if unit_instance and unit_instance.unit_resource:

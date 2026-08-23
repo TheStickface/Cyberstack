@@ -121,6 +121,8 @@ func _refresh_augment_tray() -> void:
 		chip.setup(aug, i)
 		chip.set_selected(selected_inventory_idx == i)
 		chip.chip_clicked.connect(_on_augment_chip_clicked)
+		chip.card_mouse_entered.connect(_on_shop_card_hovered)
+		chip.card_mouse_exited.connect(_on_card_hover_exited)
 
 func _refresh_shop() -> void:
 	# 1. Operative Recruitment Shelf (Pure Units)

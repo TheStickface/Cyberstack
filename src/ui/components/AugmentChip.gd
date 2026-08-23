@@ -5,6 +5,8 @@ extends PanelContainer
 
 signal chip_clicked(augment_res: AugmentResource, inventory_idx: int)
 signal chip_selected(chip: AugmentChip)
+signal card_mouse_entered(augment_res: AugmentResource, card_pos: Vector2)
+signal card_mouse_exited()
 
 @export var augment_resource: AugmentResource = null
 var inventory_index: int = -1
@@ -13,6 +15,21 @@ var is_selected: bool = false
 @onready var name_label: Label = $VBox/NameLabel
 @onready var slot_type_label: Label = $VBox/HBox/SlotTypeLabel
 @onready var tag_label: Label = $VBox/HBox/TagLabel
+
+func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_PASS
+	mouse_entered.connect(_on_chip_mouse_entered)
+	mouse_exited.connect(_on_chip_mouse_exited)
+	for child in get_children():
+		if child is Control:
+			child.mouse_filter = Control.MOUSE_FILTER_PASS
+
+func _on_chip_mouse_entered() -> void:
+	if augment_resource:
+		card_mouse_entered.emit(augment_resource, global_position)
+
+func _on_chip_mouse_exited() -> void:
+	card_mouse_exited.emit()
 
 func setup(aug: AugmentResource, inv_idx: int = -1) -> void:
 	augment_resource = aug

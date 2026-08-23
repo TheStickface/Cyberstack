@@ -3,14 +3,13 @@ extends PanelContainer
 
 ## Cyberpunk Floating Synergy Intelligence & Operative Profile Tooltip
 
-@onready var title_label: Label = Label.new()
-@onready var subtitle_label: Label = Label.new()
-@onready var bio_label: Label = Label.new()
-@onready var stats_label: Label = Label.new()
-@onready var ability_header: Label = Label.new()
-@onready var ability_desc: Label = Label.new()
-@onready var synergy_box: VBoxContainer = VBoxContainer.new()
-
+var title_label: Label = Label.new()
+var subtitle_label: Label = Label.new()
+var bio_label: Label = Label.new()
+var stats_label: Label = Label.new()
+var ability_header: Label = Label.new()
+var ability_desc: Label = Label.new()
+var synergy_box: VBoxContainer = VBoxContainer.new()
 var main_vbox: VBoxContainer = VBoxContainer.new()
 
 func _init() -> void:
@@ -18,7 +17,7 @@ func _init() -> void:
 	top_level = true
 	visible = false
 	z_index = 100
-	custom_minimum_size = Vector2(280, 0)
+	custom_minimum_size = Vector2(290, 0)
 	
 	var style = StyleBoxFlat.new()
 	style.bg_color = Color(0.04, 0.03, 0.10, 0.98)
@@ -36,47 +35,56 @@ func _init() -> void:
 	add_theme_stylebox_override("panel", style)
 	
 	var margin = MarginContainer.new()
+	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	margin.add_theme_constant_override("margin_left", 12)
 	margin.add_theme_constant_override("margin_right", 12)
 	margin.add_theme_constant_override("margin_top", 10)
 	margin.add_theme_constant_override("margin_bottom", 10)
 	add_child(margin)
 	
+	main_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	main_vbox.add_theme_constant_override("separation", 5)
 	margin.add_child(main_vbox)
-	main_vbox.add_theme_constant_override("separation", 6)
 	
 	# Title
+	title_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	title_label.add_theme_font_size_override("font_size", 13)
 	title_label.add_theme_color_override("font_color", Color(0, 1, 0.9))
 	main_vbox.add_child(title_label)
 	
 	# Subtitle / Role & Faction
+	subtitle_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	subtitle_label.add_theme_font_size_override("font_size", 9)
 	subtitle_label.add_theme_color_override("font_color", Color(1, 0.85, 0.2))
 	main_vbox.add_child(subtitle_label)
 	
 	# Bio
+	bio_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bio_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	bio_label.add_theme_font_size_override("font_size", 8)
 	bio_label.add_theme_color_override("font_color", Color(0.65, 0.65, 0.75))
 	main_vbox.add_child(bio_label)
 	
 	# Stats
+	stats_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	stats_label.add_theme_font_size_override("font_size", 9)
 	stats_label.add_theme_color_override("font_color", Color(0.8, 0.85, 0.95))
 	main_vbox.add_child(stats_label)
 	
 	# Ability Section
+	ability_header.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ability_header.add_theme_font_size_override("font_size", 10)
 	ability_header.add_theme_color_override("font_color", Color(1, 0.2, 0.6))
 	main_vbox.add_child(ability_header)
 	
+	ability_desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ability_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	ability_desc.add_theme_font_size_override("font_size", 8)
 	ability_desc.add_theme_color_override("font_color", Color(0.75, 0.75, 0.85))
 	main_vbox.add_child(ability_desc)
 	
 	# Synergy Intel Box
+	synergy_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	main_vbox.add_child(synergy_box)
 
 func show_for_unit(unit_res: UnitResource, impact_info: Dictionary = {}, star_lvl: int = 1) -> void:
@@ -92,6 +100,7 @@ func show_for_unit(unit_res: UnitResource, impact_info: Dictionary = {}, star_lv
 		unit_res.base_cost
 	]
 	bio_label.text = "\"%s\"" % unit_res.bio if not unit_res.bio.is_empty() else ""
+	bio_label.visible = not unit_res.bio.is_empty()
 	
 	stats_label.text = "HP: %.0f | Armor: %.0f | AD: %.0f | AP: %.0f | Spd: %.0f | Crit: %.0f%%" % [
 		unit_res.base_max_health,
@@ -103,16 +112,20 @@ func show_for_unit(unit_res: UnitResource, impact_info: Dictionary = {}, star_lv
 	]
 	
 	ability_header.text = "⚡ %s" % unit_res.ability_name
+	ability_header.visible = not unit_res.ability_name.is_empty()
 	ability_desc.text = unit_res.ability_description
+	ability_desc.visible = not unit_res.ability_description.is_empty()
 	
 	# Populate Synergy Intel Box
 	for c in synergy_box.get_children():
 		c.queue_free()
 		
 	var sep = HSeparator.new()
+	sep.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	synergy_box.add_child(sep)
 	
 	var intel_header = Label.new()
+	intel_header.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	intel_header.text = "⚡ SYNERGY INTELLIGENCE"
 	intel_header.add_theme_font_size_override("font_size", 9)
 	intel_header.add_theme_color_override("font_color", Color(0, 0.95, 0.83))
@@ -126,6 +139,7 @@ func show_for_unit(unit_res: UnitResource, impact_info: Dictionary = {}, star_lv
 		var is_dup = impact_info.get("is_duplicate", false)
 		
 		var f_lbl = Label.new()
+		f_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		if will_act:
 			f_lbl.text = "• %s: [%d -> %d] ★ ACTIVATES NEW TIER!" % [f_name, prev, nxt]
 			f_lbl.add_theme_color_override("font_color", Color(0.2, 1.0, 0.4))
@@ -137,6 +151,7 @@ func show_for_unit(unit_res: UnitResource, impact_info: Dictionary = {}, star_lv
 		
 		if is_dup:
 			var dup_lbl = Label.new()
+			dup_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			dup_lbl.text = "★ 2-COPY MERGE: Combines toward Star Level Up!"
 			dup_lbl.add_theme_font_size_override("font_size", 9)
 			dup_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.0))
@@ -145,12 +160,14 @@ func show_for_unit(unit_res: UnitResource, impact_info: Dictionary = {}, star_lv
 		var new_combos = impact_info.get("new_combos", [])
 		for combo in new_combos:
 			var c_lbl = Label.new()
+			c_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			c_lbl.text = "★ UNLOCKS COMBO: %s!" % combo.name
 			c_lbl.add_theme_font_size_override("font_size", 9)
 			c_lbl.add_theme_color_override("font_color", Color(1.0, 0.2, 0.6))
 			synergy_box.add_child(c_lbl)
 			
-	visible = true
+	synergy_box.visible = true
+	show()
 
 func show_for_augment(aug_res: AugmentResource) -> void:
 	if aug_res == null:
@@ -170,24 +187,31 @@ func show_for_augment(aug_res: AugmentResource) -> void:
 		aug_res.base_cost
 	]
 	bio_label.text = "Tags: %s" % (", ".join(tag_names) if not tag_names.is_empty() else "None")
+	bio_label.visible = true
 	
 	stats_label.text = aug_res.description
-	ability_header.text = ""
-	ability_desc.text = ""
+	ability_header.visible = false
+	ability_desc.visible = false
 	
 	for c in synergy_box.get_children():
 		c.queue_free()
-		
-	visible = true
+	synergy_box.visible = false
+	show()
 
 func update_screen_position(target_pos: Vector2, vp_size: Vector2) -> void:
-	var tip_size = size
-	var pos_x = target_pos.x + 15
-	var pos_y = target_pos.y + 10
+	var m_pos = get_global_mouse_position()
+	if m_pos.length_squared() > 10:
+		target_pos = m_pos
+		
+	var tip_size = size if size.x > 50 else Vector2(290, 240)
+	var pos_x = target_pos.x + 18
+	var pos_y = target_pos.y + 12
 	
 	# Clamp within screen bounds
 	if pos_x + tip_size.x > vp_size.x - 10:
-		pos_x = target_pos.x - tip_size.x - 15
+		pos_x = target_pos.x - tip_size.x - 18
+	if pos_x < 10:
+		pos_x = 10
 	if pos_y + tip_size.y > vp_size.y - 10:
 		pos_y = vp_size.y - tip_size.y - 10
 	if pos_y < 10:
