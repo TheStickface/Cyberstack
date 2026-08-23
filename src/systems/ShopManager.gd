@@ -46,17 +46,31 @@ func collect_round_income(base_income: int = 5, win_bonus: int = 0) -> Dictionar
 func generate_shop_offerings(district_id: int = 1, repo_instance: Object = null, num_crew: int = Constants.DEFAULT_CREW_SHOP_SLOTS, num_augments: int = Constants.DEFAULT_AUGMENT_SHOP_SLOTS) -> Array[Dictionary]:
 	current_district = district_id
 	var repo = repo_instance if repo_instance != null else _get_default_repo()
-	var odds = Constants.DISTRICT_SHOP_ODDS.get(district_id, Constants.DISTRICT_SHOP_ODDS[1])
+	var aug_odds = Constants.DISTRICT_SHOP_ODDS.get(district_id, Constants.DISTRICT_SHOP_ODDS[1])
+	var unit_odds = Constants.DISTRICT_UNIT_SHOP_ODDS.get(district_id, Constants.DISTRICT_UNIT_SHOP_ODDS[1])
 	
 	unit_slots.clear()
 	augment_slots.clear()
 	shop_slots.clear()
 	
-	# 1. Generate Pure Operative / Crew Slots (4 to start, expandable to 6)
-	var units_pool = repo.get_all_units()
+	# 1. Generate Pure Operative / Crew Slots (Tiered by District Odds)
+	var all_units = repo.get_all_units()
 	for i in range(num_crew):
-		if not units_pool.is_empty():
-			var unit_res: UnitResource = units_pool[randi() % units_pool.size()]
+		var target_tier = _roll_unit_tier(unit_odds)
+		var filtered_units: Array[UnitResource] = []
+		for u in all_units:
+			if target_tier == 1 and u.base_cost <= 2:
+				filtered_units.append(u)
+			elif target_tier == 2 and (u.base_cost == 3 or u.base_cost == 4):
+				filtered_units.append(u)
+			elif target_tier == 3 and u.base_cost >= 5:
+				filtered_units.append(u)
+				
+		if filtered_units.is_empty():
+			filtered_units = all_units
+			
+		if not filtered_units.is_empty():
+			var unit_res: UnitResource = filtered_units[randi() % filtered_units.size()]
 			var slot_data = {
 				"type": "unit",
 				"resource": unit_res,
@@ -70,9 +84,9 @@ func generate_shop_offerings(district_id: int = 1, repo_instance: Object = null,
 			unit_slots.append(empty_slot)
 			shop_slots.append(empty_slot)
 			
-	# 2. Generate Pure Augment Slots (2 to start, expandable to 5)
+	# 2. Generate Pure Augment Slots (Tiered by District Odds)
 	for i in range(num_augments):
-		var chosen_tier = _roll_tier(odds)
+		var chosen_tier = _roll_tier(aug_odds)
 		var aug_pool = repo.get_augments_by_tier(chosen_tier)
 		if aug_pool.is_empty():
 			aug_pool = repo.get_all_augments()
@@ -93,6 +107,15 @@ func generate_shop_offerings(district_id: int = 1, repo_instance: Object = null,
 			shop_slots.append(empty_slot)
 			
 	return shop_slots
+
+func _roll_unit_tier(odds: Dictionary) -> int:
+	var roll = randf()
+	var cum_prob = 0.0
+	for tier in [1, 2, 3]:
+		cum_prob += odds.get(tier, 0.0)
+		if roll <= cum_prob:
+			return tier
+	return 1
 
 func reroll_shop(repo_instance: Object = null, free_reroll: bool = false) -> bool:
 	if not free_reroll:

@@ -130,6 +130,19 @@ func _create_combatant(unit: UnitInstance, is_player: bool) -> CombatantState:
 		state.ability_power = 20.0
 		state.attack_speed = 1.0
 		
+	# Scale enemy combatants by district progression and boss tier
+	if not is_player:
+		var dist_id = combat_payload.get("district_id", 1)
+		var scaling = Constants.DISTRICT_ENEMY_SCALING.get(dist_id, {"hp_mult": 1.0, "dmg_mult": 1.0})
+		state.max_hp *= scaling.get("hp_mult", 1.0)
+		state.current_hp = state.max_hp
+		state.attack_damage *= scaling.get("dmg_mult", 1.0)
+		state.ability_power *= scaling.get("dmg_mult", 1.0)
+		if combat_payload.get("is_boss", false):
+			state.max_hp *= 1.35
+			state.current_hp = state.max_hp
+			state.attack_damage *= 1.20
+		
 	state.attack_timer = randf_range(0.0, 0.4) # Slight desync for natural flow
 	
 	# UI Box

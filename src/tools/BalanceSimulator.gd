@@ -143,7 +143,7 @@ static func simulate_full_run(starter_id: String, repo: Object) -> Dictionary:
 					var enemy_comp_templates = _build_minion_enemy_comp(repo, d_idx)
 					var enemy_crew = _instantiate_crew(enemy_comp_templates, repo)
 					
-					var battle_res = simulate_single_battle(crew, enemy_crew, repo)
+					var battle_res = simulate_single_battle(crew, enemy_crew, repo, d_idx, false)
 					if not battle_res["victory"]:
 						return {
 							"victory": false,
@@ -163,7 +163,7 @@ static func simulate_full_run(starter_id: String, repo: Object) -> Dictionary:
 					var enemy_comp_templates = _build_boss_enemy_comp(repo, d_idx)
 					var enemy_crew = _instantiate_crew(enemy_comp_templates, repo)
 					
-					var battle_res = simulate_single_battle(crew, enemy_crew, repo)
+					var battle_res = simulate_single_battle(crew, enemy_crew, repo, d_idx, true)
 					if not battle_res["victory"]:
 						return {
 							"victory": false,
@@ -210,7 +210,14 @@ static func simulate_full_run(starter_id: String, repo: Object) -> Dictionary:
 	}
 
 static func _simulate_shop_purchase(crew: Array[UnitInstance], gold: int, crew_cap: int, repo: Object) -> void:
-	# 1. Recruit units if crew cap allows
+	# 1. Star Level Combinations / Duplicate Purchases
+	for u in crew:
+		if u.star_level < 3 and gold >= u.unit_resource.base_cost:
+			if randf() < 0.35: # Chance player finds duplicate copy in shop
+				gold -= u.unit_resource.base_cost
+				u.star_level = min(3, u.star_level + 1)
+				
+	# 2. Recruit new units if crew cap allows
 	if crew.size() < crew_cap and gold >= 3:
 		var unfielded = _get_unfielded_units(crew, repo)
 		if not unfielded.is_empty():
@@ -219,7 +226,7 @@ static func _simulate_shop_purchase(crew: Array[UnitInstance], gold: int, crew_c
 				gold -= recruit_unit.base_cost
 				crew.append(UnitInstance.new(recruit_unit))
 				
-	# 2. Buy augments for open slots
+	# 3. Buy augments for open slots
 	var all_augs = repo.get_all_augments()
 	for u in crew:
 		for s_idx in range(Constants.MAX_AUGMENT_SLOTS_PER_UNIT):
@@ -277,15 +284,17 @@ static func _get_unfielded_units(crew: Array[UnitInstance], repo: Object) -> Arr
 static func simulate_single_battle(
 	player_crew: Array[UnitInstance],
 	enemy_crew: Array[UnitInstance],
-	repo: Object
+	repo: Object,
+	district_index: int = 1,
+	is_boss: bool = false
 ) -> Dictionary:
 	var player_combatants: Array[Dictionary] = []
 	for u in player_crew:
-		player_combatants.append(_create_combatant(u, repo, true))
+		player_combatants.append(_create_combatant(u, repo, true, district_index, false))
 		
 	var enemy_combatants: Array[Dictionary] = []
 	for u in enemy_crew:
-		enemy_combatants.append(_create_combatant(u, repo, false))
+		enemy_combatants.append(_create_combatant(u, repo, false, district_index, is_boss))
 		
 	var time = 0.0
 	var dt = 0.1
@@ -370,7 +379,7 @@ static func _apply_damage(target: Dictionary, dmg: float) -> void:
 			target["shield"] = 0.0
 	target["hp"] = maxf(0.0, target["hp"] - dmg)
 
-static func _create_combatant(unit: UnitInstance, repo: Object, is_player: bool) -> Dictionary:
+static func _create_combatant(unit: UnitInstance, repo: Object, is_player: bool, district_index: int = 1, is_boss: bool = false) -> Dictionary:
 	var hp = unit.calculate_effective_stat(Enums.StatType.MAX_HEALTH)
 	var shield = unit.calculate_effective_stat(Enums.StatType.SHIELD)
 	var armor = unit.calculate_effective_stat(Enums.StatType.ARMOR)
@@ -381,6 +390,15 @@ static func _create_combatant(unit: UnitInstance, repo: Object, is_player: bool)
 	var max_mana = unit.calculate_effective_stat(Enums.StatType.MAX_MANA)
 	var crit = unit.calculate_effective_stat(Enums.StatType.CRIT_CHANCE)
 	var evasion = unit.calculate_effective_stat(Enums.StatType.EVASION)
+	
+	if not is_player:
+		var scaling = Constants.DISTRICT_ENEMY_SCALING.get(district_index, {"hp_mult": 1.0, "dmg_mult": 1.0})
+		hp *= scaling.get("hp_mult", 1.0)
+		ad *= scaling.get("dmg_mult", 1.0)
+		ap *= scaling.get("dmg_mult", 1.0)
+		if is_boss:
+			hp *= 1.35
+			ad *= 1.20
 	
 	return {
 		"id": unit.unit_resource.id if unit.unit_resource else "unit",

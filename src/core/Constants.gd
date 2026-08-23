@@ -102,6 +102,22 @@ const DISTRICT_SHOP_ODDS: Dictionary = {
 	}
 }
 
+# District Unit Shop Odds (Cost 1-2 CR: Tier 1, Cost 3-4 CR: Tier 2, Cost 5 CR: Tier 3)
+const DISTRICT_UNIT_SHOP_ODDS: Dictionary = {
+	1: { 1: 0.75, 2: 0.25, 3: 0.00 },
+	2: { 1: 0.45, 2: 0.45, 3: 0.10 },
+	3: { 1: 0.25, 2: 0.50, 3: 0.25 },
+	4: { 1: 0.15, 2: 0.50, 3: 0.35 }
+}
+
+# Enemy Stat Scaling Multipliers per District (HP, Damage)
+const DISTRICT_ENEMY_SCALING: Dictionary = {
+	1: { "hp_mult": 1.00, "dmg_mult": 1.00 },
+	2: { "hp_mult": 1.35, "dmg_mult": 1.25 },
+	3: { "hp_mult": 1.75, "dmg_mult": 1.55 },
+	4: { "hp_mult": 2.40, "dmg_mult": 1.90 }
+}
+
 # Sell Refund Values
 const AUGMENT_SELL_VALUES: Dictionary = {
 	Enums.AugmentTier.COMMON: 1,
