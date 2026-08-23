@@ -397,8 +397,8 @@ static func _create_combatant(unit: UnitInstance, repo: Object, is_player: bool,
 		ad *= scaling.get("dmg_mult", 1.0)
 		ap *= scaling.get("dmg_mult", 1.0)
 		if is_boss:
-			hp *= 1.35
-			ad *= 1.20
+			hp *= 1.15
+			ad *= 1.10
 	
 	return {
 		"id": unit.unit_resource.id if unit.unit_resource else "unit",
@@ -421,25 +421,28 @@ static func _build_minion_enemy_comp(repo: Object, district_index: int) -> Array
 	match district_index:
 		1:
 			return [
-				{"unit": "runner_dash", "augments": []}
+				{"unit": "runner_dash", "augments": []},
+				{"unit": "corp_patrol", "augments": []}
 			]
 		2:
 			return [
 				{"unit": "corp_sentinel", "augments": ["common_kinetic_accelerator"]},
-				{"unit": "runner_dash", "augments": []}
+				{"unit": "runner_slasher", "augments": []},
+				{"unit": "corp_auditor", "augments": []}
 			]
 		3:
 			return [
-				{"unit": "ai_null_construct", "augments": ["rare_thermal_exhaust"]},
+				{"unit": "ai_bastion", "augments": ["rare_thermal_exhaust"]},
 				{"unit": "ai_cipher", "augments": ["rare_neural_synapse"]},
-				{"unit": "fixer_wiretap", "augments": ["rare_viral_siphon"]}
+				{"unit": "runner_nexus", "augments": ["rare_neural_synapse"]},
+				{"unit": "fixer_chemist", "augments": ["rare_viral_siphon"]}
 			]
 		4:
 			return [
-				{"unit": "corp_sentinel", "augments": ["rare_thermal_exhaust", "common_kinetic_plating"]},
-				{"unit": "corp_apex", "augments": ["rare_kinetic_rail"]},
-				{"unit": "ai_glitch", "augments": ["rare_neural_daemon"]},
-				{"unit": "fixer_broker", "augments": ["rare_viral_cascade"]}
+				{"unit": "corp_breacher", "augments": ["rare_thermal_exhaust"]},
+				{"unit": "corp_deadeye", "augments": ["rare_kinetic_rail"]},
+				{"unit": "ai_dreadnought", "augments": ["rare_neural_daemon"]},
+				{"unit": "fixer_hitman", "augments": ["rare_viral_cascade"]}
 			]
 		_:
 			return [{"unit": "runner_dash", "augments": []}]
@@ -466,11 +469,10 @@ static func _build_boss_enemy_comp(repo: Object, district_index: int) -> Array:
 			]
 		4:
 			return [
-				{"unit": "corp_sentinel", "augments": ["rare_thermal_exhaust", "legendary_supernova_core"]},
+				{"unit": "fixer_kingpin", "augments": ["legendary_viral_pandemic", "rare_thermal_exhaust"]},
 				{"unit": "corp_apex", "augments": ["legendary_kinetic_destroyer"]},
-				{"unit": "ai_glitch", "augments": ["legendary_neural_hive"]},
-				{"unit": "fixer_broker", "augments": ["legendary_viral_pandemic"]},
-				{"unit": "ai_null_construct", "augments": ["rare_thermal_exhaust"]}
+				{"unit": "ai_glitch", "augments": ["rare_neural_hive"]},
+				{"unit": "corp_sentinel", "augments": ["rare_thermal_exhaust"]}
 			]
 		_:
 			return [{"unit": "runner_blitz", "augments": []}]

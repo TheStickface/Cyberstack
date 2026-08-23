@@ -111,8 +111,8 @@ func test_effective_stat_calculation() -> Dictionary:
 	var blitz = UnitInstance.new(blitz_res)
 	
 	var base_hp = blitz.calculate_effective_stat(Enums.StatType.MAX_HEALTH)
-	if base_hp != 750.0:
-		return {"passed": false, "message": "Base HP mismatch. Expected 750, got %.1f" % base_hp, "assertions": 1}
+	if base_hp != blitz_res.base_max_health:
+		return {"passed": false, "message": "Base HP mismatch. Expected %.1f, got %.1f" % [blitz_res.base_max_health, base_hp], "assertions": 1}
 		
 	# Equip thermal core (+120 HP, +5 Armor) in slot 0 (Defensive)
 	var thermal_core = repo.get_augment("common_thermal_core")
@@ -121,13 +121,13 @@ func test_effective_stat_calculation() -> Dictionary:
 		return {"passed": false, "message": "Failed to equip thermal core on Tank", "assertions": 2}
 		
 	var new_hp = blitz.calculate_effective_stat(Enums.StatType.MAX_HEALTH)
-	if new_hp != 870.0:
-		return {"passed": false, "message": "Expected 870 HP with augment, got %.1f" % new_hp, "assertions": 3}
+	if new_hp != (blitz_res.base_max_health + 120.0):
+		return {"passed": false, "message": "Expected %.1f HP with augment, got %.1f" % [blitz_res.base_max_health + 120.0, new_hp], "assertions": 3}
 		
 	# Add global synergy bonus
 	var global_stats = {Enums.StatType.MAX_HEALTH: 50.0}
 	var total_hp = blitz.calculate_effective_stat(Enums.StatType.MAX_HEALTH, global_stats)
-	if total_hp != 920.0:
-		return {"passed": false, "message": "Expected 920 HP with global synergy, got %.1f" % total_hp, "assertions": 4}
+	if total_hp != (blitz_res.base_max_health + 170.0):
+		return {"passed": false, "message": "Expected %.1f HP with global synergy, got %.1f" % [blitz_res.base_max_health + 170.0, total_hp], "assertions": 4}
 		
 	return {"passed": true, "assertions": 4}

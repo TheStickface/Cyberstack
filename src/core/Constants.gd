@@ -113,9 +113,9 @@ const DISTRICT_UNIT_SHOP_ODDS: Dictionary = {
 # Enemy Stat Scaling Multipliers per District (HP, Damage)
 const DISTRICT_ENEMY_SCALING: Dictionary = {
 	1: { "hp_mult": 1.00, "dmg_mult": 1.00 },
-	2: { "hp_mult": 1.35, "dmg_mult": 1.25 },
-	3: { "hp_mult": 1.75, "dmg_mult": 1.55 },
-	4: { "hp_mult": 2.40, "dmg_mult": 1.90 }
+	2: { "hp_mult": 1.20, "dmg_mult": 1.15 },
+	3: { "hp_mult": 1.45, "dmg_mult": 1.30 },
+	4: { "hp_mult": 1.70, "dmg_mult": 1.45 }
 }
 
 # Sell Refund Values

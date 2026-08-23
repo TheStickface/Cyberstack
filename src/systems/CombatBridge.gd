@@ -59,6 +59,19 @@ static func _generate_enemy_squad(district_id: int, is_boss: bool, repo: Object)
 				
 		squad.append(enemy_instance)
 		
+	if is_boss and not squad.is_empty():
+		var apex_id = "runner_overdrive"
+		match district_id:
+			1: apex_id = "runner_overdrive"
+			2: apex_id = "corp_director"
+			3: apex_id = "ai_singularity"
+			4: apex_id = "fixer_kingpin"
+		var boss_res = repo.get_unit(apex_id)
+		if boss_res:
+			var boss_inst = UnitInstance.new(boss_res)
+			boss_inst.star_level = 2
+			squad[0] = boss_inst
+		
 	return squad
 
 static func _get_default_repo() -> Object:
