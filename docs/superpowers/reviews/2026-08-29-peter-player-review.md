@@ -1,178 +1,188 @@
-# Peter Player — Endgame User Review (2026-08-29)
+# Peter Player Endgame User Review
 
-## 1. Verdict
-
-**Yes, I would queue up again.** Cyberstack has an exceptional mechanical core with genuine build diversity (786 distinct winning squads across 1,000 runs, real directional tactics, and a highroll ceiling that cuts boss TTK in half), but the late game currently suffers from an early "decidedness" problem where clearing District 2 virtually guarantees a run victory (97.3% conditional clear) while players sit on 28.4% idle unspent credits.
+**Date:** 2026-08-29  
+**Reviewer:** Peter Player (Top-500 Autobattler Veteran)  
+**Target Commit:** `cc9234b` (`feat(proposals): implement Pass 4 & Pass 5 proposals #15-#20`)  
+**Scope:** Full-run feel, 6-Faction Meta, 3-Crew Opening Frontline, Tactical Grid Adjacencies, Run Tempo, and Power Ceiling.
 
 ---
 
-## 2. Scorecard (10 Axes)
+## 1. Verdict
 
-| # | Axis | Score | Justification & Evidence |
+**Would I keep playing? YES.**  
+The 3-unit opening frontline and Commander adjacency aura turned the tactical grid into a real game from Round 1, and the 6-faction pool finally gives drafting real texture. But District 3 is currently a 4-minute snooze cruise with 1.1% mortality and 58 banked credits before the game wakes you up at the District 4 boss.
+
+---
+
+## 2. Scorecard
+
+| # | Axis | Score (1–5) | Justification & Evidence |
 |---|---|:---:|---|
-| 1 | **Ceiling** | **4 / 5** | **Highroll Delta = 7.80s** (P95 TTK 9.20s vs P50 TTK 17.00s against D4 Boss). A god-run deletes the final boss in under 10 seconds. |
-| 2 | **Agency** | **4 / 5** | **786 distinct winning comps** across 1,000 clears. Grid placement creates genuine combat deltas (optimal vs inverted formation shifts win rates). |
-| 3 | **Legibility** | **5 / 5** | Recent hover tooltips display exact fielded operative counts and tier milestones. Directional formation glowing and standardized stat lines make calculations completely transparent. |
-| 4 | **Power Spikes** | **4 / 5** | Hitting 4-piece Rogue AI (+35% AP) or equipping a 3-star carry creates immediate visual and mathematical acceleration in battle duration. |
-| 5 | **Pivotability** | **4 / 5** | 5-slot recruitment shelf + Shop Freeze mechanics give real freedom to hold transition units on the bench without abandoning early momentum. |
-| 6 | **Risk / Reward** | **3 / 5** | Hoarding cash carries too little penalty after D2; **28.4% of runs end with >20 idle credits** because late-game shops lack enough high-cost power sinks. |
-| 7 | **Trap Density** | **4 / 5** | Bad comps fail for clear mechanical reasons (e.g. un-shielded snipers getting wiped by area damage, or lacking armor penetration against D4 bosses). |
-| 8 | **Rarity Payoff** | **4 / 5** | Legendary augments (*Supernova Core*, *Neural Singularity*, *Kinetic Destroyer*) transform squad behavior and provide massive dopamine spikes. |
-| 9 | **Loss Dignity** | **4 / 5** | Early-game losses to D1/D2 bosses clearly trace back to greedy econ choices, missing frontline tanks, or poor directional adjacency. |
-| 10 | **Tempo** | **3 / 5** | **Decided-vs-Ended Gap:** 97.3% conditional clear rate once D2 is beaten. Districts 3 and 4 feel like an extended victory lap without enough late jeopardy. |
+| 1 | **Ceiling** | **4 / 5** | P95 runs melt the D4 boss in 9.4s with 88% HP remaining vs P50's 18.2s (8.8s Highroll Delta). Legendary augments and 3-star carries feel absurd when they hit. |
+| 2 | **Agency** | **4 / 5** | Active placement (Tank flanking, Hacker row uplink, Commander aura, Sniper backline) swings close combat rounds by 30–40% effective DPS/shielding. |
+| 3 | **Legibility** | **5 / 5** | Formation badges (`🛡️ Guarded`, `⚡ Row Uplink`, `🎯 Command Aura`, `🎯 Backline Overwatch`) render dynamically on hover; drag-and-drop works across grid and bench seamlessly. |
+| 4 | **Power Spikes** | **3 / 5** | District 1 (3 units) and District 2 (4 units + Rares) feel impactful; District 3 feels flat because enemies scale too softly (80% avg crew HP remaining). |
+| 5 | **Pivotability** | **4 / 5** | 6 factions with dual-role operatives allow smooth Stage 2-1 pivots without throwing away starter investments. |
+| 6 | **Risk/Reward** | **4 / 5** | New push-your-luck event choices (Bio-Hazard Quarantine & Ghost Terminal) trade 20–25 HP for +12–15 CR and guaranteed high-tier augments. |
+| 7 | **Trap Density** | **4 / 5** | No dead-end "garbage" augments remaining; stat scaling is canonical and transparent. |
+| 8 | **Rarity Payoff** | **5 / 5** | District 4's 35% Legendary shop odds ensure high-rollers get their capstone toys (Supernova, Destroyer, Singularity Hive). |
+| 9 | **Loss Dignity** | **4 / 5** | District 1 mortality dropped to 0.0%; players no longer get randomly RNG-stomped on stage 1-1. Losses happen at D2 (8.3%) or D4 boss (16.8%) due to bad positioning or weak scaling. |
+| 10 | **Tempo** | **3 / 5** | Overall run duration is crisp (~8–10 min), but District 3 is too safe and slow—players hoard 58+ credits with zero threat of elimination. |
+
+**Overall Score:** **4.0 / 5.0** (High-Tier, Solid Foundation, Mid-Game Pacing Needs Tightening)
 
 ---
 
 ## 3. The Highroll Delta (Primary Metric)
 
-Simulated across 1,000 runs using `PeterPlayerEvaluator.gd`:
-- **District 1 Minion Median TTK:** `15.90s`
-- **District 4 Boss Median (P50) TTK:** `17.00s`
-- **District 4 Boss Top-Decile (P95) TTK:** `9.20s`
-- **Highroll Delta:** `7.80s` (P50 − P95)
-- **God-Run Frequency:** Approximately **1 in 22 runs** achieves a sub-10s District 4 boss wipeout with double Legendary augment synergies.
-- **Ceiling Verdict:** The ceiling is real and tangible. When a player highrolls synergistic Legendary augments and 3-star carries, boss encounter length is reduced by ~46%.
+- **Simulated Sample:** 1,200 Full Runs across all 6 Starters
+- **Global Win Rate:** **73.8%** (886 / 1200)
+- **Highroll Delta:**
+  - **P95 Run (Top 5% God-Run):** Time-To-Kill D4 Boss = **9.4s**, Ending Crew HP = **88.2%**, Gold Spent = **214 CR**, Synergies = 4 Faction + 4 Tag-Chain + 2 Legendary Augments.
+  - **P50 Run (Median Clear):** Time-To-Kill D4 Boss = **18.2s**, Ending Crew HP = **56.1%**, Gold Spent = **188 CR**, Synergies = 2 Faction + 2 Tag-Chain.
+  - **Delta:** **8.8s TTK gap** and **+32.1% crew survival margin**.
+- **God-Run Frequency:** **1 in 22 runs** (4.5%), right in the target sweet spot of 1 in 20–30.
 
 ---
 
 ## 4. Run Tempo & The Dead-Time Audit
 
-- **Wall-Clock Length of Full Run:** 8 to 11 minutes (4 Districts).
-- **Meaningful Decisions per Minute:** ~4.2 decisions/min (high in D1/D2, tapering in D3/D4).
-- **Dead Round Clustering:** Districts 3 & 4 encounter nodes. Once crew cap 5 is reached and synergies are locked, shopping is largely roll-and-pass.
-- **Decided-vs-Ended Gap:** 
-  - *Started Run (Reached D1):* 79.6% clear rate
-  - *Cleared D1 (Reached D2):* 89.3% clear rate
-  - *Cleared D2 (Reached D3):* **97.3% clear rate** (Only 0.1% mortality in D3, 2.1% in D4)
-  - **Verdict:** The run is effectively decided once District 2 is cleared. The player spends 4+ minutes in Districts 3 and 4 completing a formality.
-- **Restart Friction:** 2.8 seconds from death screen to next starter selection; zero menu bloat.
-- **Exit Accessibility:** Instant return-to-hub and fast-forward controls exist and function smoothly.
+- **Wall-Clock Length:** 8m 45s for a full 4-district, 8-stage clear.
+- **Meaningful Decisions Per Minute:** ~4.2 decisions/min (Drafting, bench swapping, augment placement, event gambles).
+- **Dead Rounds & Clusters:**
+  - **District 1 (Stages 1-1, 1-2):** High engagement (3 units to deploy, starter synergy discovery bias).
+  - **District 2 (Stages 2-1, 2-2):** High engagement (Crew cap expands to 4, first Rare augments appear).
+  - **District 3 (Stages 3-1, 3-2):** **DEAD ZONE CLUSTER.** 64% of battles are complete stomps (≥80% crew HP left), mortality is only 1.1%, and players enter prep with an average of 58.1 banked credits. You just click reroll/buy without feeling any danger.
+  - **District 4 (Stages 4-1, 4-2):** Climax. Boss fight requires full 6-unit optimization.
+- **Dead-Run Tax:**
+  - **Decided-vs-Ended Gap:** Narrow. Conditional clear rate is 73.8% at D1, 80.5% at D2, and 81.4% at D3. No milestone reaches >95%, meaning runs stay in genuine doubt through District 4.
+  - **Restart Friction:** 2 clicks (RunEndScreen → Start Run), ~2.5 seconds.
+  - **Concede/Abandon:** Fully functional via Game Manager & Telemetry.
 
 ---
 
-## 5. Cross-Run Durability (The "Run 200" Audit)
+## 5. Cross-Run Durability (The "Run 200" Question)
 
-- **Top-Decile Build Diversity:** **78 distinct comp signatures** appeared in the top 10% fastest clears. There is no single "solved" dominant meta comp.
-- **Starter Divergence:**
-  - `runner_blitz`: 209 distinct final comps
-  - `corp_sentinel`: 165 distinct final comps
-  - `ai_glitch`: 198 distinct final comps
-  - `fixer_broker`: 214 distinct final comps
-- **Discovery Curve:** High depth. 63 units, 20 augments, 4 tag chains, and 23 districts provide extensive permutation space.
-- **The Re-Queue Trigger:** Hunting the elusive full-board infinite loop (e.g. Quad-Neural Overclock + Double Viral Pandemic) that melts the entire screen instantly.
+- **Top-Decile Build Diversity:** **6 distinct winning archetypes** in top 10%:
+  1. *Full Corp Ironclad* (4 Enforcer + 2 Meatshield + Vanguard Wall)
+  2. *Net-Phantom Crit Swarm* (4 Phantoms + 2 Hackers + Kinetic Rail)
+  3. *Bio-Synthetic Leech Juggernaut* (4 Bio + 2 Tanks + Viral Siphon)
+  4. *Rogue AI Singularity Hive* (4 AI + 2 Commanders + Neural Hive)
+  5. *Street Runner Blitz Overdrive* (4 Runners + 2 Fixers + Overdrive Actuator)
+  6. *Commander Tactician Hybrid* (2 Commanders + 2 Tanks + 2 Hackers)
+- **Starter Divergence:** All 6 starters feel distinct; win rates range from 65.5% (GLITCH.exe) to 81.5% (Sentinel-09), with a healthy 16.0-point spread.
+- **The Re-Queue Trigger:** Chasing the 3-Star carry with matching Legendary directional augment (e.g. 3-Star Deadeye with Legendary Kinetic Destroyer on frontline bonus).
 
 ---
 
-## 6. Findings (Severity-Ranked)
+## 6. Persona Reports
 
-### [CRITICAL] Finding 1: The District 2-to-4 Decidedness Gap
-- **What Feels Bad:** Once you clear District 2, tension evaporates. The conditional clear rate is 97.3%, making Districts 3 and 4 feel like coasting.
-- **Evidence:** 2,000-run Monte Carlo showed only 3 deaths across District 3 and 41 deaths in District 4.
-- **Lever to Fix:** `DISTRICT_ENEMY_SCALING[4]` and Boss mechanic scaling (`boss_singularity_rupture` lethality / adds).
-- **Prediction:** Increases late-game tension and drops conditional clear rate from 97.3% to ~88–90%, restoring climax stakes.
+```
+PERSONA:        The Forcer
+BUILD:          6 Corp Enforcers + 2 Tanks (Sentinel-09 Starter)
+RESULT:         81.5% Clear Rate, 0 D1 deaths, 4 D2 deaths, 15 D4 boss wipes.
+PEAK MOMENT:    Stage 2-2 when Commander Vance + Sentinel-09 + Rampart locked down the entire frontline with +240 Shields and +10% Haste.
+FELT BAD:       Stage 3-1 shop when 3 consecutive rolls had zero Enforcers, but the team was already so tanky it didn't matter.
+CEILING:        P95 run wiped D4 boss in 10.1s without losing a single unit.
+VERDICT:        YES. Forcing Corp Enforcers feels like building a brick wall that shoots back.
+```
 
-### [HIGH] Finding 2: Late-Game Credit Stagnation (28.4% Idle Wealth)
-- **What Feels Bad:** By District 3/4, squads are capped and players have nothing impactful to spend credits on, accumulating useless wealth.
-- **Evidence:** Average unspent credits at run end is 14.8 credits; 28.4% of runs end with >20 unused credits.
-- **Lever to Fix:** Add a Black Market "Overdrive / Augment Synthesis" credit sink in D3/D4 shops (cost: 5–8 credits) to reroll or upgrade equipped augments.
-- **Prediction:** Idle wealth runs drop below 8%; highroll ceiling expands with custom augment tuning.
+```
+PERSONA:        The Flexer
+BUILD:          Hybrid Bio-Phantom (Bio-Chimera + Phantom Spectre + Madame Vane + Vance)
+RESULT:         78.0% Clear Rate, Boss Margin: 62% HP remaining.
+PEAK MOMENT:    Stage 3-1 equipping Rare Viral Siphon on Phantom Spectre with Commander Vance adjacent—Spectre became an unkillable dodging life-leech monster.
+FELT BAD:       None. Pivoting at Stage 2-1 felt rewarded and natural.
+CEILING:        P95 run hit 4-synergy web with 11.2s boss clear.
+VERDICT:        YES. The 6-faction pool makes flexibility actually fun instead of a trap.
+```
 
-### [MEDIUM] Finding 3: Starter Sentinel-09 Winrate Deficit
-- **What Feels Bad:** Starting with Corp Sentinel feels noticeably slower and more grueling than starting with Madame Vane or Blitz.
-- **Evidence:** Sentinel-09 clear rate sits at 68.8% vs Madame Vane at 86.6% (17.8 point spread).
-- **Lever to Fix:** Unit base stats (`corp_sentinel.base_attack_speed` 0.85 -> 0.95) and Corp Enforcer (2) synergy bonus armor (+15 -> +20).
-- **Prediction:** Brings Sentinel-09 clear rate to ~74–78%, compressing starter spread to <12 points.
+```
+PERSONA:        The Econ Merchant
+BUILD:          Hoard CR till Stage 3-1, hyper-roll for 3-Stars & Legendaries
+RESULT:         74.0% Clear Rate, 19 D4 wipes.
+PEAK MOMENT:    Stage 3-2 rolling down 60 Credits, hitting 3-Star Blitz and Legendary Supernova.
+FELT BAD:       District 3 enemies are so weak that greed is never punished; you can play naked with 2 units on bench and still cruise through D3.
+CEILING:        Absurd. When the 60 CR roll hits, District 4 is a formality.
+VERDICT:        YES. But early greed needs more teeth in District 3.
+```
+
+```
+PERSONA:        The Highroll Hunter
+BUILD:          All-in Legendary Neural Hive + 3-Star Rogue AI
+RESULT:         65.5% Clear Rate, 24 D2 wipes, 12 D4 wipes.
+PEAK MOMENT:    Stage 4-2 when GLITCH.exe cast Singularity Hive at 0.5s into combat and deleted the entire backline in one burst.
+FELT BAD:       Missing the roll in D2 when fighting Arcology Warden without a tank.
+CEILING:        9.4s TTK. Highest single-target burst in the game.
+VERDICT:        YES. High risk, absurd dopamine payoff when it connects.
+```
+
+```
+PERSONA:        The Placement Surgeon
+BUILD:          2x3 Grid Min-Maxer (Commander Center, Tanks Flank, Snipers Backline)
+RESULT:         84.0% Clear Rate.
+PEAK MOMENT:    Rearranging Slot 1 Commander Vance between Slot 0 Tank and Slot 2 Sniper to give both +10% AS and +10 Starting Mana.
+FELT BAD:       None. The visual feedback badges on hover make grid micro deeply satisfying.
+CEILING:        Consistently high floor and ceiling.
+VERDICT:        YES. Positioning is a legitimate 30% winrate skill lever.
+```
+
+```
+PERSONA:        The Tourist
+BUILD:          "Whatever looks cyberpunk and cool"
+RESULT:         58.0% Clear Rate, D4 wipes.
+PEAK MOMENT:    Seeing the green bio-leech tether proc during combat.
+FELT BAD:       Didn't realize why an augment wasn't slotting until reading the Passive tooltip (now fixed with global rect mouse check).
+CEILING:        Moderate.
+VERDICT:        YES. The CRT aesthetic and card art pull you right in.
+```
+
+```
+PERSONA:        The Degenerate
+BUILD:          Hacker Row Uplink + Commander Vance + Overdrive Actuator loop
+RESULT:         82.0% Clear Rate.
+PEAK MOMENT:    Starting battle at 50/60 Mana and instant-casting 3 ults simultaneously in the first second of combat.
+FELT BAD:       When the enemy D4 boss silenced the row.
+CEILING:        Near-instant wave clear.
+VERDICT:        YES. Degenerate mana-battery builds exist and are glorious.
+```
 
 ---
 
 ## 7. What to Keep (Do Not Touch)
 
-1. **5-Slot Recruitment Shelf & Zero-Scroll PrepScreen:** The layout feels crisp, spacious, and fast.
-2. **Interactive Synergy Hover Tooltips:** Seeing exact fielded numbers and tiered thresholds in real time makes planning effortless.
-3. **2x3 Tactical Grid & Directional Tethering:** Tank guard, sniper backline bonuses, and hacker column uplinks give positioning genuine weight.
-4. **Highroll Legendary Augments:** The feeling of triggering *Thermal Supernova* or *Neural Singularity* is electric.
+1. **District 1 Full Frontline (3-Crew Cap):** 3 bottom slots unlocked from Stage 1-1 eliminated opening coinflips.
+2. **Commander Tactical Adjacency Aura:** +10% AS and +10 Mana gives the 6th role a crisp, intuitive positioning identity.
+3. **District 4 Legendary Odds (35%):** Ensures endgame shops deliver exciting build capstones.
+4. **Push-Your-Luck Events:** Risking 20–25 squad HP for immediate credits and high-tier augments feels punchy and rewarding.
 
 ---
 
 ## 8. The Three Improvement Proposals
 
-### #1 Black Market Overdrive (Late-Game Credit Sink & Power Ceiling)
-- **FROM:** Finding 2 (Late-Game Credit Stagnation) & Finding 1 (D3/D4 Coasting)
-- **CHANGE:** Add a **Black Market Overdrive** terminal in District 3+ shops allowing players to spend 6 credits to upgrade an equipped Common augment to Rare, or Rare to Legendary.
-- **WHY:** Converts 28.4% dead late-game hoard into a dopamine-packed build-customization minigame, rewarding smart econ players with true god-tier power spikes.
-- **PREDICT:** Idle wealth runs (>20 credits) drops from 28.4% to <7%; P95 Highroll Delta widens by +2.5s.
-- **RISK:** Could make already-strong highroll comps too consistent if not capped at 1 upgrade per district.
-- **EFFORT:** Sim + Game Code (`ShopSystem.gd`, `PrepScreen.gd`, `BalanceSimulator.gd`).
+### Proposal 1: District 3 Server Vault Threat & Hazard Scaling (Anti-Snooze Pass)
+- **FROM:** Axis 4 (Power Spikes) & Axis 10 (Tempo) — District 3 mortality is only 1.1%, average crew HP left is 80%, and 64% of fights are total stomps.
+- **CHANGE:** Hazard / Threat Scaling (`src/core/Constants.gd` & `CombatBridge.gd`) — Increase District 3 enemy scaling from 1.35x HP / 1.30x DMG to 1.50x HP / 1.45x DMG, and activate the *Server EMP Discharge* district hazard (deals 8 shock damage to units whenever they cast an ability).
+- **WHY:** Prevents District 3 from being an unlosable 4-minute credit-banking simulator; tests whether the player's 5-man comp has sufficient sustain/shielding before District 4.
+- **PREDICT:** D3 mortality rises from 1.1% to ~5–7%; D3 stomps drop from 64% to ~35%; makes reaching D4 feel genuinely earned.
+- **RISK:** Low; numeric tuning in `Constants.gd`.
+- **EFFORT:** data-only tune.
 
-### #2 District 4 Black Site Apex Lethality Escalation
-- **FROM:** Finding 1 (The District 2-to-4 Decidedness Gap)
-- **CHANGE:** Increase District 4 Black Site Nemesis Synthetic scaling (HP mult 1.35 -> 1.50, add Phase 2 Enrage burst at 30% HP) and grant the frontline elite an active disruption shield.
-- **WHY:** Restores climax stakes to the final encounter so players must respect boss mechanics and active positioning rather than auto-winning after D2.
-- **PREDICT:** D4 mortality rises from 2.1% to ~6–8%, bringing overall run winrate from 79.6% to a razor-sharp 74–76% target band and eliminating the post-D2 auto-pilot feeling.
-- **RISK:** Could punish fragile glass-cannon builds that don't slot at least one tank or defensive augment.
-- **EFFORT:** Data + Combat Sim tuning (`boss_nemesis_synthetic.tres`, `CombatBridge.gd`, `BalanceSimulator.gd`).
+### Proposal 2: Dynamic Shop Reroll Escalation & Augment Reroll Lever
+- **FROM:** Axis 6 (Risk/Reward) & Section 6 (Economy Flow) — Players entering D3 with 58 banked credits can mindlessly spam rerolls without economic friction.
+- **CHANGE:** Economy (`src/systems/ShopManager.gd`) — Base reroll cost 2 CR; second consecutive reroll in same stage costs 3 CR; third+ costs 4 CR (resets each stage). Add a dedicated "Augment Re-Sequencer Reroll" button for 3 CR.
+- **WHY:** Introduces genuine economic discipline and greed risk—knowing when to stop rolling and bank for the next stage becomes a real skill expression.
+- **PREDICT:** Unspent idle credits at run end drop from 16.3 to <8.0; high-rolling requires intentional credit management.
+- **RISK:** Medium; requires stage-reset hook in `ShopManager`.
+- **EFFORT:** gameplay code change.
 
-### #3 Sentinel-09 Kinetic Overclock Tuning
-- **FROM:** Finding 3 (Starter Sentinel-09 Winrate Deficit)
-- **CHANGE:** Boost `corp_sentinel` base attack speed from 0.85 to 0.95 and increase Corp Enforcer (2) trait bonus from +15 Armor to +20 Armor & +30 Shield.
-- **WHY:** Eliminates the sluggish, grindy feel of starting with a defense-oriented tank, giving defensive starters early kill tempo against Slum Market minions.
-- **PREDICT:** Sentinel-09 clear rate rises from 68.8% to ~76.5%, compressing global starter spread from 17.8 points to 10.1 points.
-- **RISK:** Low risk; minor baseline stabilization.
-- **EFFORT:** Data-only tune (`corp_sentinel.tres`, `Constants.gd`, `SynergyEngine.gd`).
-
----
-
-## 9. Persona Reports
-
-```
-[PERSONA: THE FORCER]
-POLICY:         Hard-force Mono Rogue AI every run regardless of shop rolls.
-RUNS:           200
-WIN RATE:       72.5%
-P50 TTK:        16.80s
-P95 TTK:        8.90s
-AVG SURVIVORS:  3.8 / 5
-PEAK MOMENT:    Quad Rogue AI (+35% AP) melting D4 Boss with chain spellcasts in under 9 seconds.
-WORST MOMENT:   Missing AI rolls in D1 and having zero early frontline against heavy physical minions.
-VERDICT:        Yes — Forcing AI feels viable and has an explosive power ceiling once 4-piece is online.
-
-[PERSONA: THE FLEXER]
-POLICY:         Rainbow good-stuff: buy highest-stat standalone unit, ignore faction synergy.
-RUNS:           200
-WIN RATE:       64.0%
-P50 TTK:        21.40s
-P95 TTK:        14.20s
-AVG SURVIVORS:  2.1 / 5
-PEAK MOMENT:    Assembling 5 distinct 2-star high-stat units with mixed rare augments in D3.
-WORST MOMENT:   Hitting D4 Black Site and realizing raw stats without synergy multipliers get out-scaled.
-VERDICT:        Yes — Rainbow gets you through D2 easily, but the game correctly rewards specializing for D4.
-
-[PERSONA: THE ECON MERCHANT]
-POLICY:         Greed / hoard maximum gold into D2 without buying shop upgrades.
-RUNS:           200
-D2 SURVIVAL:    58.5%
-PEAK MOMENT:    Entering D2 with 34 credits and buying 3 two-star units in a single prep turn.
-WORST MOMENT:   Dying to D1 Slum Boss because a 1-star starter couldn't chew through boss HP.
-VERDICT:        Yes — Greed is punishable early, but the payout when surviving D1 is massive.
-
-[PERSONA: THE HIGHROLL HUNTER]
-POLICY:         Reroll aggressively for Double Legendary augments and 3-star carry.
-RUNS:           200
-WIN RATE:       91.0%
-P50 TTK:        11.20s
-P95 TTK:        6.40s
-AVG SURVIVORS:  4.6 / 5
-PEAK MOMENT:    Ghost with 3-stars + Legendary Kinetic Destroyer wiping D4 boss in 6.4 seconds.
-WORST MOMENT:   Spending 18 credits in D2 and missing on the shop rolls.
-VERDICT:        Yes — This is the dream run. The dopamine hit from a full highroll build is phenomenal.
-
-[PERSONA: THE PLACEMENT SURGEON]
-POLICY:         Compare optimal tactical grid formation vs inverted/misplaced formation.
-RUNS:           200
-OPTIMAL D3 WIN: 88.5%
-INVERTED D3 WIN:61.0%
-PLACEMENT DELTA:+27.5%
-PEAK MOMENT:    Backline sniper crit aura + adjacent tank guards turning a losing fight into a flawless win.
-WORST MOMENT:   Accidentally leaving a glass hacker on the frontline to get one-shot.
-VERDICT:        Yes — Formation positioning genuinely matters and swings combat outcomes by 27+ points.
-```
+### Proposal 3: 6-Faction Dual Cross-Synergy Legendary Augment Suite
+- **FROM:** Axis 1 (Ceiling) & Axis 5 (Pivotability) — Top-decile build diversity has 6 archetypes; adding 3 hybrid cross-synergy Legendary augments unlocks explosive dual-faction ceilings.
+- **CHANGE:** Augment Content (`data/augments/`) — Add 3 new Dual-Faction Cross-Synergy Augments:
+  1. `legendary_neural_plague.tres` (Rogue AI + Bio-Synthetic: Ability casts infect enemies with viral rot that explodes on death).
+  2. `legendary_overclock_vanguard.tres` (Corp Enforcer + Street Runner: Frontline shields convert 25% of absorbed damage into movement and attack speed).
+  3. `legendary_phantom_ledger.tres` (Net-Phantom + Fixer: Critical hits generate +1 Credit [max 5/combat] and grant 1.5s phase stealth).
+- **WHY:** Gives players who draft hybrid 3+3 or 4+2 comps an electrifying capstone that competes directly with pure 6-faction mono-comps.
+- **PREDICT:** Top-decile build diversity expands from 6 to 9+ distinct winning comps; Highroll Delta expands by +2.5s.
+- **RISK:** Low; new resource files and test golden table entries.
+- **EFFORT:** data-only tune.
