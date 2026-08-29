@@ -20,15 +20,16 @@ triggers_combat = false
 
 [sub_resource type="Resource" id="Resource_contain_2"]
 script = ExtResource("2_choice")
-text = "Purge laboratory bio-reactor with disinfectant (-3 Credits)"
-outcome_description = "You neutralize the biological leak, earning a civil defense voucher (+10 Credits)."
-required_gold = 3
+text = "Extract experimental serum [Risk Contamination]"
+outcome_description = "You extract volatile pathogen cultures, securing +15 Credits and the Rare Augment, but your squad suffers 20 HP contamination damage."
+required_gold = 0
 required_role = 6
 required_faction = 0
-reward_type = 0
-reward_gold = 10
+reward_type = 1
+reward_gold = 15
+reward_augment = ExtResource("3_aug")
 penalty_gold = 0
-penalty_health_cost = 0.0
+penalty_health_cost = 20.0
 triggers_combat = false
 
 [resource]

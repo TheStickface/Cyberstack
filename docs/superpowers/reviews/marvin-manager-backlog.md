@@ -165,7 +165,7 @@ RISK:       Very low; pure data .tres update.
 EFFORT:     data-only tune
 
 #15 District 4 Black Market Legendary Augment Siphon Odds
-STATUS:     new
+STATUS:     done
 PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass4.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass4.md)
 ORIGIN:     Simon Seer — Black Market Singularity Nodes
 CHANGE:     Economy / Shop Odds (src/core/Constants.gd) — Set DISTRICT_SHOP_ODDS[4] Tier-3 (Legendary) odds to 0.35 (up from 0.20).
@@ -175,7 +175,7 @@ RISK:       Low; single dictionary entry in Constants.gd.
 EFFORT:     data-only tune
 
 #16 Bio-Hazard Quarantine High-Yield Siphon Risk Branch
-STATUS:     new
+STATUS:     done
 PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass4.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass4.md)
 ORIGIN:     Simon Seer — Contagion Ledger Extraction
 CHANGE:     Event Balancing (data/events/event_bio_hazard_quarantine.tres) — Choice 2 "Extract Experimental Serum" grants +15 Credits and 1 Rare Augment roll for 20.0 HP crew penalty.
@@ -189,7 +189,7 @@ EFFORT:     data-only tune
 ## Pass 5 (2026-08-29)
 
 #17 Commander Tactical Grid Adjacency Aura
-STATUS:     new
+STATUS:     done
 PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass5.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass5.md)
 ORIGIN:     Simon Seer — Overclock Command Array
 CHANGE:     Tactical Formations (src/systems/CrewManager.gd) — Add Commander formation aura granting +10% Attack Speed and +10 Starting Mana to adjacent allies.
@@ -199,7 +199,7 @@ RISK:       Low; isolated calculation in CrewManager.calculate_formation_bonuses
 EFFORT:     gameplay code change
 
 #18 Bio-Phantom Neuro-Toxic Siphon Cross-Synergy Augment (Rare)
-STATUS:     new
+STATUS:     done
 PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass5.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass5.md)
 ORIGIN:     Simon Seer — Venomous Phase Shift
 CHANGE:     Augment Stats (data/augments/rare_viral_siphon.tres) — Stat modifiers: +18 AD, +10% Evasion; life-steal drain on crit.
@@ -209,7 +209,7 @@ RISK:       Very low; single augment .tres update.
 EFFORT:     data-only tune
 
 #19 District 2 & 3 Encounter Credit Pacing Curve
-STATUS:     new
+STATUS:     done
 PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass5.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass5.md)
 ORIGIN:     Simon Seer — Syndicate Dividend Rebalance
 CHANGE:     Economy / Payouts (src/core/Constants.gd) — Set DISTRICT_ENCOUNTER_PAYOUTS for District 2 and 3 to 5 Credits (up from 4).
@@ -219,7 +219,7 @@ RISK:       Low; dictionary adjustment in Constants.gd.
 EFFORT:     data-only tune
 
 #20 Abandoned Cyberware Lab High-Yield Terminal Risk Branch
-STATUS:     new
+STATUS:     done
 PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass5.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass5.md)
 ORIGIN:     Simon Seer — Neural Terminal Extraction
 CHANGE:     Event Balancing (data/events/event_abandoned_cyberware_lab.tres) — Choice 2 "Extract Classified Blueprints" rewards +1 Rare Augment and +12 Credits for 25.0 HP crew penalty.

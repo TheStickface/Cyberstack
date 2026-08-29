@@ -20,15 +20,16 @@ triggers_combat = false
 
 [sub_resource type="Resource" id="Resource_choice_2"]
 script = ExtResource("2_choice")
-text = "Siphon deep core ledgers [Risk Bio-Shock]"
-outcome_description = "You siphon 12 digital credits, but suffer a 15 HP electrical backlash."
+text = "Extract classified blueprints [Risk Bio-Shock]"
+outcome_description = "You siphon encrypted military schematics, securing +12 Credits and the Legendary Augment, but suffer a 25 HP neural backlash."
 required_gold = 0
 required_role = 6
 required_faction = 0
-reward_type = 0
+reward_type = 1
 reward_gold = 12
+reward_augment = ExtResource("3_aug")
 penalty_gold = 0
-penalty_health_cost = 15.0
+penalty_health_cost = 25.0
 triggers_combat = false
 
 [resource]

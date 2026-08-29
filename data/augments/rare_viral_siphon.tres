@@ -15,7 +15,8 @@ tags = Array[int]([1])
 base_cost = 4
 stat_modifiers = {
 0: 120.0,
-1: 15.0
+1: 18.0,
+10: 0.1
 }
 directional_target = 5
 directional_modifiers = {

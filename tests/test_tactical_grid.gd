@@ -148,8 +148,11 @@ func test_formation_synergy_calculations() -> void:
 	# Place Tank on slot 0 (Row 1, Col 0 - Bottom Left)
 	# Place Hacker on slot 1 (Row 1, Col 1 - Bottom Center) -> adjacent to Tank!
 	# Place Sniper on slot 4 (Row 0, Col 1 - Top Center) -> Backline!
+	# Place Commander on slot 2 (Row 1, Col 2 - Bottom Right) -> adjacent to Hacker!
+	var commander = UnitInstance.new(repo.get_unit("corp_commander"))
 	crew_mgr.place_unit_on_grid(tank, 0)
 	crew_mgr.place_unit_on_grid(hacker, 1)
+	crew_mgr.place_unit_on_grid(commander, 2)
 	crew_mgr.place_unit_on_grid(sniper, 4)
 	
 	var bonuses = crew_mgr.calculate_formation_bonuses()
@@ -159,6 +162,8 @@ func test_formation_synergy_calculations() -> void:
 	if bonuses.has(hacker):
 		var h_bonus = bonuses[hacker]
 		_assert(h_bonus["shield_bonus"] >= 120.0, "Hacker adjacent to Tank should receive at least 120 shield bonus")
+		_assert(h_bonus["attack_speed_bonus"] >= 0.10, "Hacker adjacent to Commander should receive at least +10% Attack Speed")
+		_assert(h_bonus["starting_mana_bonus"] >= 10.0, "Hacker adjacent to Commander should receive at least +10 Starting Mana")
 		
 	if bonuses.has(sniper):
 		var s_bonus = bonuses[sniper]

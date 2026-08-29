@@ -181,7 +181,7 @@ func _augment_golden() -> Dictionary:
 		"rare_viral_cascade": ["", "ON ALLY TAG TRIGGER", "+12% Attack Speed", "", []],
 		"rare_neural_synapse": ["Synaptic burst at combat start", "ON COMBAT START", "+25 Starting Mana, +15 Speed", "ABOVE", ["+25 Starting Mana", "+10 Speed"]],
 		"rare_thermal_exhaust": ["Thermal burn on ability cast", "ON ABILITY CAST", "+30 Ability Power, +15 Starting Mana", "SAME ROW", ["+25 Ability Power"]],
-		"rare_viral_siphon": ["Leech HP from target", "ON ATTACK", "+120 Max Health, +15 Attack Damage", "ADJACENT", ["+80 Max Health"]],
+		"rare_viral_siphon": ["Leech HP from target", "ON ATTACK", "+120 Max Health, +18 Attack Damage, +10% Evasion", "ADJACENT", ["+80 Max Health"]],
 		"legendary_kinetic_destroyer": ["Piercing burst to nearby enemies", "ON ATTACK", "+45 Attack Damage, +15 Armor", "FRONTLINE", ["+50 Attack Damage", "+15% Crit Chance"]],
 		"legendary_neural_hive": ["", "ON ABILITY CAST", "+50 Ability Power, +30 Starting Mana", "", []],
 		"legendary_thermal_supernova": ["", "ON ABILITY CAST", "+75 Ability Power", "", []],

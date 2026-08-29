@@ -477,12 +477,30 @@ func calculate_formation_bonuses() -> Dictionary:
 			u_bonuses["crit_bonus"] += 0.25
 			u_bonuses["formation_tags"].append("🎯 Backline Overwatch (+25% Crit)")
 			
-		# 4. Operative-Specific Directional Passives
+		# 4. Base Commander Tactician Aura: Commanders grant +10% Attack Speed & +10 Starting Mana to orthogonally adjacent allies
+		var adjacent_units_all = []
+		if left_neighbor: adjacent_units_all.append(left_neighbor)
+		if right_neighbor: adjacent_units_all.append(right_neighbor)
+		var above_neighbor = get_unit_at_coords(row - 1, col)
+		var below_neighbor = get_unit_at_coords(row + 1, col)
+		if above_neighbor: adjacent_units_all.append(above_neighbor)
+		if below_neighbor: adjacent_units_all.append(below_neighbor)
+		
+		var commander_adj_count = 0
+		for adj_u in adjacent_units_all:
+			if adj_u.unit_resource and adj_u.unit_resource.role == Enums.UnitRole.COMMANDER:
+				commander_adj_count += 1
+		if commander_adj_count > 0:
+			u_bonuses["attack_speed_bonus"] += 0.10 * commander_adj_count
+			u_bonuses["starting_mana_bonus"] += 10.0 * commander_adj_count
+			u_bonuses["formation_tags"].append("🎯 Command Aura (+%d%% Haste, +%d Mana)" % [10 * commander_adj_count, 10 * commander_adj_count])
+			
+		# 5. Operative-Specific Directional Passives
 		var u_res = unit.unit_resource
 		if u_res and u_res.directional_target != Enums.GridDirection.NONE:
 			_apply_directional_mods(unit, slot_idx, u_res.directional_target, u_res.directional_modifiers, u_res.directional_passive_description, report)
 			
-		# 5. Equipped Augment Directional Modifiers
+		# 6. Equipped Augment Directional Modifiers
 		for aug in unit.equipped_augments:
 			if aug and aug.directional_target != Enums.GridDirection.NONE:
 				_apply_directional_mods(unit, slot_idx, aug.directional_target, aug.directional_modifiers, "%s Synergy" % aug.display_name, report)
