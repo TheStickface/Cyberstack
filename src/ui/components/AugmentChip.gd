@@ -113,7 +113,7 @@ func _update_ui() -> void:
 		name_label.text = augment_resource.display_name
 		
 	if slot_type_label:
-		slot_type_label.text = "[%s]" % Enums.role_to_string(augment_resource.slot_type as int as Enums.UnitRole)
+		slot_type_label.text = "[%s]" % Enums.slot_type_to_string(augment_resource.slot_type)
 		
 	if tag_label:
 		var tag_names: Array[String] = []

@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/phantom_eidolon.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "phantom_eidolon"
+display_name = "Phantom Eidolon"
+title = "Singularity Process"
+bio = "A legendary ghost entity capable of collapsing localized network architecture."
+role = 1
+faction = 6
+base_cost = 5
+base_max_health = 720.0
+base_attack_damage = 40.0
+base_ability_power = 95.0
+base_attack_speed = 1.0
+base_armor = 10.0
+base_shield = 0.0
+base_starting_mana = 40.0
+base_max_mana = 100.0
+base_speed = 62.0
+base_crit_chance = 0.1
+base_evasion = 0.12
+ability_name = "Net Singularity"
+ability_description = "pull backline to center, 300 AP dmg"
+ability_effect_id = "net_singularity"
+directional_target = 8
+directional_passive_description = "Singularity Core"
+directional_modifiers = {2: 25.0, 6: 15.0}

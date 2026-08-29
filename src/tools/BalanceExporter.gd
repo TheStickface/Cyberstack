@@ -70,7 +70,7 @@ static func generate_markdown_matrix(repo: Object) -> String:
 			aug.id,
 			aug.display_name,
 			aug.get_tier_name(),
-			Enums.role_to_string(aug.slot_type as int as Enums.UnitRole),
+			Enums.slot_type_to_string(aug.slot_type),
 			", ".join(tag_names),
 			", ".join(stat_desc) if not stat_desc.is_empty() else "None",
 			aug.base_cost,

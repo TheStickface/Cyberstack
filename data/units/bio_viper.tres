@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/bio_viper.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "bio_viper"
+display_name = "Bio-Viper"
+title = "Neuro-Toxic Marksman"
+bio = "Precision sharpshooter firing pressurized biological neuro-toxin darts."
+role = 2
+faction = 5
+base_cost = 1
+base_max_health = 480.0
+base_attack_damage = 46.0
+base_ability_power = 10.0
+base_attack_speed = 1.05
+base_armor = 4.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 60.0
+base_speed = 60.0
+base_crit_chance = 0.1
+base_evasion = 0.0
+ability_name = "Venom Dart"
+ability_description = "110 physical dmg, 30 poison (3s)"
+ability_effect_id = "venom_dart"
+directional_target = 6
+directional_passive_description = "Venom Coating"
+directional_modifiers = {1: 10.0}

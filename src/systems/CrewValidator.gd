@@ -34,7 +34,7 @@ static func validate_unit_slots(unit: UnitInstance) -> Dictionary:
 		if not aug.can_equip_in_slot(slot_type):
 			errors.append("Augment '%s' (Slot: %s) cannot be equipped in slot %d (Requires: %s) on unit '%s'" % [
 				aug.display_name,
-				Enums.role_to_string(aug.slot_type as int as Enums.UnitRole), # or slot_type string
+				Enums.slot_type_to_string(aug.slot_type),
 				i,
 				str(slot_type),
 				unit.unit_resource.display_name

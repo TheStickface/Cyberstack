@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/bio_chimera.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "bio_chimera"
+display_name = "Bio-Chimera"
+title = "Grafted Brawler"
+bio = "Bio-engineered frontliner reinforced with grafted subdermal plates."
+role = 4
+faction = 5
+base_cost = 1
+base_max_health = 720.0
+base_attack_damage = 34.0
+base_ability_power = 0.0
+base_attack_speed = 0.85
+base_armor = 14.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 80.0
+base_speed = 45.0
+base_crit_chance = 0.05
+base_evasion = 0.0
+ability_name = "Carapace Harden"
+ability_description = "150 Shield self (4s)"
+ability_effect_id = "carapace_harden"
+directional_target = 3
+directional_passive_description = "Subdermal Mesh"
+directional_modifiers = {0: 80.0}

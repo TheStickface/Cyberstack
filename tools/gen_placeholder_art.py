@@ -36,8 +36,10 @@ FACTION_COLORS = {
     2: (0, 180, 216),    # CORP_ENFORCERS - electric blue
     3: (150, 60, 255),   # ROGUE_AIS - neon purple (brightened for legibility)
     4: (255, 0, 110),    # FIXERS - hot pink
+    5: (50, 240, 80),    # BIO_HACKERS - acid green
+    6: (170, 70, 255),   # NET_PHANTOMS - violet
 }
-FACTION_ABBR = {1: "RUN", 2: "CORP", 3: "AI", 4: "FIX"}
+FACTION_ABBR = {1: "RUN", 2: "CORP", 3: "AI", 4: "FIX", 5: "BIO", 6: "GHOST"}
 
 # AugmentTier (Enums.AugmentTier) -> accent color / label
 TIER_COLORS = {
@@ -56,8 +58,8 @@ TAG_COLORS = {
 }
 
 # UnitRole (Enums.UnitRole) -> badge shape / label
-ROLE_SHAPE_SIDES = {0: 6, 1: 4, 2: 3, 3: 5}  # tank hex, hacker diamond, sniper triangle, fixer pentagon
-ROLE_ABBR = {0: "TANK", 1: "HACK", 2: "SNIPE", 3: "FIXER"}
+ROLE_SHAPE_SIDES = {0: 6, 1: 4, 2: 3, 3: 5, 4: 8, 5: 7}  # tank hex, hacker diamond, sniper triangle, fixer pentagon, meatshield octagon, commander heptagon
+ROLE_ABBR = {0: "TANK", 1: "HACK", 2: "SNIPE", 3: "FIXER", 4: "MEAT", 5: "CMDR"}
 
 
 # ---------- .tres parsing ----------

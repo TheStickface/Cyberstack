@@ -8,7 +8,9 @@ enum Faction {
 	STREET_RUNNERS,
 	CORP_ENFORCERS,
 	ROGUE_AIS,
-	FIXERS
+	FIXERS,
+	BIO_HACKERS,
+	NET_PHANTOMS
 }
 
 enum AugmentTag {
@@ -38,6 +40,8 @@ enum UnitRole {
 	HACKER,     # 2 utility slots, 1 passive
 	SNIPER,     # 2 offensive slots, 1 passive
 	FIXER,      # 1 offensive, 1 utility, 1 passive
+	MEATSHIELD, # 1 offensive, 1 defensive, 1 passive
+	COMMANDER,  # 1 defensive, 1 utility, 1 passive
 	ANY
 }
 
@@ -88,6 +92,8 @@ static func faction_to_string(faction: Faction) -> String:
 		Faction.CORP_ENFORCERS: return "Corp Enforcers"
 		Faction.ROGUE_AIS: return "Rogue AIs"
 		Faction.FIXERS: return "Fixers"
+		Faction.BIO_HACKERS: return "Bio-Synthetics"
+		Faction.NET_PHANTOMS: return "Net-Phantoms"
 		_: return "None"
 
 static func string_to_faction(str_val: String) -> Faction:
@@ -97,6 +103,8 @@ static func string_to_faction(str_val: String) -> Faction:
 		"corp_enforcers", "enforcers", "corp": return Faction.CORP_ENFORCERS
 		"rogue_ais", "rogue_ai", "ais", "ai": return Faction.ROGUE_AIS
 		"fixers", "fixer": return Faction.FIXERS
+		"bio_hackers", "bio_synthetics", "bio", "synthetics": return Faction.BIO_HACKERS
+		"net_phantoms", "phantoms", "phantom", "ghosts": return Faction.NET_PHANTOMS
 		_: return Faction.NONE
 
 static func tag_to_string(tag: AugmentTag) -> String:
@@ -122,7 +130,20 @@ static func role_to_string(role: UnitRole) -> String:
 		UnitRole.HACKER: return "Hacker"
 		UnitRole.SNIPER: return "Sniper"
 		UnitRole.FIXER: return "Fixer"
+		UnitRole.MEATSHIELD: return "Meatshield"
+		UnitRole.COMMANDER: return "Commander"
 		_: return "Any"
+
+static func string_to_role(str_val: String) -> UnitRole:
+	var clean = str_val.strip_edges().to_lower().replace(" ", "_").replace("-", "_")
+	match clean:
+		"tank": return UnitRole.TANK
+		"hacker": return UnitRole.HACKER
+		"sniper": return UnitRole.SNIPER
+		"fixer": return UnitRole.FIXER
+		"meatshield", "meat_shield", "brawler": return UnitRole.MEATSHIELD
+		"commander", "commanders", "warden": return UnitRole.COMMANDER
+		_: return UnitRole.ANY
 
 static func slot_type_to_string(st: SlotType) -> String:
 	match st:

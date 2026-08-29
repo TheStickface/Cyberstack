@@ -10,8 +10,8 @@ func _init() -> void:
 	repo.load_all_data("res://data")
 
 func test_all_factions_loaded() -> Dictionary:
-	if repo.factions.size() != 4:
-		return {"passed": false, "message": "Expected 4 factions, got %d" % repo.factions.size(), "assertions": 1}
+	if repo.factions.size() != 6:
+		return {"passed": false, "message": "Expected 6 factions, got %d" % repo.factions.size(), "assertions": 1}
 		
 	var runners = repo.get_faction(Enums.Faction.STREET_RUNNERS)
 	if runners == null or runners.threshold_bonuses.size() < 2:
@@ -31,18 +31,18 @@ func test_all_tags_loaded() -> Dictionary:
 
 func test_unit_queries() -> Dictionary:
 	var all_units = repo.get_all_units()
-	if all_units.size() != 63:
-		return {"passed": false, "message": "Expected 63 total units (40 recruitable + 23 bosses), got %d" % all_units.size(), "assertions": 1}
+	if all_units.size() != 83:
+		return {"passed": false, "message": "Expected 83 total units (60 recruitable + 23 bosses), got %d" % all_units.size(), "assertions": 1}
 		
 	var recruitable = repo.get_recruitable_units()
-	if recruitable.size() != 40:
-		return {"passed": false, "message": "Expected 40 recruitable units, got %d" % recruitable.size(), "assertions": 2}
+	if recruitable.size() != 60:
+		return {"passed": false, "message": "Expected 60 recruitable units, got %d" % recruitable.size(), "assertions": 2}
 		
 	var bosses = repo.get_boss_units()
 	if bosses.size() != 23:
 		return {"passed": false, "message": "Expected 23 boss units, got %d" % bosses.size(), "assertions": 3}
 		
-	for f in [Enums.Faction.STREET_RUNNERS, Enums.Faction.CORP_ENFORCERS, Enums.Faction.ROGUE_AIS, Enums.Faction.FIXERS]:
+	for f in [Enums.Faction.STREET_RUNNERS, Enums.Faction.CORP_ENFORCERS, Enums.Faction.ROGUE_AIS, Enums.Faction.FIXERS, Enums.Faction.BIO_HACKERS, Enums.Faction.NET_PHANTOMS]:
 		var fac_recruitable = repo.get_recruitable_units().filter(func(u): return u.faction == f)
 		if fac_recruitable.size() != 10:
 			return {"passed": false, "message": "Expected 10 recruitable units for faction %d, got %d" % [f, fac_recruitable.size()], "assertions": 4}

@@ -1,0 +1,50 @@
+[gd_resource type="Resource" script_class="FactionResource" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/FactionResource.gd" id="1_fac"]
+[ext_resource type="Script" path="res://src/data/resources/SynergyBonus.gd" id="2_syn"]
+
+[sub_resource type="Resource" id="Resource_bio_2"]
+script = ExtResource("2_syn")
+id = "bio_2"
+name = "Cellular Grafting"
+description = "Bio-Synthetics gain +120 Max Health and +5 Armor."
+required_count = 2
+stat_modifiers = {
+0: 120.0,
+4: 5.0
+}
+trigger_effect_id = ""
+
+[sub_resource type="Resource" id="Resource_bio_4"]
+script = ExtResource("2_syn")
+id = "bio_4"
+name = "Mutagenic Plating"
+description = "Bio-Synthetics gain +280 Max Health and +15 Armor."
+required_count = 4
+stat_modifiers = {
+0: 280.0,
+4: 15.0
+}
+trigger_effect_id = ""
+
+[sub_resource type="Resource" id="Resource_bio_6"]
+script = ExtResource("2_syn")
+id = "bio_6"
+name = "Apex Mutation"
+description = "Bio-Synthetics gain +600 Max Health, +35 Armor, and +20% Attack Speed."
+required_count = 6
+stat_modifiers = {
+0: 600.0,
+3: 0.20,
+4: 35.0
+}
+trigger_effect_id = ""
+
+[resource]
+script = ExtResource("1_fac")
+faction_type = 5
+id = "bio_hackers"
+display_name = "Bio-Synthetics"
+description = "Underground gene-weavers and bio-engineered outcasts who manipulate viral biotics, regen, and massive health sustain."
+theme_color = Color(0.2, 0.95, 0.3, 1)
+threshold_bonuses = [SubResource("Resource_bio_2"), SubResource("Resource_bio_4"), SubResource("Resource_bio_6")]

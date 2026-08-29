@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/bio_fleshweaver.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "bio_fleshweaver"
+display_name = "Bio-Fleshweaver"
+title = "Cellular Reconstructor"
+bio = "Elite biological architect capable of rapidly restructuring cellular damage across adjacent allies."
+role = 5
+faction = 5
+base_cost = 3
+base_max_health = 750.0
+base_attack_damage = 38.0
+base_ability_power = 45.0
+base_attack_speed = 0.95
+base_armor = 14.0
+base_shield = 0.0
+base_starting_mana = 30.0
+base_max_mana = 75.0
+base_speed = 50.0
+base_crit_chance = 0.05
+base_evasion = 0.0
+ability_name = "Cellular Reconstruct"
+ability_description = "heal 200 HP (2 adjacent allies)"
+ability_effect_id = "cellular_reconstruct"
+directional_target = 5
+directional_passive_description = "Tissue Regeneration"
+directional_modifiers = {3: 0.15}

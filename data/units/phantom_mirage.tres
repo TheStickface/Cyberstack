@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/phantom_mirage.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "phantom_mirage"
+display_name = "Phantom Mirage"
+title = "Holographic Decoy"
+bio = "Illusionist who projects solid-light holograms that intercept enemy attacks."
+role = 3
+faction = 6
+base_cost = 3
+base_max_health = 660.0
+base_attack_damage = 36.0
+base_ability_power = 44.0
+base_attack_speed = 1.0
+base_armor = 8.0
+base_shield = 0.0
+base_starting_mana = 30.0
+base_max_mana = 75.0
+base_speed = 56.0
+base_crit_chance = 0.08
+base_evasion = 0.15
+ability_name = "Holographic Decoy"
+ability_description = "2 decoys distract 2 enemy attacks"
+ability_effect_id = "holographic_decoy"
+directional_target = 8
+directional_passive_description = "Holo Projection"
+directional_modifiers = {10: 0.10}

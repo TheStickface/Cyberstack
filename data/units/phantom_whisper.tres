@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/phantom_whisper.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "phantom_whisper"
+display_name = "Phantom Whisper"
+title = "Sub-Net Cipher"
+bio = "Silent comms broker cleansing allied debuffs and routing untracked power packets."
+role = 3
+faction = 6
+base_cost = 1
+base_max_health = 530.0
+base_attack_damage = 28.0
+base_ability_power = 22.0
+base_attack_speed = 0.95
+base_armor = 6.0
+base_shield = 0.0
+base_starting_mana = 25.0
+base_max_mana = 70.0
+base_speed = 54.0
+base_crit_chance = 0.05
+base_evasion = 0.06
+ability_name = "Tactical Blackout"
+ability_description = "dispel debuffs (allies), +10 mana"
+ability_effect_id = "tactical_blackout"
+directional_target = 6
+directional_passive_description = "Sub-Net Frequency"
+directional_modifiers = {6: 10.0}

@@ -65,7 +65,7 @@ func _init() -> void:
 		print("  - %s [%s Tier | %s] Tags: [%s]" % [
 			aug.display_name,
 			aug.get_tier_name(),
-			Enums.role_to_string(aug.slot_type as int as Enums.UnitRole),
+			Enums.slot_type_to_string(aug.slot_type),
 			", ".join(tag_names)
 		])
 		if aug.tags.is_empty():

@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/bio_gorgon.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "bio_gorgon"
+display_name = "Bio-Gorgon"
+title = "Scleroderm Titan"
+bio = "Heavily calcified bio-construct capable of neutralizing attackers with kinetic slams."
+role = 0
+faction = 5
+base_cost = 2
+base_max_health = 880.0
+base_attack_damage = 36.0
+base_ability_power = 0.0
+base_attack_speed = 0.8
+base_armor = 20.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 90.0
+base_speed = 40.0
+base_crit_chance = 0.05
+base_evasion = 0.0
+ability_name = "Calcified Slam"
+ability_description = "80 physical dmg, stun (1.5s)"
+ability_effect_id = "calcified_slam"
+directional_target = 9
+directional_passive_description = "Calcified Wall"
+directional_modifiers = {4: 12.0}

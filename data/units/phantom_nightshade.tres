@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/phantom_nightshade.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "phantom_nightshade"
+display_name = "Phantom Nightshade"
+title = "Void Infiltrator"
+bio = "Infiltration specialist executing high-value targets with armor-shredding true damage."
+role = 4
+faction = 6
+base_cost = 4
+base_max_health = 800.0
+base_attack_damage = 90.0
+base_ability_power = 20.0
+base_attack_speed = 1.2
+base_armor = 14.0
+base_shield = 0.0
+base_starting_mana = 20.0
+base_max_mana = 70.0
+base_speed = 70.0
+base_crit_chance = 0.3
+base_evasion = 0.15
+ability_name = "Void Execute"
+ability_description = "280 true dmg (lowest-HP enemy)"
+ability_effect_id = "void_execute"
+directional_target = 6
+directional_passive_description = "Void Resonance"
+directional_modifiers = {1: 20.0, 8: 0.15}

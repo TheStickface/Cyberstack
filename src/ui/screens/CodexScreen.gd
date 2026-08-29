@@ -122,7 +122,7 @@ func _populate_augments() -> void:
 		var sub_lbl = Label.new()
 		sub_lbl.text = "[%s Tier | %s] Tags: %s" % [
 			aug.get_tier_name(),
-			Enums.role_to_string(aug.slot_type as int as Enums.UnitRole),
+			Enums.slot_type_to_string(aug.slot_type),
 			", ".join(tag_names)
 		]
 		sub_lbl.add_theme_font_size_override("font_size", 9)

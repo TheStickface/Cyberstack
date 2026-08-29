@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/bio_plague_doctor.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "bio_plague_doctor"
+display_name = "Bio-Plague Doctor"
+title = "Miasma Specialist"
+bio = "Underground viral engineer releasing caustic bio-aerosols across combat zones."
+role = 1
+faction = 5
+base_cost = 2
+base_max_health = 540.0
+base_attack_damage = 25.0
+base_ability_power = 40.0
+base_attack_speed = 0.9
+base_armor = 6.0
+base_shield = 0.0
+base_starting_mana = 25.0
+base_max_mana = 75.0
+base_speed = 52.0
+base_crit_chance = 0.05
+base_evasion = 0.0
+ability_name = "Miasma Cloud"
+ability_description = "120 viral dmg over 4s (all frontline enemies)"
+ability_effect_id = "miasma_cloud"
+directional_target = 4
+directional_passive_description = "Toxic Aura"
+directional_modifiers = {2: 15.0}

@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/bio_symbiote.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "bio_symbiote"
+display_name = "Bio-Symbiote"
+title = "Organic Transfuser"
+bio = "Mutated combat medic channeling living tissue to regenerate wounded crewmates."
+role = 3
+faction = 5
+base_cost = 1
+base_max_health = 560.0
+base_attack_damage = 30.0
+base_ability_power = 20.0
+base_attack_speed = 0.9
+base_armor = 8.0
+base_shield = 0.0
+base_starting_mana = 20.0
+base_max_mana = 70.0
+base_speed = 50.0
+base_crit_chance = 0.05
+base_evasion = 0.0
+ability_name = "Organic Infusion"
+ability_description = "heal 140 HP (lowest-HP ally)"
+ability_effect_id = "organic_infusion"
+directional_target = 5
+directional_passive_description = "Symbiotic Pulse"
+directional_modifiers = {0: 60.0}

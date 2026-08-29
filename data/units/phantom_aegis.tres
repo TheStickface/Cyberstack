@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/phantom_aegis.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "phantom_aegis"
+display_name = "Phantom Aegis"
+title = "Phase Commander"
+bio = "Tactical officer generating holographic distortion fields that reflect incoming damage."
+role = 5
+faction = 6
+base_cost = 3
+base_max_health = 850.0
+base_attack_damage = 40.0
+base_ability_power = 25.0
+base_attack_speed = 0.85
+base_armor = 16.0
+base_shield = 0.0
+base_starting_mana = 20.0
+base_max_mana = 85.0
+base_speed = 48.0
+base_crit_chance = 0.05
+base_evasion = 0.12
+ability_name = "Phase Shift Cloak"
+ability_description = "untargetable (1.5s), reflect 50 dmg"
+ability_effect_id = "phase_shift_cloak"
+directional_target = 9
+directional_passive_description = "Aegis Cloak"
+directional_modifiers = {4: 15.0, 10: 0.10}

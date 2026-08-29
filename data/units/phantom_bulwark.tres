@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/phantom_bulwark.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "phantom_bulwark"
+display_name = "Phantom Bulwark"
+title = "Phase Deflector"
+bio = "Phasing defensive chassis that bends incoming projectile trajectories into sub-space."
+role = 0
+faction = 6
+base_cost = 1
+base_max_health = 700.0
+base_attack_damage = 32.0
+base_ability_power = 0.0
+base_attack_speed = 0.85
+base_armor = 12.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 80.0
+base_speed = 46.0
+base_crit_chance = 0.05
+base_evasion = 0.08
+ability_name = "Phase Barrier"
+ability_description = "120 Shield, +25% Evasion (3s)"
+ability_effect_id = "phase_barrier"
+directional_target = 9
+directional_passive_description = "Phase Distortion"
+directional_modifiers = {10: 0.10}

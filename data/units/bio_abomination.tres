@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/bio_abomination.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "bio_abomination"
+display_name = "Bio-Abomination"
+title = "Apex Bio-Cannon"
+bio = "The pinnacle of black-market gene modification, unleashing overwhelming biological devastation."
+role = 2
+faction = 5
+base_cost = 5
+base_max_health = 780.0
+base_attack_damage = 96.0
+base_ability_power = 55.0
+base_attack_speed = 1.1
+base_armor = 12.0
+base_shield = 0.0
+base_starting_mana = 30.0
+base_max_mana = 90.0
+base_speed = 65.0
+base_crit_chance = 0.15
+base_evasion = 0.0
+ability_name = "Apex Bio-Cannon"
+ability_description = "320 toxic dmg (column)"
+ability_effect_id = "apex_biocannon"
+directional_target = 8
+directional_passive_description = "Apex Pheromones"
+directional_modifiers = {1: 15.0, 3: 0.10}

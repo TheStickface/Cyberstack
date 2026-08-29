@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/phantom_spectre.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "phantom_spectre"
+display_name = "Phantom Spectre"
+title = "Shadow Carbine"
+bio = "Ghost operative armed with soundless particle carbine delivering guaranteed critical strikes."
+role = 2
+faction = 6
+base_cost = 1
+base_max_health = 470.0
+base_attack_damage = 48.0
+base_ability_power = 0.0
+base_attack_speed = 1.05
+base_armor = 4.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 60.0
+base_speed = 62.0
+base_crit_chance = 0.12
+base_evasion = 0.08
+ability_name = "Ghost Shot"
+ability_description = "120 physical dmg, guaranteed crit"
+ability_effect_id = "ghost_shot"
+directional_target = 6
+directional_passive_description = "Spectre Sight"
+directional_modifiers = {8: 0.08}

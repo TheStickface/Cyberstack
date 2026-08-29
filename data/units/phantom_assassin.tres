@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/phantom_assassin.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "phantom_assassin"
+display_name = "Phantom Assassin"
+title = "Ghost Blade"
+bio = "Deadly strike operative who teleports behind enemy lines for lethal critical assassinations."
+role = 4
+faction = 6
+base_cost = 2
+base_max_health = 620.0
+base_attack_damage = 66.0
+base_ability_power = 0.0
+base_attack_speed = 1.15
+base_armor = 8.0
+base_shield = 0.0
+base_starting_mana = 20.0
+base_max_mana = 65.0
+base_speed = 68.0
+base_crit_chance = 0.25
+base_evasion = 0.12
+ability_name = "Shadow Strike"
+ability_description = "teleport backline, 160 crit dmg"
+ability_effect_id = "shadow_strike"
+directional_target = 10
+directional_passive_description = "Ambush Stance"
+directional_modifiers = {8: 0.15}

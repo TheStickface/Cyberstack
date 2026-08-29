@@ -46,6 +46,16 @@ const ROLE_SLOT_SCHEMAS: Dictionary = {
 		Enums.SlotType.OFFENSIVE,
 		Enums.SlotType.UTILITY,
 		Enums.SlotType.PASSIVE
+	],
+	Enums.UnitRole.MEATSHIELD: [
+		Enums.SlotType.OFFENSIVE,
+		Enums.SlotType.DEFENSIVE,
+		Enums.SlotType.PASSIVE
+	],
+	Enums.UnitRole.COMMANDER: [
+		Enums.SlotType.DEFENSIVE,
+		Enums.SlotType.UTILITY,
+		Enums.SlotType.PASSIVE
 	]
 }
 

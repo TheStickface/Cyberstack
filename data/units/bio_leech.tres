@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/bio_leech.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "bio_leech"
+display_name = "Bio-Leech"
+title = "Viral Infiltrator"
+bio = "Parasitic bio-hacker siphoning energy from host networks."
+role = 1
+faction = 5
+base_cost = 1
+base_max_health = 500.0
+base_attack_damage = 24.0
+base_ability_power = 28.0
+base_attack_speed = 0.95
+base_armor = 5.0
+base_shield = 0.0
+base_starting_mana = 20.0
+base_max_mana = 60.0
+base_speed = 55.0
+base_crit_chance = 0.05
+base_evasion = 0.0
+ability_name = "Spore Drain"
+ability_description = "drain 40 HP from target"
+ability_effect_id = "spore_drain"
+directional_target = 5
+directional_passive_description = "Spore Vector"
+directional_modifiers = {2: 10.0}

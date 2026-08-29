@@ -99,7 +99,7 @@ static func compute_augment_meta(records: Array[TelemetryEvent], repo: Object) -
 			"id": aug.id,
 			"name": aug.display_name,
 			"tier": aug.get_tier_name(),
-			"slot": Enums.role_to_string(aug.slot_type as int as Enums.UnitRole),
+			"slot": Enums.slot_type_to_string(aug.slot_type),
 			"equips": equips,
 			"equip_rate": equip_rate,
 			"win_rate": win_rate

@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/bio_hydra.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "bio_hydra"
+display_name = "Bio-Hydra"
+title = "Regenerative Behemoth"
+bio = "Multi-chambered mutagenic monstrosity that recovers health at an alarming rate."
+role = 4
+faction = 5
+base_cost = 4
+base_max_health = 1250.0
+base_attack_damage = 55.0
+base_ability_power = 0.0
+base_attack_speed = 0.8
+base_armor = 22.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 100.0
+base_speed = 42.0
+base_crit_chance = 0.05
+base_evasion = 0.0
+ability_name = "Regenerative Surge"
+ability_description = "heal 30% missing HP (3s)"
+ability_effect_id = "regenerative_surge"
+directional_target = 9
+directional_passive_description = "Hydra Vitality"
+directional_modifiers = {0: 150.0, 4: 10.0}

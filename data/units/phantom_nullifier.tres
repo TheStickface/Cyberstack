@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/phantom_nullifier.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "phantom_nullifier"
+display_name = "Phantom Nullifier"
+title = "Black-Ice Silencer"
+bio = "Deep-net hacker delivering concentrated black-ice surges that silence enemy cyberware."
+role = 1
+faction = 6
+base_cost = 2
+base_max_health = 550.0
+base_attack_damage = 26.0
+base_ability_power = 42.0
+base_attack_speed = 0.9
+base_armor = 6.0
+base_shield = 0.0
+base_starting_mana = 25.0
+base_max_mana = 75.0
+base_speed = 55.0
+base_crit_chance = 0.05
+base_evasion = 0.08
+ability_name = "Black-Ice Pulse"
+ability_description = "silence target (2.5s), -25 mana"
+ability_effect_id = "black_ice_pulse"
+directional_target = 5
+directional_passive_description = "Null Field"
+directional_modifiers = {2: 15.0}
