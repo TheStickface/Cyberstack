@@ -677,13 +677,8 @@ func _flash_card(panel: PanelContainer, flash_color: Color, duration: float = 0.
 	var tween = create_tween()
 	tween.tween_property(panel, "modulate", orig_mod, duration)
 
-func _find_target(defenders: Array[CombatantState]) -> CombatantState:
-	for d in defenders:
-		if d.alive:
-			return d
-	return null
-
 func _find_weakest_target(defenders: Array[CombatantState]) -> CombatantState:
+
 	var lowest: CombatantState = null
 	for d in defenders:
 		if d.alive:
