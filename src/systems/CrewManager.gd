@@ -34,23 +34,20 @@ func get_max_field_units() -> int:
 
 func is_slot_unlocked(slot_idx: int) -> bool:
 	match slot_idx:
-		0, 1: # Bottom Left, Bottom Center - Unlocked in District 1
+		0, 1, 2: # Bottom Left, Bottom Center, Bottom Right - Full Frontline unlocked in District 1
 			return true
-		2: # Bottom Right (Frontline Right) - Unlocks in District 2 (Crew cap expands to 4)
+		4: # Top Center (Backline Center) - Unlocks in District 2 (Crew cap expands to 4)
 			return current_district >= 2
-		4: # Top Center (Backline Center) - Unlocks in District 2
-			return current_district >= 2
-		3: # Top Left (Backline Left) - Unlocks in District 3
+		3: # Top Left (Backline Left) - Unlocks in District 3 (Crew cap expands to 5)
 			return current_district >= 3
-		5: # Top Right (Backline Right) - Unlocks in District 4
+		5: # Top Right (Backline Right) - Unlocks in District 4 (Crew cap expands to 6)
 			return current_district >= 4
 		_:
 			return false
 
 func get_slot_unlock_district(slot_idx: int) -> int:
 	match slot_idx:
-		0, 1: return 1
-		2: return 2
+		0, 1, 2: return 1
 		4: return 2
 		3: return 3
 		5: return 4
