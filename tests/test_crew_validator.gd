@@ -36,21 +36,22 @@ func test_district_size_limits() -> Dictionary:
 	var blitz = UnitInstance.new(repo.get_unit("runner_blitz"))
 	var ghost = UnitInstance.new(repo.get_unit("street_ghost"))
 	var sentinel = UnitInstance.new(repo.get_unit("corp_sentinel"))
+	var operative = UnitInstance.new(repo.get_unit("corp_operative"))
 	
-	var crew_valid: Array[UnitInstance] = [blitz, ghost]
+	var crew_valid: Array[UnitInstance] = [blitz, ghost, sentinel]
 	var res_1 = CrewValidator.validate_crew_size(crew_valid, 1)
 	if not res_1.valid:
-		return {"passed": false, "message": "District 1 should allow 2 units", "assertions": 1}
+		return {"passed": false, "message": "District 1 should allow 3 units", "assertions": 1}
 		
-	var crew_invalid: Array[UnitInstance] = [blitz, ghost, sentinel]
+	var crew_invalid: Array[UnitInstance] = [blitz, ghost, sentinel, operative]
 	var res_2 = CrewValidator.validate_crew_size(crew_invalid, 1)
 	if res_2.valid:
-		return {"passed": false, "message": "District 1 should reject 3 units", "assertions": 2}
+		return {"passed": false, "message": "District 1 should reject 4 units", "assertions": 2}
 		
-	# But District 2 should allow 3 units (limit is 4)
+	# But District 2 should allow 4 units (limit is 4)
 	var res_3 = CrewValidator.validate_crew_size(crew_invalid, 2)
 	if not res_3.valid:
-		return {"passed": false, "message": "District 2 should allow 3 units", "assertions": 3}
+		return {"passed": false, "message": "District 2 should allow 4 units", "assertions": 3}
 		
 	return {"passed": true, "assertions": 3}
 

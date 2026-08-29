@@ -108,34 +108,36 @@ func test_empty_slot_drop_validation() -> void:
 	var repo = DataRepoScript.new()
 	repo.load_all_data("res://data")
 	
-	# District 1: Max crew 2. Slots 0, 1 unlocked. Slot 2 locked.
+	# District 1: Max crew 3. Slots 0, 1, 2 unlocked. Slots 3, 4, 5 locked.
 	var crew_mgr = CrewManager.new(1, repo)
 	var u1 = UnitInstance.new(repo.get_unit("runner_blitz"))
 	var u2 = UnitInstance.new(repo.get_unit("corp_sentinel"))
 	var u3 = UnitInstance.new(repo.get_unit("fixer_broker"))
+	var u4 = UnitInstance.new(repo.get_unit("street_ghost"))
 	
 	crew_mgr.place_unit_on_grid(u1, 0)
 	crew_mgr.place_unit_on_grid(u2, 1)
-	crew_mgr.benched_units.append(u3)
+	crew_mgr.place_unit_on_grid(u3, 2)
+	crew_mgr.benched_units.append(u4)
 	
 	var PrepScreenScript = preload("res://src/ui/screens/PrepScreen.gd")
 	var slot0_btn = PrepScreenScript.TacticalEmptySlot.new()
 	slot0_btn.slot_idx = 0
 	slot0_btn.crew_mgr = crew_mgr
 	
-	var slot2_btn = PrepScreenScript.TacticalEmptySlot.new()
-	slot2_btn.slot_idx = 2
-	slot2_btn.crew_mgr = crew_mgr
+	var slot4_btn = PrepScreenScript.TacticalEmptySlot.new()
+	slot4_btn.slot_idx = 4
+	slot4_btn.crew_mgr = crew_mgr
 	
-	# 1. Dragging benched unit u3 to locked slot 2 should be rejected
-	var benched_drag = {"type": "unit", "unit": u3, "is_fielded": false}
-	_assert(not slot2_btn._can_drop_data(Vector2.ZERO, benched_drag), "Empty slot 2 (locked in D1) must reject drop")
+	# 1. Dragging benched unit u4 to locked slot 4 should be rejected
+	var benched_drag = {"type": "unit", "unit": u4, "is_fielded": false}
+	_assert(not slot4_btn._can_drop_data(Vector2.ZERO, benched_drag), "Empty slot 4 (locked in D1) must reject drop")
 	
-	# 2. Dragging benched unit u3 when crew cap (2/2) reached should be rejected even on unlocked slots
+	# 2. Dragging benched unit u4 when crew cap (3/3) reached should be rejected even on unlocked slots
 	var slot1_btn = PrepScreenScript.TacticalEmptySlot.new()
 	slot1_btn.slot_idx = 1
 	slot1_btn.crew_mgr = crew_mgr
-	_assert(not slot1_btn._can_drop_data(Vector2.ZERO, benched_drag), "Benched unit cannot drop to empty slot when crew max 2 is reached")
+	_assert(not slot1_btn._can_drop_data(Vector2.ZERO, benched_drag), "Benched unit cannot drop to empty slot when crew max 3 is reached")
 	
 	# 3. Fielded unit moving/repositioning should be allowed on unlocked slots
 	var fielded_drag = {"type": "unit", "unit": u1, "is_fielded": true, "source_slot": 0}
@@ -145,7 +147,7 @@ func test_empty_slot_drop_validation() -> void:
 	_assert(empty_unlocked_btn._can_drop_data(Vector2.ZERO, fielded_drag), "Fielded unit can move to unlocked empty slot")
 	
 	slot0_btn.free()
-	slot2_btn.free()
+	slot4_btn.free()
 	slot1_btn.free()
 	empty_unlocked_btn.free()
 	tests_passed += 1

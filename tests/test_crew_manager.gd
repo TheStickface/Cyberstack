@@ -10,18 +10,19 @@ func _init() -> void:
 	repo.load_all_data("res://data")
 
 func test_deploy_and_recall() -> Dictionary:
-	var crew_mgr = CrewManager.new(1, repo) # District 1: limit 2
-	
+	var crew_mgr = CrewManager.new(1, repo)
 	var blitz = UnitInstance.new(repo.get_unit("runner_blitz"))
+	var dash = UnitInstance.new(repo.get_unit("runner_dash"))
 	var ghost = UnitInstance.new(repo.get_unit("street_ghost"))
 	var sentinel = UnitInstance.new(repo.get_unit("corp_sentinel"))
 	
 	crew_mgr.add_unit_to_bench(blitz)
+	crew_mgr.add_unit_to_bench(dash)
 	crew_mgr.add_unit_to_bench(ghost)
 	crew_mgr.add_unit_to_bench(sentinel)
 	
-	if crew_mgr.benched_units.size() != 3:
-		return {"passed": false, "message": "Expected 3 benched units", "assertions": 1}
+	if crew_mgr.benched_units.size() != 4:
+		return {"passed": false, "message": "Expected 4 benched units", "assertions": 1}
 		
 	# Deploy 1st
 	var d1_ok = crew_mgr.deploy_unit_to_field(0)
@@ -33,17 +34,22 @@ func test_deploy_and_recall() -> Dictionary:
 	if not d2_ok or crew_mgr.fielded_units.size() != 2:
 		return {"passed": false, "message": "Failed to deploy 2nd unit", "assertions": 3}
 		
-	# Deploy 3rd (Should FAIL because District 1 cap is 2)
-	var d3_fail = crew_mgr.deploy_unit_to_field(0)
-	if d3_fail or crew_mgr.fielded_units.size() != 2:
-		return {"passed": false, "message": "Should not exceed District 1 limit of 2 units", "assertions": 4}
+	# Deploy 3rd
+	var d3_ok = crew_mgr.deploy_unit_to_field(0)
+	if not d3_ok or crew_mgr.fielded_units.size() != 3:
+		return {"passed": false, "message": "Failed to deploy 3rd unit", "assertions": 4}
+		
+	# Deploy 4th (Should FAIL because District 1 cap is 3)
+	var d4_fail = crew_mgr.deploy_unit_to_field(0)
+	if d4_fail or crew_mgr.fielded_units.size() != 3:
+		return {"passed": false, "message": "Should not exceed District 1 limit of 3 units", "assertions": 5}
 		
 	# Recall 1st
 	var r_ok = crew_mgr.recall_unit_to_bench(0)
-	if not r_ok or crew_mgr.fielded_units.size() != 1 or crew_mgr.benched_units.size() != 2:
-		return {"passed": false, "message": "Recall unit failed", "assertions": 5}
+	if not r_ok or crew_mgr.fielded_units.size() != 2 or crew_mgr.benched_units.size() != 2:
+		return {"passed": false, "message": "Recall unit failed", "assertions": 6}
 		
-	return {"passed": true, "assertions": 5}
+	return {"passed": true, "assertions": 6}
 
 func test_augment_inventory_and_swapping() -> Dictionary:
 	var crew_mgr = CrewManager.new(1, repo)
@@ -154,34 +160,36 @@ func test_sell_and_replace_starting_unit() -> Dictionary:
 	var blitz = UnitInstance.new(repo.get_unit("runner_blitz"))
 	var dash = UnitInstance.new(repo.get_unit("runner_dash"))
 	var ghost = UnitInstance.new(repo.get_unit("street_ghost"))
+	var sentinel = UnitInstance.new(repo.get_unit("corp_sentinel"))
 	
-	# Field 2 units (District 1 cap = 2), bench 1 unit
+	# Field 3 units (District 1 cap = 3), bench 1 unit
 	crew_mgr.add_unit(blitz)
 	crew_mgr.add_unit(dash)
 	crew_mgr.add_unit(ghost)
+	crew_mgr.add_unit(sentinel)
 	
-	if crew_mgr.fielded_units.size() != 2 or crew_mgr.benched_units.size() != 1:
-		return {"passed": false, "message": "Expected 2 fielded, 1 benched", "assertions": 1}
+	if crew_mgr.fielded_units.size() != 3 or crew_mgr.benched_units.size() != 1:
+		return {"passed": false, "message": "Expected 3 fielded, 1 benched", "assertions": 1}
 		
 	# Sell starting unit blitz
 	var refund = shop_mgr.sell_unit(blitz, crew_mgr)
 	if refund <= 0:
 		return {"passed": false, "message": "Selling blitz should provide credit refund", "assertions": 2}
-	if crew_mgr.fielded_units.size() != 1:
-		return {"passed": false, "message": "Field size should be 1 after selling blitz", "assertions": 3}
+	if crew_mgr.fielded_units.size() != 2:
+		return {"passed": false, "message": "Field size should be 2 after selling blitz", "assertions": 3}
 		
-	# Deploy benched ghost into the open slot
-	var deploy_ok = crew_mgr.field_unit(ghost)
+	# Deploy benched sentinel into the open slot
+	var deploy_ok = crew_mgr.field_unit(sentinel)
 	if not deploy_ok:
-		return {"passed": false, "message": "field_unit(ghost) should successfully deploy ghost from bench", "assertions": 4}
-	if crew_mgr.fielded_units.size() != 2 or not crew_mgr.fielded_units.has(ghost):
-		return {"passed": false, "message": "Ghost should now be in fielded_units", "assertions": 5}
+		return {"passed": false, "message": "field_unit(sentinel) should successfully deploy sentinel from bench", "assertions": 4}
+	if crew_mgr.fielded_units.size() != 3 or not crew_mgr.fielded_units.has(sentinel):
+		return {"passed": false, "message": "Sentinel should now be in fielded_units", "assertions": 5}
 	if not crew_mgr.benched_units.is_empty():
 		return {"passed": false, "message": "Bench should now be empty", "assertions": 6}
 		
-	# Bench ghost
-	var bench_ok = crew_mgr.bench_unit(ghost)
-	if not bench_ok or crew_mgr.fielded_units.size() != 1 or crew_mgr.benched_units.size() != 1:
-		return {"passed": false, "message": "bench_unit(ghost) should recall ghost to bench", "assertions": 7}
+	# Bench sentinel
+	var bench_ok = crew_mgr.bench_unit(sentinel)
+	if not bench_ok or crew_mgr.fielded_units.size() != 2 or crew_mgr.benched_units.size() != 1:
+		return {"passed": false, "message": "bench_unit(sentinel) should recall sentinel to bench", "assertions": 7}
 		
 	return {"passed": true, "assertions": 7}

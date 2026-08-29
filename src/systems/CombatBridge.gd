@@ -71,7 +71,7 @@ static func _place_squad_on_grid(squad: Array[UnitInstance], district_id: int) -
 
 static func _generate_enemy_squad(district_id: int, is_boss: bool, repo: Object, district_res: DistrictResource = null) -> Array[UnitInstance]:
 	var squad: Array[UnitInstance] = []
-	var enemy_count = Constants.DISTRICT_CREW_LIMITS.get(district_id, 2)
+	var enemy_count = Constants.DISTRICT_ENEMY_COUNTS.get(district_id, 2)
 	
 	var raw_units = repo.get_all_units()
 	if raw_units.is_empty():

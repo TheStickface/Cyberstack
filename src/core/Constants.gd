@@ -9,8 +9,17 @@ const MAX_BENCH_UNITS: int = 8
 const MAX_BENCH_AUGMENTS: int = 10
 const MAX_INVENTORY_AUGMENTS: int = 10
 
-# District Crew Limits
+# District Crew Limits (Player field capacity)
 const DISTRICT_CREW_LIMITS: Dictionary = {
+	1: 3,
+	2: 4,
+	3: 5,
+	4: 6,
+	5: 6
+}
+
+# District Enemy Squad Sizes (Minion counts)
+const DISTRICT_ENEMY_COUNTS: Dictionary = {
 	1: 2,
 	2: 4,
 	3: 5,

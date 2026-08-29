@@ -104,3 +104,17 @@ func test_draw_run_districts() -> Dictionary:
 		return {"passed": false, "message": "Final run slot did not contain a final-boss district", "assertions": 3}
 
 	return {"passed": true, "assertions": 3}
+
+func test_constants_limits_consistency() -> Dictionary:
+	# District 1: 3 player slots vs 2 enemy minions
+	if Constants.DISTRICT_CREW_LIMITS.get(1) != 3 or Constants.DISTRICT_ENEMY_COUNTS.get(1) != 2:
+		return {"passed": false, "message": "District 1 should have 3 crew limit and 2 enemy minions", "assertions": 1}
+		
+	# District 2+: Enemy count must equal crew limit for matching symmetric scaling
+	for d in [2, 3, 4, 5]:
+		var crew_lim = Constants.DISTRICT_CREW_LIMITS.get(d)
+		var enemy_lim = Constants.DISTRICT_ENEMY_COUNTS.get(d)
+		if crew_lim != enemy_lim:
+			return {"passed": false, "message": "District %d mismatch: crew %d vs enemy %d" % [d, crew_lim, enemy_lim], "assertions": 2}
+			
+	return {"passed": true, "assertions": 2}

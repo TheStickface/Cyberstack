@@ -19,8 +19,8 @@ func test_run_initialization() -> Dictionary:
 		return {"passed": false, "message": "Run should start in District 1", "assertions": 2}
 	if run.crew_mgr.fielded_units.size() != 1:
 		return {"passed": false, "message": "Expected 1 starter unit fielded", "assertions": 3}
-	if run.crew_mgr.get_max_field_units() != 2:
-		return {"passed": false, "message": "District 1 crew cap should be 2", "assertions": 4}
+	if run.crew_mgr.get_max_field_units() != 3:
+		return {"passed": false, "message": "District 1 crew cap should be 3", "assertions": 4}
 	if run.district_nodes.is_empty():
 		return {"passed": false, "message": "District nodes should be populated", "assertions": 5}
 		
