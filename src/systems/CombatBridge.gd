@@ -85,12 +85,14 @@ static func _generate_enemy_squad(district_id: int, is_boss: bool, repo: Object,
 	if all_units.is_empty():
 		all_units = raw_units
 		
-	# Select faction themed for district
+	# Select faction themed for district (6 factions)
 	var target_faction = Enums.Faction.CORP_ENFORCERS
-	match district_id % 4:
+	match district_id % 6:
 		1: target_faction = Enums.Faction.STREET_RUNNERS
 		2: target_faction = Enums.Faction.CORP_ENFORCERS
 		3: target_faction = Enums.Faction.ROGUE_AIS
+		4: target_faction = Enums.Faction.BIO_HACKERS
+		5: target_faction = Enums.Faction.NET_PHANTOMS
 		0: target_faction = Enums.Faction.FIXERS
 		
 	var faction_units: Array[UnitResource] = []
@@ -98,6 +100,22 @@ static func _generate_enemy_squad(district_id: int, is_boss: bool, repo: Object,
 		if u.faction == target_faction:
 			faction_units.append(u)
 	var pool = faction_units if not faction_units.is_empty() else all_units
+	
+	# Tier gating: District 1 minions must be common 1-2 cost units to avoid high-cost spikes
+	if district_id == 1:
+		var tier1_pool: Array[UnitResource] = []
+		for u in pool:
+			if u.base_cost <= 2:
+				tier1_pool.append(u)
+		if not tier1_pool.is_empty():
+			pool = tier1_pool
+	elif district_id == 2:
+		var tier2_pool: Array[UnitResource] = []
+		for u in pool:
+			if u.base_cost <= 4:
+				tier2_pool.append(u)
+		if not tier2_pool.is_empty():
+			pool = tier2_pool
 	
 	for i in range(enemy_count):
 		var base_res = pool[randi() % pool.size()]

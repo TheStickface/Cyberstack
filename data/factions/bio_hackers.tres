@@ -7,11 +7,11 @@
 script = ExtResource("2_syn")
 id = "bio_2"
 name = "Cellular Grafting"
-description = "Bio-Synthetics gain +120 Max Health and +5 Armor."
+description = "Bio-Synthetics gain +160 Max Health and +8 Armor."
 required_count = 2
 stat_modifiers = {
-0: 120.0,
-4: 5.0
+0: 160.0,
+4: 8.0
 }
 trigger_effect_id = ""
 

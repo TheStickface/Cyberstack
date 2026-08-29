@@ -620,11 +620,11 @@ static func _create_combatant(unit: UnitInstance, repo: Object, is_player: bool,
 					if count >= 2: hp += 100.0; evasion += 0.05
 					if count >= 4: hp += 200.0; evasion += 0.10
 				Enums.Faction.BIO_HACKERS:
-					if count >= 2: hp += 120.0; armor += 5.0
+					if count >= 2: hp += 160.0; armor += 8.0
 					if count >= 4: hp += 280.0; armor += 15.0
 					if count >= 6: hp += 600.0; armor += 35.0; aspeed *= 1.20
 				Enums.Faction.NET_PHANTOMS:
-					if count >= 2: evasion += 0.15; ad += 10.0
+					if count >= 2: evasion += 0.20; ad += 10.0
 					if count >= 4: evasion += 0.25; crit += 0.20; ad += 20.0
 					if count >= 6: evasion += 0.40; crit += 0.35; ad += 40.0
 					

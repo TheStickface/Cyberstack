@@ -10,6 +10,7 @@ var total_spent: int = 0  ## Cumulative credits spent this run (buys + rerolls)
 var current_district: int = 1
 var is_locked: bool = false
 var active_district_res: DistrictResource = null
+var active_crew_mgr: Object = null
 var unit_slots: Array[Dictionary] = [] # Array of 4 (expandable to 6) pure operative slots
 var augment_slots: Array[Dictionary] = [] # Array of 2 (expandable to 5) pure augment slots
 var shop_slots: Array[Dictionary] = [] # Unified array [unit_slots + augment_slots]
@@ -106,6 +107,18 @@ func generate_shop_offerings(district_id: int = 1, repo_instance: Object = null,
 				
 		if filtered_units.is_empty():
 			filtered_units = all_units
+			
+		# Early synergy discovery bias: In District 1, 50% chance on the first slot to offer a unit matching player's starter/fielded faction
+		if district_id == 1 and i == 0 and active_crew_mgr != null:
+			var player_crew = active_crew_mgr.fielded_units
+			if not player_crew.is_empty() and player_crew[0].unit_resource != null:
+				var starter_fac = player_crew[0].unit_resource.faction
+				var syn_units: Array[UnitResource] = []
+				for u in filtered_units:
+					if u.faction == starter_fac:
+						syn_units.append(u)
+				if not syn_units.is_empty() and randf() < 0.50:
+					filtered_units = syn_units
 			
 		if not filtered_units.is_empty():
 			var unit_res: UnitResource = filtered_units[randi() % filtered_units.size()]

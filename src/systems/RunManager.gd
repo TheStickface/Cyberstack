@@ -30,6 +30,7 @@ func _init(p_repo: Object = null) -> void:
 	_repo = p_repo if p_repo != null else _get_default_repo()
 	shop_mgr = ShopManager.new(Constants.DEFAULT_STARTING_GOLD)
 	crew_mgr = CrewManager.new(1, _repo)
+	shop_mgr.active_crew_mgr = crew_mgr
 
 func get_elapsed_duration_seconds() -> float:
 	if run_start_time_msec <= 0:

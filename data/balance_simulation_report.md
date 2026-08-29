@@ -1,42 +1,44 @@
-# Cyberstack — 1000 Full-Run Monte Carlo Simulation Report
-**Generated Date:** 2026-08-29 | **Total Complete Runs Simulated:** 1000
+# Cyberstack — 1200 Full-Run Monte Carlo Simulation Report
+**Generated Date:** 2026-08-29 | **Total Complete Runs Simulated:** 1200
 
 ---
 
 ## 1. Global Roguelite Run Performance
-- **Global 4-District Run Clear Rate:** **53.3%** (533 Victories / 1000 Runs)
-- **Total Events Encountered:** 3259 (Avg 3.3 per run)
-- **Role-Check Activation Rate:** **55.4%** (1807 special checks passed)
-- **Average Bonus Event Gold Earned:** +21.5 credits/run
-- **Average Bonus Event Augments Gained:** +1.59 augments/run
-- **Average Fights Won per Run:** 9.57 (9566 total across all runs)
+- **Global 4-District Run Clear Rate:** **69.0%** (828 Victories / 1200 Runs)
+- **Total Events Encountered:** 8074 (Avg 6.7 per run)
+- **Role-Check Activation Rate:** **53.9%** (4349 special checks passed)
+- **Average Bonus Event Gold Earned:** +39.9 credits/run
+- **Average Bonus Event Augments Gained:** +2.90 augments/run
+- **Average Fights Won per Run:** 16.41 (19698 total across all runs)
 
 ## 2. Starter Operative Clear Rates & Event Synergies
 | Starter Operative | Runs Simulated | Victories | Clear Rate | Role-Check Success | Avg Event Gold |
 |---|---|---|---|---|---|
-| **Street Runner (Blitz)** | 250 | 134 | **53.6%** | 52.4% | +22.7 credits |
-| **Corp Enforcer (Sentinel-09)** | 250 | 150 | **60.0%** | 49.2% | +22.2 credits |
-| **Rogue AI (GLITCH.exe)** | 250 | 123 | **49.2%** | 61.8% | +20.7 credits |
-| **Fixer (Madame Vane)** | 250 | 126 | **50.4%** | 58.5% | +20.4 credits |
+| **Street Runner (Blitz)** | 200 | 157 | **78.5%** | 53.8% | +47.1 credits |
+| **Corp Enforcer (Sentinel-09)** | 200 | 154 | **77.0%** | 56.9% | +45.4 credits |
+| **Rogue AI (GLITCH.exe)** | 200 | 114 | **57.0%** | 61.0% | +36.5 credits |
+| **Fixer (Madame Vane)** | 200 | 144 | **72.0%** | 59.5% | +39.2 credits |
+| **Bio-Synthetic (Bio-Chimera)** | 200 | 129 | **64.5%** | 44.8% | +35.5 credits |
+| **Net-Phantom (Phantom Spectre)** | 200 | 130 | **65.0%** | 46.8% | +35.5 credits |
 
 ## 3. District Mortality Hotspot Distribution
 | District | Player Eliminations | % of Total Runs |
 |---|---|---|
-| District 1 (Slum Market) | 117 | 11.7% |
-| District 2 (Corp Arcology) | 52 | 5.2% |
-| District 3 (Server Vault) | 32 | 3.2% |
-| District 4 (Black Site Boss) | 266 | 26.6% |
-| **RUN VICTORY (Secured)** | **533** | **53.3%** |
+| District 1 (Slum Market) | 72 | 6.0% |
+| District 2 (Corp Arcology) | 159 | 13.3% |
+| District 3 (Server Vault) | 22 | 1.8% |
+| District 4 (Black Site Boss) | 119 | 9.9% |
+| **RUN VICTORY (Secured)** | **828** | **69.0%** |
 
 ## 4. Conditional Clear Probability (Decided-vs-Ended)
 _P(win the whole run | reached this milestone). A run is 'effectively decided' once this crosses 95%._
 
 | Milestone | Runs Reaching | Eventual Clears | Conditional Clear Rate |
 |---|---|---|---|
-| Started run (reached District 1) | 1000 | 533 | **53.30%** |
-| Cleared District 1 (reached District 2) | 883 | 533 | **60.36%** |
-| Cleared District 2 (reached District 3) | 831 | 533 | **64.14%** |
-| Cleared District 3 (reached District 4) | 799 | 533 | **66.71%** |
+| Started run (reached District 1) | 1200 | 828 | **69.00%** |
+| Cleared District 1 (reached District 2) | 1128 | 828 | **73.40%** |
+| Cleared District 2 (reached District 3) | 969 | 828 | **85.45%** |
+| Cleared District 3 (reached District 4) | 947 | 828 | **87.43%** |
 
 - **Run stays in genuine doubt through the final district** (no milestone reaches 95% conditional clear).
 
@@ -45,19 +47,19 @@ _Crew HP remaining at the end of **won** battles. Stomp = won with ≥80% crew H
 
 | District | Won Battles Sampled | Avg Crew HP Left | Stomps | Nailbiters | Boss: Avg Crew HP Left |
 |---|---|---|---|---|---|
-| District 1 (Slum Market) | 2883 | 73% | 43.5% | 1.5% | 62% |
-| District 2 (Corp Arcology) | 2583 | 77% | 51.7% | 0.5% | 63% |
-| District 3 (Server Vault) | 2459 | 72% | 28.6% | 0.3% | 64% |
-| District 4 (Black Site) | 1641 | 46% | 0.0% | 2.3% | 48% |
+| District 1 (Slum Market) | 5715 | 83% | 69.4% | 0.9% | 73% |
+| District 2 (Corp Arcology) | 4996 | 79% | 56.6% | 0.2% | 64% |
+| District 3 (Server Vault) | 4757 | 80% | 62.5% | 0.1% | 73% |
+| District 4 (Black Site) | 4230 | 59% | 0.7% | 0.6% | 58% |
 
 ## 6. Economy & Credit Flow
-- **Average Credits Spent per Run:** 93.5
-- **Average Credits Unspent at Run End:** 11.1
-- **Runs Ending With >20 Idle Credits:** 2.2% (economy never bit)
+- **Average Credits Spent per Run:** 166.6
+- **Average Credits Unspent at Run End:** 15.8
+- **Runs Ending With >20 Idle Credits:** 7.9% (economy never bit)
 
 | Entering Prep For | Avg Credits On Hand |
 |---|---|
 | District 1 | 12.0 |
-| District 2 | 15.9 |
-| District 3 | 19.2 |
-| District 4 | 14.3 |
+| District 2 | 30.3 |
+| District 3 | 51.3 |
+| District 4 | 14.5 |
