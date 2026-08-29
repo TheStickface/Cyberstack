@@ -44,10 +44,12 @@ func _make_custom_tooltip(_for_text: String) -> Object:
 		return SynergyTooltipScript.create_augment_tooltip_node(augment_resource)
 	return null
 
+var is_dragging_this: bool = false
+
 func _get_drag_data(_at_position: Vector2) -> Variant:
 	if augment_resource == null:
 		return null
-		
+	is_dragging_this = true
 	if get_node_or_null("/root/EventBus"):
 		get_node("/root/EventBus").augment_drag_started.emit(augment_resource)
 		
@@ -87,8 +89,10 @@ func _get_drag_data(_at_position: Vector2) -> Variant:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_DRAG_END:
-		if get_node_or_null("/root/EventBus"):
-			get_node("/root/EventBus").augment_drag_ended.emit()
+		if is_dragging_this:
+			is_dragging_this = false
+			if get_node_or_null("/root/EventBus"):
+				get_node("/root/EventBus").augment_drag_ended.emit()
 
 func setup(aug: AugmentResource, inv_idx: int = -1) -> void:
 	augment_resource = aug

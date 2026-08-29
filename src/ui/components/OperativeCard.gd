@@ -74,10 +74,12 @@ func _on_card_gui_input(event: InputEvent) -> void:
 		elif event.button_index == MOUSE_BUTTON_LEFT:
 			card_clicked.emit(unit_instance)
 
+var is_dragging_this: bool = false
+
 func _get_drag_data(_pos: Vector2) -> Variant:
 	if unit_instance == null or unit_instance.unit_resource == null:
 		return null
-		
+	is_dragging_this = true
 	if is_inside_tree() and get_node_or_null("/root/EventBus"):
 		get_node("/root/EventBus").unit_drag_started.emit(unit_instance, unit_instance.grid_slot, is_fielded)
 
@@ -136,8 +138,10 @@ func _get_drag_data(_pos: Vector2) -> Variant:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_DRAG_END:
-		if get_node_or_null("/root/EventBus"):
-			get_node("/root/EventBus").unit_drag_ended.emit()
+		if is_dragging_this:
+			is_dragging_this = false
+			if get_node_or_null("/root/EventBus"):
+				get_node("/root/EventBus").unit_drag_ended.emit()
 
 func _on_unit_drag_started(dragged_unit: RefCounted, _src_slot: int, _drag_is_fielded: bool) -> void:
 	if dragged_unit != unit_instance:
@@ -461,10 +465,12 @@ class AugmentSlotButton extends Button:
 	var slot_index: int = 0
 	var unit_instance: UnitInstance = null
 	var augment_res: AugmentResource = null
+	var is_dragging_this: bool = false
 	
 	func _get_drag_data(_pos: Vector2) -> Variant:
 		if augment_res == null:
 			return null
+		is_dragging_this = true
 		if get_node_or_null("/root/EventBus"):
 			get_node("/root/EventBus").augment_drag_started.emit(augment_res)
 			
@@ -505,8 +511,10 @@ class AugmentSlotButton extends Button:
 
 	func _notification(what: int) -> void:
 		if what == NOTIFICATION_DRAG_END:
-			if get_node_or_null("/root/EventBus"):
-				get_node("/root/EventBus").augment_drag_ended.emit()
+			if is_dragging_this:
+				is_dragging_this = false
+				if get_node_or_null("/root/EventBus"):
+					get_node("/root/EventBus").augment_drag_ended.emit()
 
 func _slot_type_name(st: Enums.SlotType) -> String:
 	match st:

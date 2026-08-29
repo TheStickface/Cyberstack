@@ -262,7 +262,7 @@ func _on_unit_dropped_on_card(target_unit: UnitInstance, drag_data: Dictionary) 
 			], false)
 			
 	_play_sfx("play_ui_click")
-	_refresh_all()
+	call_deferred("_refresh_all")
 
 func _on_unit_dropped_on_empty_slot(slot_idx: int, drag_data: Dictionary) -> void:
 	var incoming_unit = drag_data.get("unit") as UnitInstance
@@ -289,7 +289,7 @@ func _on_unit_dropped_on_empty_slot(slot_idx: int, drag_data: Dictionary) -> voi
 				_set_status("Failed to deploy %s to slot %d." % [incoming_unit.unit_resource.display_name, slot_idx + 1], true)
 			
 	_play_sfx("play_ui_click")
-	_refresh_all()
+	call_deferred("_refresh_all")
 
 func _on_empty_slot_clicked(slot_idx: int) -> void:
 	if not crew_mgr.benched_units.is_empty():
@@ -772,7 +772,7 @@ func _on_augment_dropped_on_unit(unit: UnitInstance, target_slot: int, drag_data
 						_play_sfx("play_ui_click")
 					else:
 						_set_status("Incompatible slot on target operative.", true)
-	_refresh_all()
+	call_deferred("_refresh_all")
 
 func _on_unit_slot_unequip_requested(unit: UnitInstance, slot_idx: int) -> void:
 	if slot_idx < 0 or slot_idx >= unit.slotted_augments.size() or unit.slotted_augments[slot_idx] == null:
@@ -788,28 +788,26 @@ func _on_unit_slot_unequip_requested(unit: UnitInstance, slot_idx: int) -> void:
 func _on_unit_toggle_field(unit: UnitInstance) -> void:
 	if crew_mgr.fielded_units.has(unit):
 		crew_mgr.bench_unit(unit)
-		_set_status("Recalled %s to bench." % unit.unit_resource.display_name, false)
 	else:
-		if crew_mgr.fielded_units.size() < crew_mgr.get_max_field_units():
-			crew_mgr.field_unit(unit)
-			_set_status("Deployed %s to field." % unit.unit_resource.display_name, false)
-		else:
-			_set_status("Field limit reached (%d/%d for District %d)." % [
-					crew_mgr.fielded_units.size(),
-					crew_mgr.get_max_field_units(),
-					crew_mgr.current_district
-				], true)
+		crew_mgr.field_unit(unit)
 	_refresh_all()
 
 func _on_unit_sell(unit: UnitInstance) -> void:
-	var refund = shop_mgr.sell_unit(unit, crew_mgr)
-	_set_status("Sold %s for +%s." % [unit.unit_resource.display_name, Constants.format_currency(refund)], false)
+	if crew_mgr.fielded_units.has(unit):
+		crew_mgr.remove_unit(unit)
+	elif crew_mgr.benched_units.has(unit):
+		crew_mgr.remove_unit(unit)
+		
+	var refund = unit.unit_resource.base_cost if unit.unit_resource else 3
+	shop_mgr.gold += refund
+	_set_status("Dismissed %s (+%d Credits)." % [unit.unit_resource.display_name, refund], false)
 	_refresh_all()
 
 func _on_lock_in_pressed() -> void:
-	var result = crew_mgr.lock_in_crew()
+	var result = CrewValidator.validate_crew(crew_mgr.fielded_units, crew_mgr.current_district)
 	if result.valid:
-		_set_status("CREW LOCKED! Deploying to District Map...", false)
+		_set_status("Deployment authorized. Entering combat...", false)
+		_play_sfx("play_ui_click")
 		if get_node_or_null("/root/GameManager"):
 			var gm = get_node("/root/GameManager")
 			if gm.active_run_manager:
@@ -841,7 +839,7 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
 			if crew_mgr.unequip_augment_from_unit(src_unit, src_slot):
 				_set_status("Unequipped [%s] back to inventory." % (unequipped_aug.display_name if unequipped_aug else ""), false)
 				_play_sfx("play_ui_click")
-				_refresh_all()
+				call_deferred("_refresh_all")
 			else:
 				_set_status("Cannot unequip: Inventory is full (Max %d)." % Constants.MAX_INVENTORY_AUGMENTS, true)
 	elif dtype == "unit":
@@ -849,10 +847,10 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
 		if dragged_u:
 			_set_status("Cannot deploy %s to locked slot or invalid area." % dragged_u.unit_resource.display_name, true)
 		_play_sfx("play_ui_error")
-		_refresh_all()
+		call_deferred("_refresh_all")
 	elif dtype == "augment":
 		_set_status("Augment returned to inventory.", false)
-		_refresh_all()
+		call_deferred("_refresh_all")
 
 func _play_sfx(method_name: String) -> void:
 	if get_node_or_null("/root/AudioManager"):
