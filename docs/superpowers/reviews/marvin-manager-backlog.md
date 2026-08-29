@@ -139,3 +139,47 @@ EVIDENCE:   Aligns narrative events with high-stakes cyberpunk risk/reward ident
 PREDICT:    Adds compelling tactical decision-making when low on health vs low on credits.
 RISK:       Very low; single .tres resource update.
 EFFORT:     data-only tune
+
+---
+
+## Pass 4 (2026-08-29)
+
+#13 Bio-Synthetic Biograft Plating & Chimera Frontline Durability
+STATUS:     new
+PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass4.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass4.md)
+ORIGIN:     Simon Seer — Biograft Regenerative Weave
+CHANGE:     Unit & Faction Stats (data/units/bio_chimera.tres, data/factions/bio_hackers.tres) — Bio-Chimera Max Health 800 → 850, Base AD 34 → 38; Bio-Synthetic (2) bonus +160 HP and +8 Armor.
+EVIDENCE:   1,200-run simulation raised Bio-Chimera win rate from 44.5% to 48.0% and tightened 6-starter strategy spread to 15.5 points.
+PREDICT:    Prevents early D1-1 dropoffs for Bio-Synthetic starters without altering late-game boss mortality.
+RISK:       Very low; pure data .tres adjustment.
+EFFORT:     data-only tune
+
+#14 Net-Phantom Wraith Shroud Starting Mana & Evasion
+STATUS:     new
+PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass4.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass4.md)
+ORIGIN:     Simon Seer — Spectral Mirage Shroud
+CHANGE:     Unit & Faction Stats (data/units/phantom_spectre.tres, data/factions/net_phantoms.tres) — Spectre Starting Mana 0/60 → 20/60; Net-Phantom (2) Evasion +15% → +20%.
+EVIDENCE:   1,200-run simulation raised Net-Phantom win rate from 49.5% to 53.5% and stabilized early D1/D2 survival.
+PREDICT:    Enables glass-cannon assassin drafting to contest D2/D3 enemy formations without requiring lucky tank drops.
+RISK:       Very low; pure data .tres update.
+EFFORT:     data-only tune
+
+#15 District 4 Black Market Legendary Augment Siphon Odds
+STATUS:     new
+PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass4.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass4.md)
+ORIGIN:     Simon Seer — Black Market Singularity Nodes
+CHANGE:     Economy / Shop Odds (src/core/Constants.gd) — Set DISTRICT_SHOP_ODDS[4] Tier-3 (Legendary) odds to 0.35 (up from 0.20).
+EVIDENCE:   Highroll Delta increased from 8.8s to 11.2s; endgame clears feel distinctly powerful with completed legendary augment synergy.
+PREDICT:    Eliminates dead credit accumulation in Stage 4-1 and 4-2 by offering attractive 5-credit legendary augments.
+RISK:       Low; single dictionary entry in Constants.gd.
+EFFORT:     data-only tune
+
+#16 Bio-Hazard Quarantine High-Yield Siphon Risk Branch
+STATUS:     new
+PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass4.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass4.md)
+ORIGIN:     Simon Seer — Contagion Ledger Extraction
+CHANGE:     Event Balancing (data/events/event_bio_hazard_quarantine.tres) — Choice 2 "Extract Experimental Serum" grants +15 Credits and 1 Rare Augment roll for 20.0 HP crew penalty.
+EVIDENCE:   Adds a high-stakes tactical branch to newly introduced bio-hazard narrative nodes.
+PREDICT:    Provides healthy risk/reward tension before entering Stage 2-1 or 3-1 mini-boss encounters.
+RISK:       Very low; single event resource update.
+EFFORT:     data-only tune
