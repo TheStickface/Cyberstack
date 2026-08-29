@@ -13,7 +13,9 @@ var faction_reputation: Dictionary = {
 	Enums.Faction.STREET_RUNNERS: 0,
 	Enums.Faction.CORP_ENFORCERS: 0,
 	Enums.Faction.ROGUE_AIS: 0,
-	Enums.Faction.FIXERS: 0
+	Enums.Faction.FIXERS: 0,
+	Enums.Faction.BIO_HACKERS: 0,
+	Enums.Faction.NET_PHANTOMS: 0
 }
 
 # Unlocked starting operatives (IDs)
@@ -21,7 +23,9 @@ var unlocked_operatives: Array[String] = [
 	"runner_blitz",
 	"corp_sentinel",
 	"ai_glitch",
-	"fixer_broker"
+	"fixer_broker",
+	"bio_chimera",
+	"phantom_spectre"
 ]
 
 # Discovered items in Codex

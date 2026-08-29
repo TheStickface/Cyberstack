@@ -43,7 +43,9 @@ func _update_factions(report: SynergyReport) -> void:
 		Enums.Faction.STREET_RUNNERS,
 		Enums.Faction.CORP_ENFORCERS,
 		Enums.Faction.ROGUE_AIS,
-		Enums.Faction.FIXERS
+		Enums.Faction.FIXERS,
+		Enums.Faction.BIO_HACKERS,
+		Enums.Faction.NET_PHANTOMS
 	]
 	
 	for f in all_factions:

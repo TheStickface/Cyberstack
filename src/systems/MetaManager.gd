@@ -15,7 +15,9 @@ const FACTION_LEVEL_2_OPERATIVES: Dictionary = {
 	Enums.Faction.STREET_RUNNERS: "street_ghost",
 	Enums.Faction.CORP_ENFORCERS: "corp_sentinel",
 	Enums.Faction.ROGUE_AIS: "ai_glitch",
-	Enums.Faction.FIXERS: "fixer_broker"
+	Enums.Faction.FIXERS: "fixer_broker",
+	Enums.Faction.BIO_HACKERS: "bio_chimera",
+	Enums.Faction.NET_PHANTOMS: "phantom_spectre"
 }
 
 static func get_faction_level(points: int) -> int:

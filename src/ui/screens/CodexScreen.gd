@@ -150,7 +150,7 @@ func _populate_factions() -> void:
 	for c in factions_container.get_children():
 		c.queue_free()
 		
-	for f_key in [Enums.Faction.STREET_RUNNERS, Enums.Faction.CORP_ENFORCERS, Enums.Faction.ROGUE_AIS, Enums.Faction.FIXERS]:
+	for f_key in [Enums.Faction.STREET_RUNNERS, Enums.Faction.CORP_ENFORCERS, Enums.Faction.ROGUE_AIS, Enums.Faction.FIXERS, Enums.Faction.BIO_HACKERS, Enums.Faction.NET_PHANTOMS]:
 		var fac = repo.get_faction(f_key)
 		if fac == null:
 			continue

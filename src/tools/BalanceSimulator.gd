@@ -266,7 +266,7 @@ static func simulate_full_run(starter_id: String, repo: Object) -> Dictionary:
 					var enemy_comp_templates = _build_minion_enemy_comp(repo, d_idx)
 					var enemy_crew = _instantiate_crew(enemy_comp_templates, repo)
 
-					var battle_res = simulate_single_battle(crew_mgr.fielded_units, enemy_crew, repo, d_idx, false, district)
+					var battle_res = simulate_single_battle(crew_mgr.fielded_units, enemy_crew, repo, d_idx, false, district, crew_mgr.tactical_grid, crew_mgr.active_synergy_report)
 					R["battle_margins"].append(_margin_entry(battle_res, d_idx, false))
 					if not battle_res["victory"]:
 						return _finish_run(R, false, d_idx, gold)
@@ -279,7 +279,7 @@ static func simulate_full_run(starter_id: String, repo: Object) -> Dictionary:
 					var enemy_comp_templates = _build_boss_enemy_comp(repo, d_idx)
 					var enemy_crew = _instantiate_crew(enemy_comp_templates, repo)
 
-					var battle_res = simulate_single_battle(crew_mgr.fielded_units, enemy_crew, repo, d_idx, true, district)
+					var battle_res = simulate_single_battle(crew_mgr.fielded_units, enemy_crew, repo, d_idx, true, district, crew_mgr.tactical_grid, crew_mgr.active_synergy_report)
 					R["battle_margins"].append(_margin_entry(battle_res, d_idx, true))
 					if not battle_res["victory"]:
 						return _finish_run(R, false, d_idx, gold)
@@ -615,6 +615,14 @@ static func _create_combatant(unit: UnitInstance, repo: Object, is_player: bool,
 				Enums.Faction.FIXERS:
 					if count >= 2: hp += 100.0; evasion += 0.05
 					if count >= 4: hp += 200.0; evasion += 0.10
+				Enums.Faction.BIO_HACKERS:
+					if count >= 2: hp += 120.0; armor += 5.0
+					if count >= 4: hp += 280.0; armor += 15.0
+					if count >= 6: hp += 600.0; armor += 35.0; aspeed *= 1.20
+				Enums.Faction.NET_PHANTOMS:
+					if count >= 2: evasion += 0.15; ad += 10.0
+					if count >= 4: evasion += 0.25; crit += 0.20; ad += 20.0
+					if count >= 6: evasion += 0.40; crit += 0.35; ad += 40.0
 					
 	# Aggregate tag counts from entire squad synergy report
 		for t_key in synergy_report.tag_counts:

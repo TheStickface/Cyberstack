@@ -178,9 +178,9 @@ func _eval_forcer(repo: Object) -> void:
 		u2.star_level = 2
 		var u3 = UnitInstance.new(repo.get_unit("ai_cipher"))
 		u3.star_level = 2
-		var u4 = UnitInstance.new(repo.get_unit("street_ghost"))
+		var u4 = UnitInstance.new(repo.get_unit("ai_bastion"))
 		u4.star_level = 2
-		var u5 = UnitInstance.new(repo.get_unit("runner_dash"))
+		var u5 = UnitInstance.new(repo.get_unit("ai_singularity"))
 		u5.star_level = 2
 		
 		var aug1 = repo.get_augment("common_neural_link")
@@ -189,19 +189,18 @@ func _eval_forcer(repo: Object) -> void:
 		if aug2: u1.equip_augment(1, aug2)
 		var aug3 = repo.get_augment("rare_neural_synapse")
 		if aug3: u3.equip_augment(0, aug3)
-		var aug4 = repo.get_augment("common_neural_buffer")
-		if aug4: u4.equip_augment(0, aug4)
+		var aug4 = repo.get_augment("legendary_neural_hive")
+		if aug4: u5.equip_augment(0, aug4)
 		
-		_deploy_units_directly(crew_mgr, [u2, u1, u3, u4, u5], [1, 4, 3, 5, 0])
+		_deploy_units_directly(crew_mgr, [u4, u2, u1, u3, u5], [0, 1, 3, 4, 5])
 		
 		var enemy_crew = BalanceSimulatorScript._instantiate_crew(BalanceSimulatorScript._build_boss_enemy_comp(repo, 4), repo)
 		var d = repo.get_district("district_4_black_site")
-		var b_res = BalanceSimulatorScript.simulate_single_battle(crew_mgr.fielded_units, enemy_crew, repo, 4, true, d)
+		var b_res = BalanceSimulatorScript.simulate_single_battle(crew_mgr.fielded_units, enemy_crew, repo, 4, true, d, crew_mgr.tactical_grid, crew_mgr.active_synergy_report)
 		if b_res["victory"]:
 			wins += 1
 			ttks.append(b_res["duration"])
 			survivors_list.append(b_res["survivors"])
-			
 	ttks.sort()
 	var p50 = ttks[int(ttks.size() * 0.5)] if not ttks.is_empty() else 60.0
 	var p95 = ttks[int(ttks.size() * 0.05)] if not ttks.is_empty() else 60.0
@@ -241,7 +240,7 @@ func _eval_flexer(repo: Object) -> void:
 		
 		var enemy_crew = BalanceSimulatorScript._instantiate_crew(BalanceSimulatorScript._build_boss_enemy_comp(repo, 4), repo)
 		var d = repo.get_district("district_4_black_site")
-		var b_res = BalanceSimulatorScript.simulate_single_battle(crew_mgr.fielded_units, enemy_crew, repo, 4, true, d)
+		var b_res = BalanceSimulatorScript.simulate_single_battle(crew_mgr.fielded_units, enemy_crew, repo, 4, true, d, crew_mgr.tactical_grid, crew_mgr.active_synergy_report)
 		if b_res["victory"]:
 			wins += 1
 			ttks.append(b_res["duration"])
