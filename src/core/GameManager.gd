@@ -95,7 +95,8 @@ func finish_combat_encounter(victory: bool, battle_stats: Dictionary = {}) -> Di
 			"fights_won": active_run_manager.fights_won,
 			"bosses_defeated": active_run_manager.bosses_defeated,
 			"gold_earned": active_run_manager.total_gold_earned,
-			"gold_spent": active_run_manager.shop_mgr.total_spent if active_run_manager.shop_mgr else 0
+			"gold_spent": active_run_manager.shop_mgr.total_spent if active_run_manager.shop_mgr else 0,
+			"duration": active_run_manager.get_elapsed_duration_seconds()
 		}
 		
 		# Record Telemetry Event
@@ -137,8 +138,15 @@ func abandon_run() -> void:
 		"bosses_defeated": active_run_manager.bosses_defeated,
 		"gold_earned": active_run_manager.total_gold_earned,
 		"gold_spent": active_run_manager.shop_mgr.total_spent if active_run_manager.shop_mgr else 0,
+		"duration": active_run_manager.get_elapsed_duration_seconds(),
 		"abandoned": true
 	}
+	
+	# Record Telemetry Event for abandoned run
+	TelemetryManager.record_run_summary(
+		last_run_summary,
+		active_run_manager.crew_mgr.fielded_units
+	)
 	
 	if active_profile == null:
 		active_profile = SaveManager.load_profile()

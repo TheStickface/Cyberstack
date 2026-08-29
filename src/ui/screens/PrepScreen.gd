@@ -793,14 +793,11 @@ func _on_unit_toggle_field(unit: UnitInstance) -> void:
 	_refresh_all()
 
 func _on_unit_sell(unit: UnitInstance) -> void:
-	if crew_mgr.fielded_units.has(unit):
-		crew_mgr.remove_unit(unit)
-	elif crew_mgr.benched_units.has(unit):
-		crew_mgr.remove_unit(unit)
-		
-	var refund = unit.unit_resource.base_cost if unit.unit_resource else 3
-	shop_mgr.gold += refund
-	_set_status("Dismissed %s (+%d Credits)." % [unit.unit_resource.display_name, refund], false)
+	if unit == null or unit.unit_resource == null:
+		return
+	var u_name = unit.unit_resource.display_name
+	var refund = shop_mgr.sell_unit(unit, crew_mgr) if shop_mgr else 0
+	_set_status("Dismissed %s (+%d Credits)." % [u_name, refund], false)
 	_refresh_all()
 
 func _on_lock_in_pressed() -> void:

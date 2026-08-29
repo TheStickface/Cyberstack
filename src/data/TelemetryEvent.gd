@@ -3,6 +3,10 @@ extends RefCounted
 
 ## Data container for individual player run telemetry events and summaries
 
+const SCHEMA_VERSION: int = 1
+
+var schema_version: int = SCHEMA_VERSION
+var is_synthetic: bool = false
 var session_id: String = ""
 var timestamp: int = 0
 var event_type: String = "" # RUN_START, ENCOUNTER, RUN_END, RECRUIT, EQUIP
@@ -20,13 +24,19 @@ var active_tags: Dictionary = {}     # Tag (int) -> count (int)
 func to_dict() -> Dictionary:
 	var fac_dict: Dictionary = {}
 	for f in active_factions.keys():
-		fac_dict[str(f)] = active_factions[f]
+		var fac_enum = f as int as Enums.Faction
+		var fac_key = Enums.faction_to_string(fac_enum)
+		fac_dict[fac_key] = active_factions[f]
 		
 	var tag_dict: Dictionary = {}
 	for t in active_tags.keys():
-		tag_dict[str(t)] = active_tags[t]
+		var tag_enum = t as int as Enums.AugmentTag
+		var tag_key = Enums.tag_to_string(tag_enum)
+		tag_dict[tag_key] = active_tags[t]
 		
 	return {
+		"schema_version": schema_version,
+		"is_synthetic": is_synthetic,
 		"session_id": session_id,
 		"timestamp": timestamp,
 		"event_type": event_type,
@@ -42,6 +52,8 @@ func to_dict() -> Dictionary:
 	}
 
 func from_dict(data: Dictionary) -> void:
+	schema_version = data.get("schema_version", SCHEMA_VERSION)
+	is_synthetic = data.get("is_synthetic", false)
 	session_id = data.get("session_id", "")
 	timestamp = data.get("timestamp", 0)
 	event_type = data.get("event_type", "")
@@ -61,10 +73,25 @@ func from_dict(data: Dictionary) -> void:
 		
 	active_factions.clear()
 	var fac_dict = data.get("active_factions", {})
-	for f_str in fac_dict.keys():
-		active_factions[int(f_str)] = int(fac_dict[f_str])
+	for f_key in fac_dict.keys():
+		var count = int(fac_dict[f_key])
+		var f_str = str(f_key)
+		if f_str.is_valid_int():
+			active_factions[int(f_str)] = count
+		else:
+			var fac_enum = Enums.string_to_faction(f_str)
+			if fac_enum != Enums.Faction.NONE:
+				active_factions[int(fac_enum)] = count
 		
 	active_tags.clear()
 	var tag_dict = data.get("active_tags", {})
-	for t_str in tag_dict.keys():
-		active_tags[int(t_str)] = int(tag_dict[t_str])
+	for t_key in tag_dict.keys():
+		var count = int(tag_dict[t_key])
+		var t_str = str(t_key)
+		if t_str.is_valid_int():
+			active_tags[int(t_str)] = count
+		else:
+			var tag_enum = Enums.string_to_tag(t_str)
+			if tag_enum != Enums.AugmentTag.NONE:
+				active_tags[int(tag_enum)] = count
+

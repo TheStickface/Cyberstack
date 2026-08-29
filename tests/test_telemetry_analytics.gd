@@ -159,3 +159,72 @@ func test_faction_meta_aggregation() -> Dictionary:
 	if runner_row.win_rate != 50.0:
 		return {"passed": false, "message": "Street Runners win rate should be 50%%, got %.1f" % runner_row.win_rate, "assertions": 4}
 	return {"passed": true, "assertions": 4}
+
+func test_telemetry_schema_version_and_synthetic_isolation() -> Dictionary:
+	var event = TelemetryEvent.new()
+	event.session_id = "test_sess_01"
+	event.is_synthetic = false
+	event.active_factions[int(Enums.Faction.ROGUE_AIS)] = 2
+	event.active_tags[int(Enums.AugmentTag.NEURAL)] = 3
+	
+	var data = event.to_dict()
+	if not data.has("schema_version") or data["schema_version"] != 1:
+		return {"passed": false, "message": "TelemetryEvent dict missing schema_version 1", "assertions": 1}
+	if not data.has("is_synthetic") or data["is_synthetic"] != false:
+		return {"passed": false, "message": "TelemetryEvent dict missing is_synthetic boolean", "assertions": 2}
+		
+	# Verify string enum keys
+	var facs: Dictionary = data.get("active_factions", {})
+	if not facs.has("Rogue AIs"):
+		return {"passed": false, "message": "Expected stable string key 'Rogue AIs' in active_factions, got: %s" % str(facs), "assertions": 3}
+		
+	var tags_dict: Dictionary = data.get("active_tags", {})
+	if not tags_dict.has("Neural"):
+		return {"passed": false, "message": "Expected stable string key 'Neural' in active_tags, got: %s" % str(tags_dict), "assertions": 4}
+		
+	# Verify round-trip back into TelemetryEvent
+	var restored = TelemetryEvent.new()
+	restored.from_dict(data)
+	if restored.active_factions.get(int(Enums.Faction.ROGUE_AIS), 0) != 2:
+		return {"passed": false, "message": "Failed to parse string faction key 'Rogue AIs' back into enum int", "assertions": 5}
+	if restored.active_tags.get(int(Enums.AugmentTag.NEURAL), 0) != 3:
+		return {"passed": false, "message": "Failed to parse string tag key 'Neural' back into enum int", "assertions": 6}
+
+	# Verify sample generation default path is SAMPLE_TELEMETRY_PATH and sets is_synthetic = true
+	var sample_path = "user://test_sample_isolation.json"
+	var samples = TelemetryManager.generate_community_sample_data(5, repo, sample_path)
+	if samples.is_empty() or not samples[0].is_synthetic:
+		SaveManager.delete_active_run(sample_path)
+		return {"passed": false, "message": "Generated sample record does not have is_synthetic set to true", "assertions": 7}
+	SaveManager.delete_active_run(sample_path)
+
+	return {"passed": true, "assertions": 7}
+
+func test_analytics_linear_scalability() -> Dictionary:
+	var records: Array[TelemetryEvent] = []
+	var units = repo.get_all_units()
+	var augs = repo.get_all_augments()
+	
+	# Generate 1,000 in-memory records
+	for i in range(1000):
+		var ev = TelemetryEvent.new()
+		ev.victory = (i % 2 == 0)
+		ev.duration_seconds = 400.0
+		ev.gold_spent = 30
+		if not units.is_empty():
+			ev.fielded_unit_ids.append(units[i % units.size()].id)
+		if not augs.is_empty():
+			ev.equipped_augment_ids.append(augs[i % augs.size()].id)
+		ev.active_factions[int(Enums.Faction.CORP_ENFORCERS)] = 2
+		records.append(ev)
+		
+	var t0 = Time.get_ticks_msec()
+	var _op = AnalyticsEngine.compute_operative_meta(records, repo)
+	var _aug = AnalyticsEngine.compute_augment_meta(records, repo)
+	var _fac = AnalyticsEngine.compute_faction_meta(records, repo)
+	var elapsed_ms = Time.get_ticks_msec() - t0
+	
+	if elapsed_ms > 100:
+		return {"passed": false, "message": "Analytics aggregation took %d ms for 1000 records (expected < 100ms)" % elapsed_ms, "assertions": 1}
+		
+	return {"passed": true, "assertions": 1}

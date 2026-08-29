@@ -4,6 +4,7 @@ extends RefCounted
 ## Telemetry recorder buffering player run summaries and community data
 
 const TELEMETRY_PATH = "user://cyberstack_telemetry.json"
+const SAMPLE_TELEMETRY_PATH = "user://cyberstack_sample_telemetry.json"
 
 const DataRepoScript = preload("res://src/systems/DataRepository.gd")
 
@@ -19,13 +20,14 @@ static func record_run_summary(
 	path: String = TELEMETRY_PATH
 ) -> TelemetryEvent:
 	var event = TelemetryEvent.new()
-	event.session_id = _generate_uuid()
+	event.session_id = summary.get("session_id", _generate_uuid())
 	event.timestamp = Time.get_unix_time_from_system()
 	event.event_type = "RUN_END"
 	event.victory = summary.get("victory", false)
 	event.district_index = summary.get("district", 1)
-	event.duration_seconds = summary.get("duration", randf_range(180.0, 720.0))
+	event.duration_seconds = float(summary.get("duration", 0.0))
 	event.gold_spent = int(summary.get("gold_spent", 0))
+	event.is_synthetic = summary.get("is_synthetic", false)
 
 	for unit in crew:
 		if unit and unit.unit_resource:
@@ -83,7 +85,7 @@ static func load_all_records(path: String = TELEMETRY_PATH) -> Array[TelemetryEv
 	return result
 
 ## Generates realistic multi-user community sample data for analytics visualization
-static func generate_community_sample_data(count: int = 50, repo_instance: Object = null, path: String = TELEMETRY_PATH) -> Array[TelemetryEvent]:
+static func generate_community_sample_data(count: int = 50, repo_instance: Object = null, path: String = SAMPLE_TELEMETRY_PATH) -> Array[TelemetryEvent]:
 	var repo = repo_instance if repo_instance != null else _get_default_repo()
 	var all_units = repo.get_all_units()
 	var all_augs = repo.get_all_augments()
@@ -92,6 +94,7 @@ static func generate_community_sample_data(count: int = 50, repo_instance: Objec
 	
 	for i in range(count):
 		var ev = TelemetryEvent.new()
+		ev.is_synthetic = true
 		ev.session_id = "user_%04d_%s" % [randi() % 1000, _generate_uuid().substr(0, 4)]
 		ev.timestamp = Time.get_unix_time_from_system() - (randi() % 604800) # Past 7 days
 		ev.event_type = "RUN_END"

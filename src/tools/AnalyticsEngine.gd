@@ -39,16 +39,21 @@ static func compute_operative_meta(records: Array[TelemetryEvent], repo: Object)
 	var total_runs = maxi(1, records.size())
 	var all_units = repo.get_all_units()
 	
+	# Single-pass frequency count: O(records)
+	var unit_stats: Dictionary = {}
+	for r in records:
+		for u_id in r.fielded_unit_ids:
+			if not unit_stats.has(u_id):
+				unit_stats[u_id] = {"picks": 0, "wins": 0}
+			unit_stats[u_id]["picks"] += 1
+			if r.victory:
+				unit_stats[u_id]["wins"] += 1
+
+	# Populate metadata: O(units)
 	for unit in all_units:
-		var picks = 0
-		var wins = 0
-		
-		for r in records:
-			if r.fielded_unit_ids.has(unit.id):
-				picks += 1
-				if r.victory:
-					wins += 1
-					
+		var s: Dictionary = unit_stats.get(unit.id, {"picks": 0, "wins": 0})
+		var picks: int = s.get("picks", 0)
+		var wins: int = s.get("wins", 0)
 		var pick_rate = (float(picks) / float(total_runs)) * 100.0
 		var win_rate = (float(wins) / float(maxi(1, picks))) * 100.0 if picks > 0 else 0.0
 		
@@ -72,16 +77,21 @@ static func compute_augment_meta(records: Array[TelemetryEvent], repo: Object) -
 	var total_runs = maxi(1, records.size())
 	var all_augs = repo.get_all_augments()
 	
+	# Single-pass frequency count: O(records)
+	var aug_stats: Dictionary = {}
+	for r in records:
+		for a_id in r.equipped_augment_ids:
+			if not aug_stats.has(a_id):
+				aug_stats[a_id] = {"equips": 0, "wins": 0}
+			aug_stats[a_id]["equips"] += 1
+			if r.victory:
+				aug_stats[a_id]["wins"] += 1
+
+	# Populate metadata: O(augments)
 	for aug in all_augs:
-		var equips = 0
-		var wins = 0
-		
-		for r in records:
-			if r.equipped_augment_ids.has(aug.id):
-				equips += 1
-				if r.victory:
-					wins += 1
-					
+		var s: Dictionary = aug_stats.get(aug.id, {"equips": 0, "wins": 0})
+		var equips: int = s.get("equips", 0)
+		var wins: int = s.get("wins", 0)
 		var equip_rate = (float(equips) / float(total_runs)) * 100.0
 		var win_rate = (float(wins) / float(maxi(1, equips))) * 100.0 if equips > 0 else 0.0
 		
@@ -104,25 +114,32 @@ static func compute_faction_meta(records: Array[TelemetryEvent], repo: Object) -
 	var result: Array[Dictionary] = []
 	var total_runs = maxi(1, records.size())
 
+	# Single-pass frequency count: O(records)
+	var fac_stats: Dictionary = {}
+	for r in records:
+		for f_id in r.active_factions.keys():
+			var fid_int := int(f_id)
+			var count := int(r.active_factions[f_id])
+			if count <= 0:
+				continue
+			if not fac_stats.has(fid_int):
+				fac_stats[fid_int] = {"runs_present": 0, "runs_at_threshold": 0, "wins": 0}
+			fac_stats[fid_int]["runs_present"] += 1
+			if count >= 2:
+				fac_stats[fid_int]["runs_at_threshold"] += 1
+			if r.victory:
+				fac_stats[fid_int]["wins"] += 1
+
+	# Populate metadata: O(factions)
 	for f_key in repo.factions.keys():
 		var f_id := int(f_key)
 		if f_id == int(Enums.Faction.NONE):
 			continue
 		var fac_res = repo.factions[f_key]
-
-		var runs_present = 0
-		var runs_at_threshold = 0  # 2+ of the faction fielded together
-		var wins_present = 0
-
-		for r in records:
-			var count := int(r.active_factions.get(f_id, 0))
-			if count <= 0:
-				continue
-			runs_present += 1
-			if r.victory:
-				wins_present += 1
-			if count >= 2:
-				runs_at_threshold += 1
+		var s: Dictionary = fac_stats.get(f_id, {"runs_present": 0, "runs_at_threshold": 0, "wins": 0})
+		var runs_present: int = s.get("runs_present", 0)
+		var runs_at_threshold: int = s.get("runs_at_threshold", 0)
+		var wins_present: int = s.get("wins", 0)
 
 		result.append({
 			"id": f_id,

@@ -79,3 +79,24 @@ func test_combat_bridge_payload() -> Dictionary:
 		return {"passed": false, "message": "District 2 enemy squad should have 4 units, got %d" % enemy_squad.size(), "assertions": 3}
 		
 	return {"passed": true, "assertions": 3}
+
+func test_abandon_run_records_telemetry() -> Dictionary:
+	var test_path = "user://test_abandon_telemetry.json"
+	SaveManager.delete_active_run(test_path)
+	
+	var gm = GameManagerScript.new()
+	gm.start_new_game("runner_blitz", repo)
+	
+	# Abandon run
+	gm.abandon_run()
+	
+	if gm.current_state != 4: # GameState.RUN_END
+		return {"passed": false, "message": "abandon_run should route to RUN_END (4), got %d" % gm.current_state, "assertions": 1}
+		
+	if gm.last_run_summary.is_empty() or not gm.last_run_summary.get("abandoned", false):
+		return {"passed": false, "message": "last_run_summary missing abandoned flag", "assertions": 2}
+		
+	if not gm.last_run_summary.has("duration"):
+		return {"passed": false, "message": "last_run_summary should contain measured duration", "assertions": 3}
+		
+	return {"passed": true, "assertions": 3}

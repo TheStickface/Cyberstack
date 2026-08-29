@@ -52,12 +52,15 @@ static func save_active_run(run_mgr: RunManager, path: String = ACTIVE_RUN_PATH)
 		return false
 		
 	var data = {
+		"schema_version": 1,
 		"district_index": run_mgr.current_district_index,
 		"node_index": run_mgr.current_node_index,
 		"fights_won": run_mgr.fights_won,
 		"bosses_defeated": run_mgr.bosses_defeated,
 		"total_gold_earned": run_mgr.total_gold_earned,
 		"gold": run_mgr.shop_mgr.gold if run_mgr.shop_mgr else 10,
+		"is_locked": run_mgr.shop_mgr.is_locked if run_mgr.shop_mgr else false,
+		"run_districts": _serialize_districts(run_mgr.run_districts),
 		"fielded_units": _serialize_units(run_mgr.crew_mgr.fielded_units if run_mgr.crew_mgr else []),
 		"benched_units": _serialize_units(run_mgr.crew_mgr.benched_units if run_mgr.crew_mgr else []),
 		"augment_inventory": _serialize_augments(run_mgr.crew_mgr.augment_inventory if run_mgr.crew_mgr else [])
@@ -98,12 +101,39 @@ static func load_active_run(repo: Object = null, path: String = ACTIVE_RUN_PATH)
 	# Setup Shop and Crew Managers
 	run_mgr.shop_mgr = ShopManager.new(data.get("gold", 10))
 	run_mgr.shop_mgr.current_district = run_mgr.current_district_index
+	run_mgr.shop_mgr.is_locked = data.get("is_locked", false)
 	
 	run_mgr.crew_mgr = CrewManager.new(run_mgr.current_district_index, repo_obj)
-	run_mgr.crew_mgr.fielded_units = _deserialize_units(data.get("fielded_units", []), repo_obj)
+	var loaded_fielded = _deserialize_units(data.get("fielded_units", []), repo_obj)
 	run_mgr.crew_mgr.benched_units = _deserialize_units(data.get("benched_units", []), repo_obj)
 	run_mgr.crew_mgr.augment_inventory = _deserialize_augments(data.get("augment_inventory", []), repo_obj)
 	
+	# Reconstruct tactical grid from fielded units
+	for u in loaded_fielded:
+		if u != null:
+			if u.grid_slot >= 0 and u.grid_slot < run_mgr.crew_mgr.tactical_grid.size():
+				run_mgr.crew_mgr.tactical_grid[u.grid_slot] = u
+			else:
+				var open_slot = run_mgr.crew_mgr._find_first_empty_unlocked_slot()
+				if open_slot != -1:
+					run_mgr.crew_mgr.tactical_grid[open_slot] = u
+					u.grid_slot = open_slot
+				else:
+					run_mgr.crew_mgr.benched_units.append(u)
+					u.grid_slot = -1
+	run_mgr.crew_mgr._sync_fielded_units()
+
+	# Reconstruct run districts
+	var district_ids: Array = data.get("run_districts", [])
+	if not district_ids.is_empty():
+		run_mgr.run_districts.clear()
+		for d_id in district_ids:
+			var d_res = repo_obj.get_district(str(d_id))
+			if d_res:
+				run_mgr.run_districts.append(d_res)
+	else:
+		run_mgr.run_districts = repo_obj.draw_run_districts(Constants.NORMAL_DISTRICTS_PER_RUN)
+
 	run_mgr._load_district(run_mgr.current_district_index)
 	run_mgr.current_node_index = data.get("node_index", 0)
 	
@@ -124,6 +154,13 @@ static func delete_active_run(path: String = ACTIVE_RUN_PATH) -> void:
 		DirAccess.remove_absolute(path)
 
 # Helper Serializers
+static func _serialize_districts(districts: Array[DistrictResource]) -> Array[String]:
+	var list: Array[String] = []
+	for d in districts:
+		if d and not d.id.is_empty():
+			list.append(d.id)
+	return list
+
 static func _serialize_units(units: Array[UnitInstance]) -> Array[Dictionary]:
 	var list: Array[Dictionary] = []
 	for u in units:
@@ -134,6 +171,8 @@ static func _serialize_units(units: Array[UnitInstance]) -> Array[Dictionary]:
 			list.append({
 				"unit_id": u.unit_resource.id,
 				"level": u.level,
+				"star_level": u.star_level,
+				"grid_slot": u.grid_slot,
 				"equipped_augments": aug_ids
 			})
 	return list
@@ -147,6 +186,8 @@ static func _deserialize_units(data_list: Array, repo: Object) -> Array[UnitInst
 		if unit_res:
 			var instance = UnitInstance.new(unit_res)
 			instance.level = dict.get("level", 1)
+			instance.star_level = dict.get("star_level", instance.level)
+			instance.grid_slot = dict.get("grid_slot", -1)
 			var aug_ids = dict.get("equipped_augments", [])
 			for i in range(mini(aug_ids.size(), Constants.MAX_AUGMENT_SLOTS_PER_UNIT)):
 				var a_id = aug_ids[i]

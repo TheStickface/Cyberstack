@@ -45,6 +45,11 @@ func test_active_run_save_and_load() -> Dictionary:
 	var run_mgr = RunManager.new(repo)
 	run_mgr.start_new_run("runner_blitz")
 	run_mgr.shop_mgr.gold = 35
+	run_mgr.shop_mgr.is_locked = true
+	
+	# Set star_level to 2 on fielded unit
+	run_mgr.crew_mgr.fielded_units[0].star_level = 2
+	run_mgr.crew_mgr.fielded_units[0].level = 2
 	
 	# Equip an augment to the fielded unit
 	var aug = repo.get_augment("common_kinetic_accelerator")
@@ -70,16 +75,29 @@ func test_active_run_save_and_load() -> Dictionary:
 	if loaded_run.shop_mgr.gold != 35:
 		return {"passed": false, "message": "Gold mismatch in loaded run", "assertions": 4}
 		
-	if loaded_run.crew_mgr.fielded_units.size() != 1:
-		return {"passed": false, "message": "Fielded units count mismatch", "assertions": 5}
+	if not loaded_run.shop_mgr.is_locked:
+		return {"passed": false, "message": "Shop lock state not preserved", "assertions": 5}
 		
-	var equipped_aug = loaded_run.crew_mgr.fielded_units[0].equipped_augments[0]
+	if loaded_run.crew_mgr.fielded_units.size() != 1:
+		return {"passed": false, "message": "Fielded units count mismatch", "assertions": 6}
+		
+	var u0 = loaded_run.crew_mgr.fielded_units[0]
+	if u0.star_level != 2:
+		return {"passed": false, "message": "Unit star level was not preserved across save/load (Got %d, Expected 2)" % u0.star_level, "assertions": 7}
+		
+	if u0.grid_slot != 1 or loaded_run.crew_mgr.tactical_grid[1] != u0:
+		return {"passed": false, "message": "Tactical grid slot assignment was not reconstructed properly", "assertions": 8}
+		
+	var equipped_aug = u0.equipped_augments[0]
 	if equipped_aug == null or equipped_aug.id != "common_kinetic_accelerator":
-		return {"passed": false, "message": "Equipped augment mismatch on loaded unit", "assertions": 6}
+		return {"passed": false, "message": "Equipped augment mismatch on loaded unit", "assertions": 9}
 		
 	if loaded_run.crew_mgr.augment_inventory.size() != 1:
-		return {"passed": false, "message": "Augment inventory size mismatch in loaded run", "assertions": 7}
+		return {"passed": false, "message": "Augment inventory size mismatch in loaded run", "assertions": 10}
+		
+	if loaded_run.run_districts.is_empty():
+		return {"passed": false, "message": "Run districts were not preserved in loaded run", "assertions": 11}
 		
 	# Cleanup
 	SaveManager.delete_active_run(test_path)
-	return {"passed": true, "assertions": 7}
+	return {"passed": true, "assertions": 11}

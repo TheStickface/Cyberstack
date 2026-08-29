@@ -23,11 +23,17 @@ var run_active: bool = false
 var fights_won: int = 0
 var bosses_defeated: int = 0
 var total_gold_earned: int = 0
+var run_start_time_msec: int = 0
 
 func _init(p_repo: Object = null) -> void:
 	_repo = p_repo if p_repo != null else _get_default_repo()
 	shop_mgr = ShopManager.new(Constants.DEFAULT_STARTING_GOLD)
 	crew_mgr = CrewManager.new(1, _repo)
+
+func get_elapsed_duration_seconds() -> float:
+	if run_start_time_msec <= 0:
+		return 0.0
+	return float(Time.get_ticks_msec() - run_start_time_msec) / 1000.0
 
 func start_new_run(starter_unit_id: String = "runner_blitz") -> void:
 	current_district_index = 1
@@ -35,6 +41,7 @@ func start_new_run(starter_unit_id: String = "runner_blitz") -> void:
 	fights_won = 0
 	bosses_defeated = 0
 	total_gold_earned = Constants.DEFAULT_STARTING_GOLD
+	run_start_time_msec = Time.get_ticks_msec()
 	run_active = true
 	
 	shop_mgr = ShopManager.new(Constants.DEFAULT_STARTING_GOLD)

@@ -15,8 +15,8 @@ func _init() -> void:
 	
 	var records = TelemetryManager.load_all_records()
 	if records.size() < 10:
-		print("[INFO] Generating 50 community player run simulations...")
-		records = TelemetryManager.generate_community_sample_data(50, repo)
+		print("[INFO] Generating 50 community player run simulations into sample storage...")
+		records = TelemetryManager.generate_community_sample_data(50, repo, TelemetryManager.SAMPLE_TELEMETRY_PATH)
 		
 	var md = generate_markdown_report(records, repo)
 	var output_path = "res://data/community_analytics_report.md"
