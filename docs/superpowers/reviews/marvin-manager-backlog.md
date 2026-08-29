@@ -183,3 +183,47 @@ EVIDENCE:   Adds a high-stakes tactical branch to newly introduced bio-hazard na
 PREDICT:    Provides healthy risk/reward tension before entering Stage 2-1 or 3-1 mini-boss encounters.
 RISK:       Very low; single event resource update.
 EFFORT:     data-only tune
+
+---
+
+## Pass 5 (2026-08-29)
+
+#17 Commander Tactical Grid Adjacency Aura
+STATUS:     new
+PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass5.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass5.md)
+ORIGIN:     Simon Seer — Overclock Command Array
+CHANGE:     Tactical Formations (src/systems/CrewManager.gd) — Add Commander formation aura granting +10% Attack Speed and +10 Starting Mana to adjacent allies.
+EVIDENCE:   1,200-run simulation lifted Rogue AI win rate from 59.5% to 64.0% and narrowed strategy spread to 15.5 points.
+PREDICT:    Gives the Commander role a distinct tactical identity on the grid and encourages hybrid formation planning.
+RISK:       Low; isolated calculation in CrewManager.calculate_formation_bonuses.
+EFFORT:     gameplay code change
+
+#18 Bio-Phantom Neuro-Toxic Siphon Cross-Synergy Augment (Rare)
+STATUS:     new
+PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass5.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass5.md)
+ORIGIN:     Simon Seer — Venomous Phase Shift
+CHANGE:     Augment Stats (data/augments/rare_viral_siphon.tres) — Stat modifiers: +18 AD, +10% Evasion; life-steal drain on crit.
+EVIDENCE:   Supports cross-faction drafting between Bio-Synthetics and Net-Phantoms in Stages 2-1 through 3-2.
+PREDICT:    Reduces pure mono-faction lock-in during mid-game shop transitions.
+RISK:       Very low; single augment .tres update.
+EFFORT:     data-only tune
+
+#19 District 2 & 3 Encounter Credit Pacing Curve
+STATUS:     new
+PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass5.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass5.md)
+ORIGIN:     Simon Seer — Syndicate Dividend Rebalance
+CHANGE:     Economy / Payouts (src/core/Constants.gd) — Set DISTRICT_ENCOUNTER_PAYOUTS for District 2 and 3 to 5 Credits (up from 4).
+EVIDENCE:   Prevents mid-run credit starvation when expanding crew cap from 3 to 5 units in 8-stage runs.
+PREDICT:    Maintains a healthy reroll tempo across Stages 2-1 to 3-2.
+RISK:       Low; dictionary adjustment in Constants.gd.
+EFFORT:     data-only tune
+
+#20 Abandoned Cyberware Lab High-Yield Terminal Risk Branch
+STATUS:     new
+PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass5.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass5.md)
+ORIGIN:     Simon Seer — Neural Terminal Extraction
+CHANGE:     Event Balancing (data/events/event_abandoned_cyberware_lab.tres) — Choice 2 "Extract Classified Blueprints" rewards +1 Rare Augment and +12 Credits for 25.0 HP crew penalty.
+EVIDENCE:   Provides high-stakes push-your-luck decision before District 2 & 3 Bosses.
+PREDICT:    Diversifies mid-run event decision density.
+RISK:       Very low; single event resource update.
+EFFORT:     data-only tune
