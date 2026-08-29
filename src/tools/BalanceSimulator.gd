@@ -62,7 +62,9 @@ static func run_10k_full_runs_matrix(repo: Object, total_runs: int = 10000) -> D
 		{"id": "runner_blitz", "name": "Street Runner (Blitz)"},
 		{"id": "corp_sentinel", "name": "Corp Enforcer (Sentinel-09)"},
 		{"id": "ai_glitch", "name": "Rogue AI (GLITCH.exe)"},
-		{"id": "fixer_broker", "name": "Fixer (Madame Vane)"}
+		{"id": "fixer_broker", "name": "Fixer (Madame Vane)"},
+		{"id": "bio_chimera", "name": "Bio-Synthetic (Bio-Chimera)"},
+		{"id": "phantom_spectre", "name": "Net-Phantom (Phantom Spectre)"}
 	]
 	
 	var runs_per_starter = total_runs / starters.size()

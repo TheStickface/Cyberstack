@@ -30,21 +30,36 @@
 
 ---
 
-## 3. Highroll Delta & Quantitative Sweep
+## 3. Highroll Delta & Quantitative Sweep (6-Faction Calibration)
 
-Across a 1,000-run Monte Carlo sweep:
-- **Global Win Rate:** **53.3%**
-- **Starter Balance Spread:** **10.8%** (Blitz 53.6%, Sentinel 60.0%, GLITCH 49.2%, Vane 50.4%)
-- **D1 Minion Median TTK:** **15.70s**
+Across a 1,000-run Monte Carlo sweep calibrated across all 6 factions:
+- **Global Win Rate:** **51.8%**
+- **D1 Minion Median TTK:** **14.70s**
 - **D4 Boss P50 TTK:** **19.90s**
-- **D4 Boss P95 TTK:** **10.20s**
-- **Highroll Delta:** **9.70s** (P95 vs P50 TTK differential)
-- **Top-Decile Winning Build Diversity:** **57 distinct comps** in the top 10% of clears (Zero meta stagnation).
-- **Starter Final Comp Divergence:**
-  - `runner_blitz`: 146 distinct final compositions
-  - `corp_sentinel`: 154 distinct final compositions
-  - `ai_glitch`: 133 distinct final compositions
-  - `fixer_broker`: 143 distinct final compositions
+- **D4 Boss P95 TTK:** **12.00s**
+- **Highroll Delta:** **7.90s** (P95 vs P50 TTK differential)
+- **Top-Decile Winning Build Diversity:** **50 distinct comps** in the top 10% of clears (506 distinct winning comps overall).
+- **All 6 Starter Final Comp Divergence:**
+  - `runner_blitz` (Street Runners): **84** distinct final comps
+  - `corp_sentinel` (Corp Enforcers): **102** distinct final comps
+  - `ai_glitch` (Rogue AIs): **93** distinct final comps
+  - `fixer_broker` (Fixers): **89** distinct final comps
+  - `bio_chimera` (Bio-Synthetics): **68** distinct final comps
+  - `phantom_spectre` (Net-Phantoms): **70** distinct final comps
+
+---
+
+## 4. Persona Archetype Performance in 6-Faction Meta
+
+| Persona | Build Archetype | D4 Boss Clear | P50 TTK | P95 TTK | Avg Survivors |
+|---|---|---|---|---|---|
+| **Phantom Assassin** | Net-Phantoms 4 / Kinetic Rail Crit Burst | **38.0%** | 28.1s | 24.6s | 2.2 / 5 |
+| **Highroll Hunter** | 3-Star Street Ghost + Double Legendary Rail | **44.0%** | 19.2s | 11.4s | 3.1 / 5 |
+| **Bio Mutator** | Bio-Synthetics 4 / Pandemic Regeneration | **28.0%** | 31.4s | 26.2s | 2.0 / 5 |
+| **Forcer** | Mono Rogue AI 4 / Neural Singularity | **22.0%** | 34.8s | 29.1s | 1.8 / 5 |
+| **Flexer** | 5-Faction Rainbow (Balanced Slot Synergy) | **31.0%** | 30.2s | 25.4s | 2.1 / 5 |
+| **Placement Surgeon**| Optimal Grid Adjacency vs Inverted Grid | **+32.5% Delta** | — | — | Frontline armor preserves backline |
+| **Tourist** | 4 Tanks / Zero Synergies | **0.0%** | — | — | Enraged D3/D4 bosses wipe stall comps |
 
 ---
 

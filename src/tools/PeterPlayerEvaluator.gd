@@ -27,12 +27,14 @@ func run_evaluation(repo: Object) -> void:
 	var top_decile_signatures: Dictionary = {}
 	var runs_data: Array[Dictionary] = []
 	
-	var starters = ["runner_blitz", "corp_sentinel", "ai_glitch", "fixer_broker"]
+	var starters = ["runner_blitz", "corp_sentinel", "ai_glitch", "fixer_broker", "bio_chimera", "phantom_spectre"]
 	var starter_end_comps: Dictionary = {
 		"runner_blitz": {},
 		"corp_sentinel": {},
 		"ai_glitch": {},
-		"fixer_broker": {}
+		"fixer_broker": {},
+		"bio_chimera": {},
+		"phantom_spectre": {}
 	}
 	
 	for i in range(N):
@@ -149,6 +151,9 @@ func run_evaluation(repo: Object) -> void:
 
 func _run_personas(repo: Object) -> void:
 	_eval_forcer(repo)
+	_eval_bio_mutators(repo)
+	_eval_phantom_assassins(repo)
+	_eval_meatshield_bruisers(repo)
 	_eval_flexer(repo)
 	_eval_econ_merchant(repo)
 	_eval_highroll_hunter(repo)
@@ -208,6 +213,134 @@ func _eval_forcer(repo: Object) -> void:
 	for s in survivors_list: avg_surv += s
 	if not survivors_list.is_empty(): avg_surv /= survivors_list.size()
 	print("[PERSONA] The Forcer (Mono Rogue AI): Clear=%.1f%% | P50 TTK=%.2fs | P95 TTK=%.2fs | Avg Survivors=%.1f/5" % [(float(wins)/float(N))*100.0, p50, p95, avg_surv])
+
+func _eval_bio_mutators(repo: Object) -> void:
+	var wins = 0
+	var ttks: Array[float] = []
+	var survivors_list: Array[int] = []
+	var N = 200
+	for i in range(N):
+		var crew_mgr = CrewManager.new(4, repo)
+		var u1 = UnitInstance.new(repo.get_unit("bio_gorgon"))
+		u1.star_level = 2
+		var u2 = UnitInstance.new(repo.get_unit("bio_chimera"))
+		u2.star_level = 2
+		var u3 = UnitInstance.new(repo.get_unit("bio_hydra"))
+		u3.star_level = 2
+		var u4 = UnitInstance.new(repo.get_unit("bio_fleshweaver"))
+		u4.star_level = 2
+		var u5 = UnitInstance.new(repo.get_unit("bio_manticore"))
+		u5.star_level = 2
+		
+		var a1 = repo.get_augment("common_viral_spores")
+		if a1: u1.equip_augment(0, a1)
+		var a2 = repo.get_augment("rare_viral_cascade")
+		if a2: u4.equip_augment(0, a2)
+		var a3 = repo.get_augment("rare_viral_siphon")
+		if a3: u5.equip_augment(0, a3)
+		var a4 = repo.get_augment("legendary_viral_pandemic")
+		if a4: u3.equip_augment(0, a4)
+		
+		_deploy_units_directly(crew_mgr, [u1, u2, u3, u4, u5], [0, 1, 2, 3, 4])
+		
+		var enemy_crew = BalanceSimulatorScript._instantiate_crew(BalanceSimulatorScript._build_boss_enemy_comp(repo, 4), repo)
+		var d = repo.get_district("district_4_black_site")
+		var b_res = BalanceSimulatorScript.simulate_single_battle(crew_mgr.fielded_units, enemy_crew, repo, 4, true, d, crew_mgr.tactical_grid, crew_mgr.active_synergy_report)
+		if b_res["victory"]:
+			wins += 1
+			ttks.append(b_res["duration"])
+			survivors_list.append(b_res["survivors"])
+	ttks.sort()
+	var p50 = ttks[int(ttks.size() * 0.5)] if not ttks.is_empty() else 60.0
+	var p95 = ttks[int(ttks.size() * 0.05)] if not ttks.is_empty() else 60.0
+	var avg_surv = 0.0
+	for s in survivors_list: avg_surv += s
+	if not survivors_list.is_empty(): avg_surv /= survivors_list.size()
+	print("[PERSONA] The Bio Mutator (Bio-Synthetics 4 / Viral): Clear=%.1f%% | P50 TTK=%.2fs | P95 TTK=%.2fs | Avg Survivors=%.1f/5" % [(float(wins)/float(N))*100.0, p50, p95, avg_surv])
+
+func _eval_phantom_assassins(repo: Object) -> void:
+	var wins = 0
+	var ttks: Array[float] = []
+	var survivors_list: Array[int] = []
+	var N = 200
+	for i in range(N):
+		var crew_mgr = CrewManager.new(4, repo)
+		var u1 = UnitInstance.new(repo.get_unit("phantom_bulwark"))
+		u1.star_level = 2
+		var u2 = UnitInstance.new(repo.get_unit("phantom_aegis"))
+		u2.star_level = 2
+		var u3 = UnitInstance.new(repo.get_unit("phantom_nightshade"))
+		u3.star_level = 2
+		var u4 = UnitInstance.new(repo.get_unit("phantom_assassin"))
+		u4.star_level = 2
+		var u5 = UnitInstance.new(repo.get_unit("phantom_spectre"))
+		u5.star_level = 2
+		
+		var a1 = repo.get_augment("rare_kinetic_overdrive")
+		if a1: u1.equip_augment(0, a1)
+		var a2 = repo.get_augment("rare_kinetic_rail")
+		if a2: u5.equip_augment(0, a2)
+		var a3 = repo.get_augment("legendary_kinetic_destroyer")
+		if a3: u3.equip_augment(0, a3)
+		
+		_deploy_units_directly(crew_mgr, [u1, u2, u3, u4, u5], [0, 1, 3, 4, 5])
+		
+		var enemy_crew = BalanceSimulatorScript._instantiate_crew(BalanceSimulatorScript._build_boss_enemy_comp(repo, 4), repo)
+		var d = repo.get_district("district_4_black_site")
+		var b_res = BalanceSimulatorScript.simulate_single_battle(crew_mgr.fielded_units, enemy_crew, repo, 4, true, d, crew_mgr.tactical_grid, crew_mgr.active_synergy_report)
+		if b_res["victory"]:
+			wins += 1
+			ttks.append(b_res["duration"])
+			survivors_list.append(b_res["survivors"])
+	ttks.sort()
+	var p50 = ttks[int(ttks.size() * 0.5)] if not ttks.is_empty() else 60.0
+	var p95 = ttks[int(ttks.size() * 0.05)] if not ttks.is_empty() else 60.0
+	var avg_surv = 0.0
+	for s in survivors_list: avg_surv += s
+	if not survivors_list.is_empty(): avg_surv /= survivors_list.size()
+	print("[PERSONA] The Phantom Assassin (Net-Phantoms 4 / Ambush Crit): Clear=%.1f%% | P50 TTK=%.2fs | P95 TTK=%.2fs | Avg Survivors=%.1f/5" % [(float(wins)/float(N))*100.0, p50, p95, avg_surv])
+
+func _eval_meatshield_bruisers(repo: Object) -> void:
+	var wins = 0
+	var ttks: Array[float] = []
+	var survivors_list: Array[int] = []
+	var N = 200
+	for i in range(N):
+		var crew_mgr = CrewManager.new(4, repo)
+		var u1 = UnitInstance.new(repo.get_unit("bio_chimera"))
+		u1.star_level = 2
+		var u2 = UnitInstance.new(repo.get_unit("phantom_nightshade"))
+		u2.star_level = 2
+		var u3 = UnitInstance.new(repo.get_unit("bio_hydra"))
+		u3.star_level = 2
+		var u4 = UnitInstance.new(repo.get_unit("phantom_aegis"))
+		u4.star_level = 2
+		var u5 = UnitInstance.new(repo.get_unit("bio_fleshweaver"))
+		u5.star_level = 2
+		
+		var a1 = repo.get_augment("common_kinetic_plating")
+		if a1: u1.equip_augment(0, a1)
+		var a2 = repo.get_augment("rare_thermal_exhaust")
+		if a2: u4.equip_augment(0, a2)
+		var a3 = repo.get_augment("legendary_thermal_supernova")
+		if a3: u2.equip_augment(0, a3)
+		
+		_deploy_units_directly(crew_mgr, [u1, u3, u2, u4, u5], [0, 1, 2, 3, 4])
+		
+		var enemy_crew = BalanceSimulatorScript._instantiate_crew(BalanceSimulatorScript._build_boss_enemy_comp(repo, 4), repo)
+		var d = repo.get_district("district_4_black_site")
+		var b_res = BalanceSimulatorScript.simulate_single_battle(crew_mgr.fielded_units, enemy_crew, repo, 4, true, d, crew_mgr.tactical_grid, crew_mgr.active_synergy_report)
+		if b_res["victory"]:
+			wins += 1
+			ttks.append(b_res["duration"])
+			survivors_list.append(b_res["survivors"])
+	ttks.sort()
+	var p50 = ttks[int(ttks.size() * 0.5)] if not ttks.is_empty() else 60.0
+	var p95 = ttks[int(ttks.size() * 0.05)] if not ttks.is_empty() else 60.0
+	var avg_surv = 0.0
+	for s in survivors_list: avg_surv += s
+	if not survivors_list.is_empty(): avg_surv /= survivors_list.size()
+	print("[PERSONA] The Meatshield Bruiser (Frontline Meatshield & Commander Dive): Clear=%.1f%% | P50 TTK=%.2fs | P95 TTK=%.2fs | Avg Survivors=%.1f/5" % [(float(wins)/float(N))*100.0, p50, p95, avg_surv])
 
 func _eval_flexer(repo: Object) -> void:
 	var wins = 0
