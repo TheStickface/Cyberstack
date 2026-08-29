@@ -6,6 +6,7 @@ extends RefCounted
 const DataRepoScript = preload("res://src/systems/DataRepository.gd")
 
 var current_district_index: int = 1
+var current_subdistrict_index: int = 1
 var current_node_index: int = 0
 var current_district: DistrictResource = null
 var district_nodes: Array[Dictionary] = []
@@ -35,8 +36,12 @@ func get_elapsed_duration_seconds() -> float:
 		return 0.0
 	return float(Time.get_ticks_msec() - run_start_time_msec) / 1000.0
 
+func get_stage_string() -> String:
+	return Constants.format_stage(current_district_index, current_subdistrict_index)
+
 func start_new_run(starter_unit_id: String = "runner_blitz") -> void:
 	current_district_index = 1
+	current_subdistrict_index = 1
 	current_node_index = 0
 	fights_won = 0
 	bosses_defeated = 0
@@ -56,10 +61,11 @@ func start_new_run(starter_unit_id: String = "runner_blitz") -> void:
 
 	run_districts = _repo.draw_run_districts(Constants.NORMAL_DISTRICTS_PER_RUN)
 
-	_load_district(current_district_index)
+	_load_district(current_district_index, 1)
 
-func _load_district(dist_idx: int) -> void:
+func _load_district(dist_idx: int, sub_idx: int = 1) -> void:
 	current_district_index = dist_idx
+	current_subdistrict_index = sub_idx
 	current_node_index = 0
 
 	var pool_idx = dist_idx - 1
@@ -78,14 +84,18 @@ func _load_district(dist_idx: int) -> void:
 
 func _generate_district_nodes() -> void:
 	district_nodes.clear()
-	var sequence = current_district.node_sequence if current_district else [
-		Enums.EncounterType.FIGHT,
-		Enums.EncounterType.SHOP,
-		Enums.EncounterType.FIGHT,
-		Enums.EncounterType.EVENT,
-		Enums.EncounterType.SHOP,
-		Enums.EncounterType.BOSS
-	]
+	var sequence: Array[Enums.EncounterType] = []
+	if current_district:
+		sequence = current_district.get_subdistrict_sequence(current_subdistrict_index)
+	if sequence.is_empty():
+		sequence = [
+			Enums.EncounterType.FIGHT,
+			Enums.EncounterType.SHOP,
+			Enums.EncounterType.FIGHT,
+			Enums.EncounterType.EVENT,
+			Enums.EncounterType.SHOP,
+			Enums.EncounterType.BOSS
+		]
 	
 	for i in range(sequence.size()):
 		district_nodes.append({
@@ -116,6 +126,8 @@ func complete_encounter(victory: bool = true, battle_stats: Dictionary = {}) -> 
 		return {
 			"status": "game_over",
 			"district": current_district_index,
+			"subdistrict": current_subdistrict_index,
+			"stage": get_stage_string(),
 			"fights_won": fights_won
 		}
 		
@@ -136,28 +148,45 @@ func complete_encounter(victory: bool = true, battle_stats: Dictionary = {}) -> 
 	enc["current"] = false
 	current_node_index += 1
 	
-	# Check if district complete
+	# Check if subdistrict/district complete
 	if current_node_index >= district_nodes.size():
-		if current_district_index >= 4:
-			# Completed Final District!
-			run_active = false
-			return {
-				"status": "victory",
-				"district": current_district_index,
-				"fights_won": fights_won,
-				"bosses_defeated": bosses_defeated
-			}
-		else:
-			# Advance to Next District
-			_load_district(current_district_index + 1)
+		if current_subdistrict_index < Constants.SUBDISTRICTS_PER_DISTRICT:
+			# Advance to next subdistrict within the same district (e.g. 1-1 -> 1-2)
+			_load_district(current_district_index, current_subdistrict_index + 1)
 			shop_mgr.generate_shop_offerings(current_district_index, _repo, Constants.DEFAULT_CREW_SHOP_SLOTS, Constants.DEFAULT_AUGMENT_SHOP_SLOTS, false, current_district)
 			return {
-				"status": "district_advanced",
-				"new_district": current_district_index,
-				"new_crew_cap": crew_mgr.get_max_field_units()
+				"status": "subdistrict_advanced",
+				"district": current_district_index,
+				"new_subdistrict": current_subdistrict_index,
+				"stage": get_stage_string(),
+				"crew_cap": crew_mgr.get_max_field_units()
 			}
+		else:
+			# Completed all subdistricts of current district
+			if current_district_index >= 4:
+				# Completed Final District (4-2)!
+				run_active = false
+				return {
+					"status": "victory",
+					"district": current_district_index,
+					"subdistrict": current_subdistrict_index,
+					"stage": get_stage_string(),
+					"fights_won": fights_won,
+					"bosses_defeated": bosses_defeated
+				}
+			else:
+				# Advance to Next District at Subdistrict 1 (e.g. 1-2 -> 2-1)
+				_load_district(current_district_index + 1, 1)
+				shop_mgr.generate_shop_offerings(current_district_index, _repo, Constants.DEFAULT_CREW_SHOP_SLOTS, Constants.DEFAULT_AUGMENT_SHOP_SLOTS, false, current_district)
+				return {
+					"status": "district_advanced",
+					"new_district": current_district_index,
+					"new_subdistrict": current_subdistrict_index,
+					"stage": get_stage_string(),
+					"new_crew_cap": crew_mgr.get_max_field_units()
+				}
 			
-	# Next node in same district -> Auto-refresh shop offerings
+	# Next node in same subdistrict -> Auto-refresh shop offerings
 	district_nodes[current_node_index]["current"] = true
 	shop_mgr.generate_shop_offerings(current_district_index, _repo, Constants.DEFAULT_CREW_SHOP_SLOTS, Constants.DEFAULT_AUGMENT_SHOP_SLOTS, false, current_district)
 	return {

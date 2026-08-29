@@ -69,8 +69,8 @@ func test_active_run_save_and_load() -> Dictionary:
 	if loaded_run == null:
 		return {"passed": false, "message": "Failed to load active run", "assertions": 2}
 		
-	if loaded_run.current_district_index != 1:
-		return {"passed": false, "message": "District index mismatch in loaded run", "assertions": 3}
+	if loaded_run.current_district_index != 1 or loaded_run.current_subdistrict_index != 1:
+		return {"passed": false, "message": "District / subdistrict index mismatch in loaded run", "assertions": 3}
 		
 	if loaded_run.shop_mgr.gold != 35:
 		return {"passed": false, "message": "Gold mismatch in loaded run", "assertions": 4}

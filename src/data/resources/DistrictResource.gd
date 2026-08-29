@@ -25,6 +25,24 @@ extends Resource
 	Enums.EncounterType.BOSS
 ]
 
+## Subdistrict 1: Approach / Perimeter Infiltration (4 nodes: Fight, Shop, Event, Mini-Boss)
+@export var subdistrict_1_sequence: Array[Enums.EncounterType] = [
+	Enums.EncounterType.FIGHT,
+	Enums.EncounterType.SHOP,
+	Enums.EncounterType.EVENT,
+	Enums.EncounterType.BOSS
+]
+
+## Subdistrict 2: District Stronghold / Climax (6 nodes: Fight, Shop, Fight, Event, Shop, Overlord Boss)
+@export var subdistrict_2_sequence: Array[Enums.EncounterType] = [
+	Enums.EncounterType.FIGHT,
+	Enums.EncounterType.SHOP,
+	Enums.EncounterType.FIGHT,
+	Enums.EncounterType.EVENT,
+	Enums.EncounterType.SHOP,
+	Enums.EncounterType.BOSS
+]
+
 @export var boss_unit_id: String = ""
 
 ## Thematic District Modifiers
@@ -34,6 +52,13 @@ extends Resource
 @export var bonus_augment_slots: int = 0 # e.g. +1 in Server Vault
 @export var scrap_refund_bonus: int = 0 # e.g. +1 CR in Kinetic Yards
 @export var payout_bonus: int = 0 # e.g. +2 CR corporate dividend in Corp Arcology
+
+func get_subdistrict_sequence(subdistrict_index: int) -> Array[Enums.EncounterType]:
+	if subdistrict_index == 1 and not subdistrict_1_sequence.is_empty():
+		return subdistrict_1_sequence
+	elif subdistrict_index == 2 and not subdistrict_2_sequence.is_empty():
+		return subdistrict_2_sequence
+	return node_sequence
 
 func get_node_count() -> int:
 	return node_sequence.size()

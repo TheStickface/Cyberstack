@@ -20,6 +20,10 @@ const DISTRICT_CREW_LIMITS: Dictionary = {
 
 # Number of non-final districts drawn from the pool per run, before the final-boss district.
 const NORMAL_DISTRICTS_PER_RUN: int = 3
+const SUBDISTRICTS_PER_DISTRICT: int = 2
+
+static func format_stage(district_idx: int, subdistrict_idx: int) -> String:
+	return "STAGE %d-%d" % [district_idx, subdistrict_idx]
 
 # Faction & Tag Synergies
 const FACTION_THRESHOLDS: Array[int] = [2, 4, 6]

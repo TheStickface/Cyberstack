@@ -59,38 +59,44 @@ func run_evaluation(repo: Object) -> void:
 			if d_idx > 1:
 				gold = BalanceSimulatorScript._simulate_shop_purchase(crew_mgr, gold, repo)
 				
-			for enc_type in district.node_sequence:
-				match enc_type:
-					Enums.EncounterType.FIGHT:
-						var enemy_comp_templates = BalanceSimulatorScript._build_minion_enemy_comp(repo, d_idx)
-						var enemy_crew = BalanceSimulatorScript._instantiate_crew(enemy_comp_templates, repo)
-						var b_res = BalanceSimulatorScript.simulate_single_battle(crew_mgr.fielded_units, enemy_crew, repo, d_idx, false, district)
-						if d_idx == 1 and d1_minion_time == 0.0:
-							d1_minion_time = b_res["duration"]
-						if not b_res["victory"]:
-							run_won = false
-							break
-						gold += Constants.DISTRICT_ENCOUNTER_PAYOUTS.get(d_idx, 4)
-					Enums.EncounterType.BOSS:
-						var enemy_comp_templates = BalanceSimulatorScript._build_boss_enemy_comp(repo, d_idx)
-						var enemy_crew = BalanceSimulatorScript._instantiate_crew(enemy_comp_templates, repo)
-						var b_res = BalanceSimulatorScript.simulate_single_battle(crew_mgr.fielded_units, enemy_crew, repo, d_idx, true, district)
-						if d_idx == 4:
-							d4_boss_res = b_res
-						if not b_res["victory"]:
-							run_won = false
-							break
-						gold += Constants.DISTRICT_ENCOUNTER_PAYOUTS.get(d_idx, 4) + 4
-					Enums.EncounterType.EVENT:
-						var ev_res = repo.get_random_event()
-						if ev_res:
-							var choice = BalanceSimulatorScript._pick_best_event_choice(ev_res, gold, crew_mgr.fielded_units)
-							if choice:
-								gold = maxi(0, gold - choice.required_gold - choice.penalty_gold + choice.reward_gold)
-								if choice.reward_augment:
-									BalanceSimulatorScript._try_equip_augment(crew_mgr.fielded_units, choice.reward_augment)
-					Enums.EncounterType.SHOP:
-						gold = BalanceSimulatorScript._simulate_shop_purchase(crew_mgr, gold, repo)
+			for sub_idx in range(1, Constants.SUBDISTRICTS_PER_DISTRICT + 1):
+				var seq = district.get_subdistrict_sequence(sub_idx)
+				for enc_type in seq:
+					match enc_type:
+						Enums.EncounterType.FIGHT:
+							var enemy_comp_templates = BalanceSimulatorScript._build_minion_enemy_comp(repo, d_idx)
+							var enemy_crew = BalanceSimulatorScript._instantiate_crew(enemy_comp_templates, repo)
+							var b_res = BalanceSimulatorScript.simulate_single_battle(crew_mgr.fielded_units, enemy_crew, repo, d_idx, false, district)
+							if d_idx == 1 and d1_minion_time == 0.0:
+								d1_minion_time = b_res["duration"]
+							if not b_res["victory"]:
+								run_won = false
+								break
+							gold += Constants.DISTRICT_ENCOUNTER_PAYOUTS.get(d_idx, 4)
+						Enums.EncounterType.BOSS:
+							var enemy_comp_templates = BalanceSimulatorScript._build_boss_enemy_comp(repo, d_idx)
+							var enemy_crew = BalanceSimulatorScript._instantiate_crew(enemy_comp_templates, repo)
+							var b_res = BalanceSimulatorScript.simulate_single_battle(crew_mgr.fielded_units, enemy_crew, repo, d_idx, true, district)
+							if d_idx == 4 and sub_idx == Constants.SUBDISTRICTS_PER_DISTRICT:
+								d4_boss_res = b_res
+							if not b_res["victory"]:
+								run_won = false
+								break
+							gold += Constants.DISTRICT_ENCOUNTER_PAYOUTS.get(d_idx, 4) + 4
+						Enums.EncounterType.EVENT:
+							var ev_res = repo.get_random_event()
+							if ev_res:
+								var choice = BalanceSimulatorScript._pick_best_event_choice(ev_res, gold, crew_mgr.fielded_units)
+								if choice:
+									gold = maxi(0, gold - choice.required_gold - choice.penalty_gold + choice.reward_gold)
+									if choice.reward_augment:
+										BalanceSimulatorScript._try_equip_augment(crew_mgr.fielded_units, choice.reward_augment)
+						Enums.EncounterType.SHOP:
+							gold = BalanceSimulatorScript._simulate_shop_purchase(crew_mgr, gold, repo)
+					if not run_won:
+						break
+				if not run_won:
+					break
 			if not run_won:
 				break
 				

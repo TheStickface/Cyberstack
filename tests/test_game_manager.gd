@@ -45,11 +45,12 @@ func test_game_manager_state_flow() -> Dictionary:
 	if gm.current_state != 1: # GameState.MAP
 		return {"passed": false, "message": "open_map should route to MAP (1), got %d" % gm.current_state, "assertions": 8}
 		
-	# Complete shop node to reach next FIGHT node
-	gm.active_run_manager.complete_encounter(true)
+	# Complete shop node and event node to reach BOSS node
+	gm.active_run_manager.complete_encounter(true) # complete SHOP (moves to EVENT)
+	gm.active_run_manager.complete_encounter(true) # complete EVENT (moves to BOSS)
 	
-	# Start Combat on second FIGHT node and trigger Defeat -> should route to RUN_END
-	gm.start_combat_encounter(false, repo)
+	# Start Combat on BOSS node and trigger Defeat -> should route to RUN_END
+	gm.start_combat_encounter(true, repo)
 	gm.finish_combat_encounter(false, {"duration": 5.0})
 	if gm.current_state != 4: # GameState.RUN_END
 		return {"passed": false, "message": "Defeat should route to RUN_END (4), got %d" % gm.current_state, "assertions": 8}

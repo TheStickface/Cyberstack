@@ -46,37 +46,47 @@ func test_district_advancement_and_crew_scaling() -> Dictionary:
 	var run = RunManager.new(repo)
 	run.start_new_run("runner_blitz")
 	
-	# Complete all encounters in District 1
-	var total_nodes_d1 = run.district_nodes.size()
-	for i in range(total_nodes_d1):
+	# Complete Subdistrict 1-1
+	var total_nodes_1_1 = run.district_nodes.size()
+	for i in range(total_nodes_1_1):
 		run.complete_encounter(true)
 		
-	if run.current_district_index != 2:
-		return {"passed": false, "message": "Expected District 2 after completing D1 nodes, got %d" % run.current_district_index, "assertions": 1}
+	if run.current_district_index != 1 or run.current_subdistrict_index != 2:
+		return {"passed": false, "message": "Expected Stage 1-2 after completing 1-1, got %s" % run.get_stage_string(), "assertions": 1}
+		
+	# Complete Subdistrict 1-2 -> Advances to District 2 (Stage 2-1)
+	var total_nodes_1_2 = run.district_nodes.size()
+	for i in range(total_nodes_1_2):
+		run.complete_encounter(true)
+		
+	if run.current_district_index != 2 or run.current_subdistrict_index != 1:
+		return {"passed": false, "message": "Expected Stage 2-1 after completing 1-2, got %s" % run.get_stage_string(), "assertions": 2}
 	if run.crew_mgr.get_max_field_units() != 4:
-		return {"passed": false, "message": "District 2 crew cap should scale to 4, got %d" % run.crew_mgr.get_max_field_units(), "assertions": 2}
+		return {"passed": false, "message": "District 2 crew cap should scale to 4, got %d" % run.crew_mgr.get_max_field_units(), "assertions": 3}
 		
-	# Complete all encounters in District 2
-	var total_nodes_d2 = run.district_nodes.size()
-	for i in range(total_nodes_d2):
-		run.complete_encounter(true)
+	# Complete District 2 (2-1 and 2-2)
+	for sub in range(2):
+		var nodes = run.district_nodes.size()
+		for i in range(nodes):
+			run.complete_encounter(true)
 		
-	if run.current_district_index != 3:
-		return {"passed": false, "message": "Expected District 3 after completing D2 nodes, got %d" % run.current_district_index, "assertions": 3}
+	if run.current_district_index != 3 or run.current_subdistrict_index != 1:
+		return {"passed": false, "message": "Expected Stage 3-1 after completing D2, got %s" % run.get_stage_string(), "assertions": 4}
 	if run.crew_mgr.get_max_field_units() != 5:
-		return {"passed": false, "message": "District 3 crew cap should scale to 5, got %d" % run.crew_mgr.get_max_field_units(), "assertions": 4}
+		return {"passed": false, "message": "District 3 crew cap should scale to 5, got %d" % run.crew_mgr.get_max_field_units(), "assertions": 5}
 		
-	# Complete all encounters in District 3
-	var total_nodes_d3 = run.district_nodes.size()
-	for i in range(total_nodes_d3):
-		run.complete_encounter(true)
+	# Complete District 3 (3-1 and 3-2)
+	for sub in range(2):
+		var nodes = run.district_nodes.size()
+		for i in range(nodes):
+			run.complete_encounter(true)
 		
-	if run.current_district_index != 4:
-		return {"passed": false, "message": "Expected District 4 after completing D3 nodes, got %d" % run.current_district_index, "assertions": 5}
+	if run.current_district_index != 4 or run.current_subdistrict_index != 1:
+		return {"passed": false, "message": "Expected Stage 4-1 after completing D3, got %s" % run.get_stage_string(), "assertions": 6}
 	if run.crew_mgr.get_max_field_units() != 6:
-		return {"passed": false, "message": "District 4 crew cap should scale to 6, got %d" % run.crew_mgr.get_max_field_units(), "assertions": 6}
+		return {"passed": false, "message": "District 4 crew cap should scale to 6, got %d" % run.crew_mgr.get_max_field_units(), "assertions": 7}
 		
-	return {"passed": true, "assertions": 6}
+	return {"passed": true, "assertions": 7}
 
 func test_game_over_state() -> Dictionary:
 	var run = RunManager.new(repo)

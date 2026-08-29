@@ -41,7 +41,8 @@ func _refresh_map() -> void:
 
 func _refresh_header() -> void:
 	if district_title and run_mgr.current_district:
-		district_title.text = "DISTRICT %d: %s" % [run_mgr.current_district_index, run_mgr.current_district.display_name.to_upper()]
+		var sub_suffix = " (APPROACH)" if run_mgr.current_subdistrict_index == 1 else " (STRONGHOLD)"
+		district_title.text = "%s: %s%s" % [run_mgr.get_stage_string(), run_mgr.current_district.display_name.to_upper(), sub_suffix]
 		district_title.add_theme_color_override("font_color", run_mgr.current_district.theme_color)
 	if crew_count_label:
 		crew_count_label.text = "CREW: %d / %d" % [run_mgr.crew_mgr.fielded_units.size(), run_mgr.crew_mgr.get_max_field_units()]
@@ -84,7 +85,10 @@ func _refresh_action_button() -> void:
 			action_btn.text = "INVESTIGATE SIGNAL [? EVENT]"
 			action_btn.add_theme_color_override("font_color", Color(0, 0.95, 0.83))
 		Enums.EncounterType.BOSS:
-			action_btn.text = "ENGAGE DISTRICT BOSS [★ BOSS]"
+			if run_mgr.current_subdistrict_index == 1:
+				action_btn.text = "ENGAGE SECURITY CAPTAIN [★ MINI-BOSS]"
+			else:
+				action_btn.text = "ENGAGE DISTRICT OVERLORD [☠ FINAL BOSS]"
 			action_btn.add_theme_color_override("font_color", Color(1, 0.1, 0.2))
 
 func _on_manage_crew_btn_pressed() -> void:

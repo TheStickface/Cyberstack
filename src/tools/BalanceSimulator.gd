@@ -262,54 +262,56 @@ static func simulate_full_run(starter_id: String, repo: Object) -> Dictionary:
 			gold = _simulate_shop_purchase(crew_mgr, gold, repo)
 			R["gold_spent_total"] += _g1 - gold
 
-		for enc_type in district.node_sequence:
-			match enc_type:
-				Enums.EncounterType.FIGHT:
-					var enemy_comp_templates = _build_minion_enemy_comp(repo, d_idx)
-					var enemy_crew = _instantiate_crew(enemy_comp_templates, repo)
+		for sub_idx in range(1, Constants.SUBDISTRICTS_PER_DISTRICT + 1):
+			var seq = district.get_subdistrict_sequence(sub_idx)
+			for enc_type in seq:
+				match enc_type:
+					Enums.EncounterType.FIGHT:
+						var enemy_comp_templates = _build_minion_enemy_comp(repo, d_idx)
+						var enemy_crew = _instantiate_crew(enemy_comp_templates, repo)
 
-					var battle_res = simulate_single_battle(crew_mgr.fielded_units, enemy_crew, repo, d_idx, false, district, crew_mgr.tactical_grid, crew_mgr.active_synergy_report)
-					R["battle_margins"].append(_margin_entry(battle_res, d_idx, false))
-					if not battle_res["victory"]:
-						return _finish_run(R, false, d_idx, gold)
+						var battle_res = simulate_single_battle(crew_mgr.fielded_units, enemy_crew, repo, d_idx, false, district, crew_mgr.tactical_grid, crew_mgr.active_synergy_report)
+						R["battle_margins"].append(_margin_entry(battle_res, d_idx, false))
+						if not battle_res["victory"]:
+							return _finish_run(R, false, d_idx, gold)
 
-					R["fights_won"] += 1
-					var payout = Constants.DISTRICT_ENCOUNTER_PAYOUTS.get(d_idx, 4)
-					gold += payout
+						R["fights_won"] += 1
+						var payout = Constants.DISTRICT_ENCOUNTER_PAYOUTS.get(d_idx, 4)
+						gold += payout
 
-				Enums.EncounterType.BOSS:
-					var enemy_comp_templates = _build_boss_enemy_comp(repo, d_idx)
-					var enemy_crew = _instantiate_crew(enemy_comp_templates, repo)
+					Enums.EncounterType.BOSS:
+						var enemy_comp_templates = _build_boss_enemy_comp(repo, d_idx)
+						var enemy_crew = _instantiate_crew(enemy_comp_templates, repo)
 
-					var battle_res = simulate_single_battle(crew_mgr.fielded_units, enemy_crew, repo, d_idx, true, district, crew_mgr.tactical_grid, crew_mgr.active_synergy_report)
-					R["battle_margins"].append(_margin_entry(battle_res, d_idx, true))
-					if not battle_res["victory"]:
-						return _finish_run(R, false, d_idx, gold)
+						var battle_res = simulate_single_battle(crew_mgr.fielded_units, enemy_crew, repo, d_idx, true, district, crew_mgr.tactical_grid, crew_mgr.active_synergy_report)
+						R["battle_margins"].append(_margin_entry(battle_res, d_idx, true))
+						if not battle_res["victory"]:
+							return _finish_run(R, false, d_idx, gold)
 
-					R["fights_won"] += 1
-					var payout = Constants.DISTRICT_ENCOUNTER_PAYOUTS.get(d_idx, 4) + 4
-					gold += payout
+						R["fights_won"] += 1
+						var payout = Constants.DISTRICT_ENCOUNTER_PAYOUTS.get(d_idx, 4) + 4
+						gold += payout
 
-				Enums.EncounterType.EVENT:
-					R["events_encountered"] += 1
-					var ev_res = repo.get_random_event()
-					if ev_res:
-						var best_choice = _pick_best_event_choice(ev_res, gold, crew_mgr.fielded_units)
-						if best_choice:
-							if best_choice.required_role != Enums.UnitRole.ANY or best_choice.required_faction != Enums.Faction.NONE:
-								R["role_checks_passed"] += 1
+					Enums.EncounterType.EVENT:
+						R["events_encountered"] += 1
+						var ev_res = repo.get_random_event()
+						if ev_res:
+							var best_choice = _pick_best_event_choice(ev_res, gold, crew_mgr.fielded_units)
+							if best_choice:
+								if best_choice.required_role != Enums.UnitRole.ANY or best_choice.required_faction != Enums.Faction.NONE:
+									R["role_checks_passed"] += 1
 
-							gold = maxi(0, gold - best_choice.required_gold - best_choice.penalty_gold + best_choice.reward_gold)
-							R["event_gold_earned"] += best_choice.reward_gold
+								gold = maxi(0, gold - best_choice.required_gold - best_choice.penalty_gold + best_choice.reward_gold)
+								R["event_gold_earned"] += best_choice.reward_gold
 
-							if best_choice.reward_augment != null:
-								R["event_augments_gained"] += 1
-								_try_equip_augment(crew_mgr.fielded_units, best_choice.reward_augment)
+								if best_choice.reward_augment != null:
+									R["event_augments_gained"] += 1
+									_try_equip_augment(crew_mgr.fielded_units, best_choice.reward_augment)
 
-				Enums.EncounterType.SHOP:
-					var _g2 = gold
-					gold = _simulate_shop_purchase(crew_mgr, gold, repo)
-					R["gold_spent_total"] += _g2 - gold
+					Enums.EncounterType.SHOP:
+						var _g2 = gold
+						gold = _simulate_shop_purchase(crew_mgr, gold, repo)
+						R["gold_spent_total"] += _g2 - gold
 
 	# Completed all 4 districts
 	return _finish_run(R, true, 4, gold)

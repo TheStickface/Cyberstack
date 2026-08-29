@@ -54,6 +54,7 @@ static func save_active_run(run_mgr: RunManager, path: String = ACTIVE_RUN_PATH)
 	var data = {
 		"schema_version": 1,
 		"district_index": run_mgr.current_district_index,
+		"subdistrict_index": run_mgr.current_subdistrict_index,
 		"node_index": run_mgr.current_node_index,
 		"fights_won": run_mgr.fights_won,
 		"bosses_defeated": run_mgr.bosses_defeated,
@@ -93,6 +94,7 @@ static func load_active_run(repo: Object = null, path: String = ACTIVE_RUN_PATH)
 	var run_mgr = RunManager.new(repo_obj)
 	run_mgr.run_active = true
 	run_mgr.current_district_index = data.get("district_index", 1)
+	run_mgr.current_subdistrict_index = data.get("subdistrict_index", 1)
 	run_mgr.current_node_index = data.get("node_index", 0)
 	run_mgr.fights_won = data.get("fights_won", 0)
 	run_mgr.bosses_defeated = data.get("bosses_defeated", 0)
@@ -134,7 +136,7 @@ static func load_active_run(repo: Object = null, path: String = ACTIVE_RUN_PATH)
 	else:
 		run_mgr.run_districts = repo_obj.draw_run_districts(Constants.NORMAL_DISTRICTS_PER_RUN)
 
-	run_mgr._load_district(run_mgr.current_district_index)
+	run_mgr._load_district(run_mgr.current_district_index, run_mgr.current_subdistrict_index)
 	run_mgr.current_node_index = data.get("node_index", 0)
 	
 	# Sync node statuses

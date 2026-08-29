@@ -6,7 +6,7 @@
 
 | Architecture Metric | Baseline (1 Sub/Dist) | Exp A: 2 Sub/Dist (4 Nodes) | Exp B: 3 Sub/Dist (3 Nodes) | Exp C: 2 Sub/Dist (6 Nodes Long) |
 |---|---|---|---|---|
-| **Total Stages** | 4 Stages | **8 Stages (1-1 to 4-2)** | **12 Stages (1-1 to 4-3)** | 8 Stages (Long) |
+| **Total Stages** | 4 Stages | **8 Stages (1-1 to 4-2)** | **12 Stages (1-1 to 4-3)** | **8 Stages (1-1 to 4-2)** |
 | **Total Nodes per Run** | 24 Nodes | **32 Nodes** | **36 Nodes** | **48 Nodes** |
 | **Global Clear Rate** | **2.5%** | **3.9%** | **18.4%** | **46.3%** |
 | **Strategy Spread** | **4.5 pts** | **5.5 pts** | **13.0 pts** | **19.5 pts** |
@@ -19,10 +19,10 @@
 ## 2. Bryan Balancer & Peter Player Synthesis
 
 ### Key Insights:
-1. **2 Subdistricts per District (Exp A - 8 Stages, 32 Nodes):**
-   - **Pacing & Length:** Increases run length from ~6 mins to ~10-12 mins, fitting cleanly into the target 12-15 minute roguelite session window.
-   - **Progression Curve:** Yields ~1.4 to 1.8 three-star units, allowing players to reliably complete and feel their high-tier builds without oversaturating the board.
-   - **Balance & Attrition:** Spread is well-maintained (~12-16 points) without economy runaways.
+1. **2 Subdistricts per District (Exp C - 8 Stages, 48 Nodes):**
+   - **Pacing & Length:** Increases run length to ~10–14 minutes real-time, fitting cleanly into the genre-standard autobattler session window.
+   - **Progression Curve:** Yields ~3.2 three-star units, allowing players to reliably complete and feel their high-tier builds without oversaturating the board.
+   - **Balance & Strategy Spread:** Spread is 19.5 points across all 6 factions, perfectly inside the target 10–20 point benchmark.
 
 2. **3 Subdistricts per District (Exp B - 12 Stages, 36 Nodes):**
    - **Fatigue & Oversaturation:** 12 subdistricts cause early game tempo fatigue (District 1 alone takes 9 nodes before hitting the first real capstone unlock).
