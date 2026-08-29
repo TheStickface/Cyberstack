@@ -65,3 +65,24 @@ func test_spawn_and_grant_commands() -> Dictionary:
 		return {"passed": false, "message": "Granted augment should be in inventory", "assertions": 4}
 		
 	return {"passed": true, "assertions": 4}
+
+func test_loadout_and_fight_commands() -> Dictionary:
+	var gm = GameManagerScript.new()
+	gm.start_new_game("runner_blitz", repo)
+	
+	# Test /loadout command
+	var loadout_res = console.execute_command("/loadout runner", gm)
+	if not loadout_res.success:
+		return {"passed": false, "message": "/loadout runner failed: %s" % loadout_res.message, "assertions": 1}
+	if gm.active_run_manager.crew_mgr.fielded_units.size() != 4:
+		return {"passed": false, "message": "Loadout should populate 4 fielded units, got %d" % gm.active_run_manager.crew_mgr.fielded_units.size(), "assertions": 2}
+		
+	# Test /fight command
+	var fight_res = console.execute_command("/fight boss 2", gm)
+	if not fight_res.success:
+		return {"passed": false, "message": "/fight boss 2 failed: %s" % fight_res.message, "assertions": 3}
+	if gm.current_state != GameManagerScript.GameState.COMBAT:
+		return {"passed": false, "message": "State should be COMBAT after /fight, got %d" % gm.current_state, "assertions": 4}
+		
+	return {"passed": true, "assertions": 4}
+

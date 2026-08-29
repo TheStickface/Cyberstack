@@ -65,15 +65,18 @@ func _show_map_screen() -> void:
 
 func _show_prep_screen() -> void:
 	var screen: PrepScreen = PrepScreenScene.instantiate()
-	screen_container.add_child(screen)
-	current_screen_node = screen
-	
 	if get_node_or_null("/root/GameManager"):
 		var gm = get_node("/root/GameManager")
 		if gm.active_run_manager:
+			screen.run_mgr = gm.active_run_manager
 			screen.shop_mgr = gm.active_run_manager.shop_mgr
 			screen.crew_mgr = gm.active_run_manager.crew_mgr
-			screen._refresh_all()
+			screen.repo = gm.active_run_manager._repo
+	screen_container.add_child(screen)
+	current_screen_node = screen
+	if screen.shop_mgr and screen.crew_mgr:
+		screen._refresh_all()
+
 
 func _show_combat_screen() -> void:
 	var screen: CombatMockArena = CombatArenaScene.instantiate()

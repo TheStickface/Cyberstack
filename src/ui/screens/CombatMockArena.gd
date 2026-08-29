@@ -66,9 +66,11 @@ func _ready() -> void:
 	_setup_arena()
 
 const TacticalTetherOverlayScript = preload("res://src/ui/components/TacticalTetherOverlay.gd")
+const CombatTelemetryHUDScript = preload("res://src/ui/components/CombatTelemetryHUD.gd")
 
 var player_tether_overlay: Control = null
 var enemy_tether_overlay: Control = null
+var telemetry_hud: Control = null
 
 func _setup_arena() -> void:
 	if combat_payload.is_empty():
@@ -105,7 +107,12 @@ func _setup_arena() -> void:
 		enemy_tether_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		enemy_container.get_parent().add_child(enemy_tether_overlay)
 		
+	if telemetry_hud == null or not is_instance_valid(telemetry_hud):
+		telemetry_hud = CombatTelemetryHUDScript.new(self)
+		add_child(telemetry_hud)
+		
 	call_deferred("_update_combat_tethers")
+
 	
 	battle_time = 0.0
 	battle_active = true

@@ -40,13 +40,15 @@ func start_new_run(starter_unit_id: String = "runner_blitz") -> void:
 	shop_mgr = ShopManager.new(Constants.DEFAULT_STARTING_GOLD)
 	crew_mgr = CrewManager.new(1, _repo)
 	
-	# Add starter unit
+	# Add starter unit to Frontline Center (Slot 1)
 	var starter_res = _repo.get_unit(starter_unit_id)
 	if starter_res:
-		crew_mgr.fielded_units.append(UnitInstance.new(starter_res))
+		var starter_inst = UnitInstance.new(starter_res)
+		crew_mgr.place_unit_on_grid(starter_inst, 1)
 		crew_mgr.recalculate_synergies()
 
 	run_districts = _repo.draw_run_districts(Constants.NORMAL_DISTRICTS_PER_RUN)
+
 	_load_district(current_district_index)
 
 func _load_district(dist_idx: int) -> void:

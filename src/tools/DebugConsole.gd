@@ -34,6 +34,9 @@ func execute_command(cmd_string: String, gm: Object = null, main_node: Object = 
 				"success": true,
 				"message": """[b]AVAILABLE DEBUG COMMANDS:[/b]
   /help — Show this command reference
+  /loadout <ai|runner|corp|fixer> — Equip 4-man max synergy team preset
+  /fight [boss|patrol|<boss_id>] [district] — Instant combat encounter jump
+  /hud (or F3) — Toggle real-time Combat Telemetry & DPS Inspector
   /gold <amount> — Add or modify credits
   /district <1-4> — Jump to district
   /spawn <unit_id> — Add operative to bench/field
@@ -46,6 +49,74 @@ func execute_command(cmd_string: String, gm: Object = null, main_node: Object = 
   /metrics — Open Community Telemetry & Analytics Dashboard
   /inspect — Print current crew synergy breakdown"""
 			}
+			
+		"loadout", "preset":
+			if args.is_empty():
+				return {"success": false, "message": "Usage: /loadout <ai|runner|corp|fixer>"}
+			var preset = args[0].to_lower()
+			if gm and gm.active_run_manager and gm.active_run_manager.crew_mgr:
+				var cm: CrewManager = gm.active_run_manager.crew_mgr
+				cm.current_district = 4 # Unlock slots for test squad
+				cm.tactical_grid = [null, null, null, null, null, null]
+				cm.benched_units.clear()
+				cm.augment_inventory.clear()
+				
+				var u_ids: Array[String] = []
+				var aug_ids: Array[String] = []
+				match preset:
+					"ai", "ai_overclock":
+						u_ids = ["ai_bastion", "ai_cipher", "ai_siphon", "ai_bastion"]
+						aug_ids = ["rare_neural_synapse", "common_neural_link", "rare_neural_synapse"]
+					"runner", "runner_kinetic":
+						u_ids = ["runner_blitz", "runner_rampart", "runner_nexus", "runner_phantom"]
+						aug_ids = ["common_kinetic_plating", "rare_kinetic_rail", "legendary_kinetic_destroyer"]
+					"corp", "corp_phalanx":
+						u_ids = ["corp_sentinel", "corp_breacher", "corp_deadeye", "corp_operative"]
+						aug_ids = ["rare_thermal_exhaust", "common_kinetic_plating", "rare_thermal_exhaust"]
+					"fixer", "fixer_vamp":
+						u_ids = ["fixer_broker", "fixer_bouncer", "fixer_doc", "street_ghost"]
+						aug_ids = ["rare_viral_siphon", "rare_viral_cascade", "rare_viral_siphon"]
+					_:
+						return {"success": false, "message": "Unknown preset '%s'. Options: ai, runner, corp, fixer" % preset}
+						
+				for i in range(u_ids.size()):
+					var u_res = repo.get_unit(u_ids[i])
+					if u_res:
+						var inst = UnitInstance.new(u_res)
+						inst.star_level = 2
+						if i < aug_ids.size():
+							var a_res = repo.get_augment(aug_ids[i])
+							if a_res and inst.can_equip_augment(0, a_res):
+								inst.equip_augment(0, a_res)
+						cm.place_unit_on_grid(inst, i)
+						
+				cm.recalculate_synergies()
+				if main_node and main_node.has_node("ScreenContainer"):
+					var sc = main_node.get_node("ScreenContainer")
+					for ch in sc.get_children():
+						if ch is PrepScreen: ch._refresh_all()
+				return {"success": true, "message": "Equipped archetype loadout '%s' (4 units, Tier-2, slotted)." % preset}
+			return {"success": false, "message": "No active run available."}
+			
+		"fight", "battle":
+			if gm and gm.active_run_manager:
+				var target_type = args[0] if not args.is_empty() else "patrol"
+				var dist_num = int(args[1]) if args.size() > 1 else gm.active_run_manager.current_district_index
+				var is_boss = target_type.begins_with("boss") or target_type == "boss"
+				gm.active_run_manager.current_district_index = dist_num
+				gm.start_combat_encounter(is_boss, repo)
+				return {"success": true, "message": "Instantly launched combat encounter (%s, District %d)!" % [target_type, dist_num]}
+			return {"success": false, "message": "No active GameManager available."}
+			
+		"hud", "dps":
+			if main_node and main_node.has_node("ScreenContainer"):
+				var sc = main_node.get_node("ScreenContainer")
+				for ch in sc.get_children():
+					if ch is CombatMockArena and ch.telemetry_hud:
+						var st = ch.telemetry_hud.toggle_visibility()
+						return {"success": true, "message": "Combat Telemetry HUD: %s" % ("ENABLED" if st else "DISABLED")}
+			return {"success": false, "message": "Combat arena is not currently active (Press F3 during combat)."}
+
 			
 		"metrics", "analytics", "telemetry":
 			if gm:

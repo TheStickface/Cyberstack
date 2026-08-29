@@ -10,8 +10,10 @@ const TacticalTetherOverlayScript = preload("res://src/ui/components/TacticalTet
 const DataRepoScript = preload("res://src/systems/DataRepository.gd")
 
 var repo: Object = null
+var run_mgr: RunManager = null
 var shop_mgr: ShopManager = null
 var crew_mgr: CrewManager = null
+
 
 # Selection state for slotting
 var selected_inventory_aug: AugmentResource = null
@@ -37,9 +39,14 @@ func _ready() -> void:
 	if get_node_or_null("/root/GameManager") and get_node("/root/GameManager").active_run_manager:
 		var gm = get_node("/root/GameManager")
 		var rm = gm.active_run_manager
+		run_mgr = rm
 		repo = rm._repo if rm._repo else DataRepoScript.new()
 		shop_mgr = rm.shop_mgr
 		crew_mgr = rm.crew_mgr
+	elif run_mgr:
+		repo = run_mgr._repo if run_mgr._repo else DataRepoScript.new()
+		shop_mgr = run_mgr.shop_mgr
+		crew_mgr = run_mgr.crew_mgr
 	else:
 		repo = DataRepoScript.new()
 		repo.load_all_data("res://data")
@@ -47,11 +54,17 @@ func _ready() -> void:
 		crew_mgr = CrewManager.new(1, repo)
 		var starter_unit = repo.get_unit("runner_blitz")
 		if starter_unit:
-			crew_mgr.fielded_units.append(UnitInstance.new(starter_unit))
+			crew_mgr.place_unit_on_grid(UnitInstance.new(starter_unit), 1)
 		shop_mgr.generate_shop_offerings(1, repo)
 		
-	crew_mgr.recalculate_synergies()
+	# Ensure shop is generated if empty
+	if shop_mgr and shop_mgr.unit_slots.is_empty() and shop_mgr.augment_slots.is_empty():
+		shop_mgr.generate_shop_offerings(crew_mgr.current_district, repo, Constants.DEFAULT_CREW_SHOP_SLOTS, Constants.DEFAULT_AUGMENT_SHOP_SLOTS, false, shop_mgr.active_district_res)
+
+	if crew_mgr:
+		crew_mgr.recalculate_synergies()
 	_refresh_all()
+
 
 func _refresh_all() -> void:
 	_refresh_top_bar()
