@@ -145,7 +145,7 @@ EFFORT:     data-only tune
 ## Pass 4 (2026-08-29)
 
 #13 Bio-Synthetic Biograft Plating & Chimera Frontline Durability
-STATUS:     new
+STATUS:     done
 PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass4.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass4.md)
 ORIGIN:     Simon Seer — Biograft Regenerative Weave
 CHANGE:     Unit & Faction Stats (data/units/bio_chimera.tres, data/factions/bio_hackers.tres) — Bio-Chimera Max Health 800 → 850, Base AD 34 → 38; Bio-Synthetic (2) bonus +160 HP and +8 Armor.
@@ -155,7 +155,7 @@ RISK:       Very low; pure data .tres adjustment.
 EFFORT:     data-only tune
 
 #14 Net-Phantom Wraith Shroud Starting Mana & Evasion
-STATUS:     new
+STATUS:     done
 PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass4.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass4.md)
 ORIGIN:     Simon Seer — Spectral Mirage Shroud
 CHANGE:     Unit & Faction Stats (data/units/phantom_spectre.tres, data/factions/net_phantoms.tres) — Spectre Starting Mana 0/60 → 20/60; Net-Phantom (2) Evasion +15% → +20%.
