@@ -7,10 +7,10 @@
 script = ExtResource("2_syn")
 id = "ai_2"
 name = "Subnet Sync I"
-description = "Rogue AIs start with +20 Starting Mana and gain +15 Ability Power."
+description = "Rogue AIs start with +20 Starting Mana and gain +25 Ability Power."
 required_count = 2
 stat_modifiers = {
-2: 15.0,
+2: 25.0,
 6: 20.0
 }
 trigger_effect_id = ""

@@ -57,7 +57,7 @@ EFFORT:     sim + game code
 ## Pass 2 (2026-08-29)
 
 #5 Rogue AI Starter & Subnet Sync AP Reinforcement
-STATUS:     new
+STATUS:     done
 PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass2.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass2.md)
 ORIGIN:     Simon Seer — Overclock Subnet
 CHANGE:     Unit stats & Faction bonus (data/units/ai_glitch.tres, data/factions/rogue_ais.tres) — ai_glitch base AP (65 → 72), Max Health (620 → 650), Starting Mana (40 → 45); Rogue AI (2) AP bonus (+15 → +25).
@@ -67,7 +67,7 @@ RISK:       Very low; pure data-only .tres tuning.
 EFFORT:     data-only tune
 
 #6 District 3 Server Vault Enemy Threat Calibration
-STATUS:     new
+STATUS:     done
 PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass2.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass2.md)
 ORIGIN:     Simon Seer — Data Surge Sentinels
 CHANGE:     District Enemy Scaling (src/core/Constants.gd) — Set District 3 hp_mult: 1.95 and dmg_mult: 1.55.
@@ -77,7 +77,7 @@ RISK:       Low; single dictionary entry in Constants.gd.
 EFFORT:     data-only tune
 
 #7 Legendary Thermal Supernova AP Amplification
-STATUS:     new
+STATUS:     done
 PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass2.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass2.md)
 ORIGIN:     Simon Seer — Supernova Catalyst
 CHANGE:     Augment tuning (data/augments/legendary_thermal_supernova.tres) — Base AP +60 → +75, armor_melt_pct 0.40 → 0.50.
@@ -87,7 +87,7 @@ RISK:       Very low; single .tres resource update.
 EFFORT:     data-only tune
 
 #8 Ghost Terminal Push-Your-Luck Risk/Reward
-STATUS:     new
+STATUS:     done
 PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass2.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass2.md)
 ORIGIN:     Simon Seer — Deep Net Access
 CHANGE:     Event choice reward scaling (data/events/event_ghost_terminal.tres) — Choice 2 "Siphon Deep Core Ledgers" grants +12 Credits but inflicts 15.0 crew HP damage (penalty_health_cost: 15.0).

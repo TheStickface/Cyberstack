@@ -121,7 +121,7 @@ const DISTRICT_UNIT_SHOP_ODDS: Dictionary = {
 const DISTRICT_ENEMY_SCALING: Dictionary = {
 	1: { "hp_mult": 1.00, "dmg_mult": 1.00 },
 	2: { "hp_mult": 1.20, "dmg_mult": 1.15 },
-	3: { "hp_mult": 1.75, "dmg_mult": 1.45 },
+	3: { "hp_mult": 1.95, "dmg_mult": 1.55 },
 	4: { "hp_mult": 2.25, "dmg_mult": 1.70 },
 	5: { "hp_mult": 2.50, "dmg_mult": 1.85 }
 }

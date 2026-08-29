@@ -184,7 +184,7 @@ func _augment_golden() -> Dictionary:
 		"rare_viral_siphon": ["Leech HP from target", "ON ATTACK", "+120 Max Health, +15 Attack Damage", "ADJACENT", ["+80 Max Health"]],
 		"legendary_kinetic_destroyer": ["Piercing burst to nearby enemies", "ON ATTACK", "+45 Attack Damage, +15 Armor", "FRONTLINE", ["+50 Attack Damage", "+15% Crit Chance"]],
 		"legendary_neural_hive": ["", "ON ABILITY CAST", "+50 Ability Power, +30 Starting Mana", "", []],
-		"legendary_thermal_supernova": ["", "ON ABILITY CAST", "+60 Ability Power", "", []],
+		"legendary_thermal_supernova": ["", "ON ABILITY CAST", "+75 Ability Power", "", []],
 		"legendary_viral_pandemic": ["", "ON KILL", "+40 Ability Power, +30% Attack Speed", "", []],
 	}
 
@@ -198,7 +198,7 @@ func _augment_proc_fragment_golden() -> Dictionary:
 		"rare_neural_daemon": "Drain 15 mana from enemy",
 		"rare_viral_cascade": "+15% Attack Speed for 2s",
 		"legendary_neural_hive": "Share 35% mana pool crew-wide",
-		"legendary_thermal_supernova": "Melt 40% target armor",
+		"legendary_thermal_supernova": "Melt 50% target armor",
 		"legendary_viral_pandemic": "-25% enemy Attack Speed",
 	}
 

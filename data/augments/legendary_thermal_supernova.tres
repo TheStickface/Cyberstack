@@ -14,8 +14,8 @@ slot_type = 4
 tags = Array[int]([2])
 base_cost = 7
 stat_modifiers = {
-2: 60.0
+2: 75.0
 }
 trigger_type = 5
 trigger_effect_id = "thermal_supernova"
-trigger_params = {"armor_melt_pct": 0.40}
+trigger_params = {"armor_melt_pct": 0.50}
