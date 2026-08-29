@@ -25,5 +25,5 @@ base_speed = 50.0
 base_crit_chance = 0.12
 base_evasion = 0.1
 ability_name = "Whiteout Discharge"
-ability_description = "Discharges electromagnetic static dealing 210 AP damage and blinding enemies for 2s."
+ability_description = "210 AP dmg, blind enemies (2s)"
 ability_effect_id = "boss_whiteout_discharge"

@@ -25,5 +25,5 @@ base_speed = 52.0
 base_crit_chance = 0.08
 base_evasion = 0.1
 ability_name = "Digital Rapture"
-ability_description = "Channels digital psalm granting 200 shield to all allies and dealing 180 AP damage."
+ability_description = "200 Shield allies, 180 AP dmg"
 ability_effect_id = "boss_digital_rapture"

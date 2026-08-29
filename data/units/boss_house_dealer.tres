@@ -25,5 +25,5 @@ base_speed = 45.0
 base_crit_chance = 0.15
 base_evasion = 0.1
 ability_name = "High-Roller Roulette"
-ability_description = "Gambles on luck: heals self for 250 HP or deals 260 AP damage to a random target."
+ability_description = "250 HP heal self OR 260 AP dmg (random target)"
 ability_effect_id = "boss_high_roller_roulette"

@@ -355,7 +355,18 @@ func _refresh_slots() -> void:
 			slot_btn.text = " [%s] %s" % [aug.get_tier_name().substr(0, 1), aug.display_name]
 			var tier_col = Color(aug.get_tier_color_hex())
 			slot_btn.add_theme_color_override("font_color", tier_col)
-			slot_btn.tooltip_text = "%s\nDrag to swap/move or right-click to unequip" % aug.description
+			var aug_lines: Array[String] = ["STATS"] + aug.get_stat_lines()
+			if aug.has_directional():
+				aug_lines.append("")
+				aug_lines.append(aug.get_directional_header())
+				aug_lines.append_array(aug.get_directional_stat_lines())
+			if aug.has_proc():
+				aug_lines.append("")
+				aug_lines.append(aug.get_proc_header())
+				aug_lines.append(aug.get_proc_fragment())
+			aug_lines.append("")
+			aug_lines.append("Drag to swap/move or right-click to unequip")
+			slot_btn.tooltip_text = "\n".join(aug_lines)
 		else:
 			slot_btn.text = " + Slot %d [%s]" % [i + 1, _slot_type_name(slot_type)]
 			slot_btn.add_theme_color_override("font_color", Color(0.4, 0.4, 0.5))

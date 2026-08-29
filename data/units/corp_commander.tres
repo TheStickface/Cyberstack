@@ -25,5 +25,5 @@ base_speed = 50.0
 base_crit_chance = 0.10
 base_evasion = 0.05
 ability_name = "Defensive Perimeter"
-ability_description = "Broadcasts tactical telemetry, deploying a 200 HP barrier to all adjacent allies."
+ability_description = "200 HP barrier (adjacent allies)"
 ability_effect_id = "vance_defensive_perimeter"

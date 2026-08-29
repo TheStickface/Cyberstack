@@ -25,5 +25,5 @@ base_speed = 60.0
 base_crit_chance = 0.10
 base_evasion = 0.12
 ability_name = "Logic Cascade"
-ability_description = "Infects 3 random enemies with a logic bomb, dealing 180 AP damage over 4s and spreading to nearby foes upon death."
+ability_description = "180 AP dmg (3 random enemies) over 4s, spread on death"
 ability_effect_id = "worm_logic_cascade"

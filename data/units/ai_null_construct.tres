@@ -25,5 +25,5 @@ base_speed = 40.0
 base_crit_chance = 0.05
 base_evasion = 0.05
 ability_name = "Nullify Matrix"
-ability_description = "Creates a 300 HP refractive barrier absorbing incoming damage and reflecting 20% back to attackers."
+ability_description = "300 HP barrier, reflects 20% dmg"
 ability_effect_id = "null_barrier"

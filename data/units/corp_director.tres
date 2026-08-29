@@ -25,5 +25,5 @@ base_speed = 50.0
 base_crit_chance = 0.12
 base_evasion = 0.08
 ability_name = "Hostile Takeover"
-ability_description = "Dominates the highest-damage enemy, forcing them to attack their own allies for 4s while taking 300 AP damage."
+ability_description = "charm highest-dmg enemy (4s), 300 AP dmg"
 ability_effect_id = "director_hostile_takeover"

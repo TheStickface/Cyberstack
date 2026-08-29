@@ -25,5 +25,5 @@ base_speed = 48.0
 base_crit_chance = 0.1
 base_evasion = 0.08
 ability_name = "Black Clinic Siphon"
-ability_description = "Siphons 200 HP from the nearest operative to repair damaged cyberware."
+ability_description = "200 HP siphon (nearest enemy)"
 ability_effect_id = "boss_clinic_siphon"

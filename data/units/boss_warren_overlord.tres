@@ -25,5 +25,5 @@ base_speed = 46.0
 base_crit_chance = 0.12
 base_evasion = 0.08
 ability_name = "Tunnel Ambush"
-ability_description = "Summons hidden ambush dealing 240 damage and applying 15% speed slow."
+ability_description = "240 dmg, -15% Speed"
 ability_effect_id = "boss_tunnel_ambush"

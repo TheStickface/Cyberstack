@@ -25,5 +25,5 @@ base_speed = 50.0
 base_crit_chance = 0.15
 base_evasion = 0.10
 ability_name = "Syndicate Retaliation"
-ability_description = "Commands a syndicate drive-by strike, dealing 300 combined damage to all enemies and granting 2 credits per enemy eliminated."
+ability_description = "300 dmg (all enemies), +2 credits per kill"
 ability_effect_id = "kingpin_syndicate_retaliation"

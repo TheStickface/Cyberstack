@@ -52,3 +52,20 @@ func get_role_name() -> String:
 
 func get_faction_name() -> String:
 	return Enums.faction_to_string(faction)
+
+func has_directional() -> bool:
+	return directional_target != Enums.GridDirection.NONE
+
+## e.g. "RIGHT" / "ADJACENT" / "SAME COLUMN". Empty when this operative has no
+## positional formation passive.
+func get_directional_header() -> String:
+	if not has_directional():
+		return ""
+	return Enums.grid_direction_to_string(directional_target).to_upper()
+
+## Stat readout for the positional passive (directional_modifiers), same
+## canonical ordering/formatting as AugmentResource.get_stat_lines().
+func get_directional_stat_lines() -> Array[String]:
+	if not has_directional():
+		return []
+	return Enums.format_stat_dict(directional_modifiers)

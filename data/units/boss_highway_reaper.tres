@@ -25,5 +25,5 @@ base_speed = 58.0
 base_crit_chance = 0.22
 base_evasion = 0.12
 ability_name = "Nitro Ricochet"
-ability_description = "Fires accelerated sniper round bouncing between 2 targets for 260 damage each."
+ability_description = "2x 260 dmg (bounce)"
 ability_effect_id = "boss_nitro_ricochet"

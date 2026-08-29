@@ -25,5 +25,5 @@ base_speed = 50.0
 base_crit_chance = 0.05
 base_evasion = 0.08
 ability_name = "System Cascade"
-ability_description = "Overloads hostile cyberware, dealing 200 AP damage to 2 enemies and draining 30 mana."
+ability_description = "200 AP dmg (2 enemies), -30 mana"
 ability_effect_id = "boss_system_cascade"

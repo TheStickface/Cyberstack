@@ -25,5 +25,5 @@ base_speed = 45.0
 base_crit_chance = 0.10
 base_evasion = 0.05
 ability_name = "Piston Slam"
-ability_description = "Strikes the ground with hydraulic force, stunning the target for 1.5s and dealing 100 Physical Damage."
+ability_description = "100 physical dmg, stun (1.5s)"
 ability_effect_id = "bruiser_piston_slam"

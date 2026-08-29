@@ -8,7 +8,7 @@ script = ExtResource("1_aug")
 icon = ExtResource("2_icon")
 id = "legendary_thermal_supernova"
 display_name = "Supernova Fusion Core"
-description = "Micro-fusion reactor that melts 40% of target armor on ability cast."
+description = ""
 tier = 2
 slot_type = 4
 tags = Array[int]([2])
@@ -18,4 +18,4 @@ stat_modifiers = {
 }
 trigger_type = 5
 trigger_effect_id = "thermal_supernova"
-trigger_params = {}
+trigger_params = {"armor_melt_pct": 0.40}

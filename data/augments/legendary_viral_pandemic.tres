@@ -8,7 +8,7 @@ script = ExtResource("1_aug")
 icon = ExtResource("2_icon")
 id = "legendary_viral_pandemic"
 display_name = "Pandemic Strain Daemon"
-description = "Weaponized global viral strain that slows all enemy attack speeds by 25% on kill."
+description = ""
 tier = 2
 slot_type = 4
 tags = Array[int]([1])
@@ -19,4 +19,4 @@ stat_modifiers = {
 }
 trigger_type = 4
 trigger_effect_id = "viral_pandemic"
-trigger_params = {}
+trigger_params = {"enemy_attack_speed_pct": -0.25}

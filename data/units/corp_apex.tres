@@ -25,5 +25,5 @@ base_speed = 45.0
 base_crit_chance = 0.20
 base_evasion = 0.05
 ability_name = "Target Locked: Annihilation"
-ability_description = "Charges a railgun beam penetrating all enemies in a line for 250% Attack Damage."
+ability_description = "250% AD dmg (line, all enemies)"
 ability_effect_id = "apex_rail_beam"

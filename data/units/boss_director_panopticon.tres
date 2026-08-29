@@ -25,5 +25,5 @@ base_speed = 52.0
 base_crit_chance = 0.2
 base_evasion = 0.1
 ability_name = "Surveillance Strike"
-ability_description = "Focuses total surveillance array, dealing 330 piercing damage to highest-HP enemy."
+ability_description = "330 piercing dmg (highest-HP target)"
 ability_effect_id = "boss_surveillance_strike"

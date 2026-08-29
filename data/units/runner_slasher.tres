@@ -25,10 +25,10 @@ base_speed = 70.0
 base_crit_chance = 0.20
 base_evasion = 0.18
 ability_name = "Sonic Flurry"
-ability_description = "Unleashes 3 rapid strikes dealing 85% AD each with a guaranteed critical hit on the final slash."
+ability_description = "3x 85% AD dmg, guaranteed crit (final hit)"
 ability_effect_id = "slasher_sonic_flurry"
 directional_target = 1
-directional_passive_description = "Flank Cutter: Grants +16 Attack Damage to the operative directly to the Left."
+directional_passive_description = "Flank Cutter"
 directional_modifiers = {
 1: 16.0
 }

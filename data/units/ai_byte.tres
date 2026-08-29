@@ -25,5 +25,5 @@ base_speed = 70.0
 base_crit_chance = 0.08
 base_evasion = 0.12
 ability_name = "Bit-Shift Burst"
-ability_description = "Fires a binary logic pulse that deals 130 AP damage and reduces the target's armor by 10 for 4s."
+ability_description = "130 AP dmg, -10 Armor (4s)"
 ability_effect_id = "byte_bit_shift_burst"

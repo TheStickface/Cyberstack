@@ -25,5 +25,5 @@ base_speed = 70.0
 base_crit_chance = 0.15
 base_evasion = 0.15
 ability_name = "Overdrive Berserk"
-ability_description = "Enters maximum overdrive for 6s: gains +60% Attack Speed, +40 Armor, and heals for 30% of all damage dealt."
+ability_description = "+60% Attack Speed, +40 Armor, heal 30% dmg dealt (6s)"
 ability_effect_id = "overdrive_berserk"

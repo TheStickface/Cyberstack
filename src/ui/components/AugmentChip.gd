@@ -118,11 +118,11 @@ func _update_ui() -> void:
 		tag_label.text = " · ".join(tag_names)
 		
 	# Setup Tooltip
-	tooltip_text = "%s (%s Tier)\n%s\n\n%s" % [
+	tooltip_text = "%s (%s Tier)\n%s%s" % [
 		augment_resource.display_name,
 		augment_resource.get_tier_name(),
-		augment_resource.description,
-		_format_stats(augment_resource.stat_modifiers)
+		"  ·  ".join(augment_resource.get_stat_lines()),
+		" ⚡" if augment_resource.has_proc() else ""
 	]
 	
 	# Apply Tier Styling
@@ -139,16 +139,6 @@ func _update_ui() -> void:
 	style.corner_radius_bottom_right = 4
 	style.corner_radius_bottom_left = 4
 	add_theme_stylebox_override("panel", style)
-
-func _format_stats(stats: Dictionary) -> String:
-	if stats.is_empty():
-		return ""
-	var lines: Array[String] = ["Stats:"]
-	for k in stats.keys():
-		var val = float(stats[k])
-		var sign_str = "+" if val > 0 else ""
-		lines.append("  %s %s" % [sign_str, str(val)])
-	return "\n".join(lines)
 
 func set_selected(selected: bool) -> void:
 	is_selected = selected

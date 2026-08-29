@@ -25,5 +25,5 @@ base_speed = 55.0
 base_crit_chance = 0.08
 base_evasion = 0.06
 ability_name = "Supply Drop"
-ability_description = "Calls down a corporate supply beam granting all allies +15 Armor and 150 Shield for 5s."
+ability_description = "+15 Armor, 150 Shield allies (5s)"
 ability_effect_id = "tactician_supply_drop"

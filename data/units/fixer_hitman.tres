@@ -25,5 +25,5 @@ base_speed = 65.0
 base_crit_chance = 0.35
 base_evasion = 0.15
 ability_name = "Contract Execution"
-ability_description = "Fires a suppressed lethal shot dealing 350% AD damage. Instantly executes non-boss targets below 25% health."
+ability_description = "350% AD dmg, execute below 25% HP (non-boss)"
 ability_effect_id = "hitman_contract_execution"

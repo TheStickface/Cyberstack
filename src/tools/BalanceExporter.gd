@@ -63,7 +63,7 @@ static func generate_markdown_matrix(repo: Object) -> String:
 			
 		var stat_desc: Array[String] = []
 		for s_type in aug.stat_modifiers.keys():
-			stat_desc.append("%s: +%.0f" % [Enums.stat_to_string(s_type as int as Enums.StatType), aug.stat_modifiers[s_type]])
+			stat_desc.append(Enums.format_stat_value(s_type as int as Enums.StatType, float(aug.stat_modifiers[s_type])) + " " + Enums.stat_to_string(s_type as int as Enums.StatType))
 			
 		var sell_val = Constants.AUGMENT_SELL_VALUES.get(aug.tier, 1)
 		lines.append("| `%s` | **%s** | %s | %s | %s | %s | %dg | %dg |" % [
@@ -125,7 +125,7 @@ static func generate_markdown_matrix(repo: Object) -> String:
 		for bonus in fac.threshold_bonuses:
 			var mod_strs: Array[String] = []
 			for st in bonus.stat_modifiers.keys():
-				mod_strs.append("%s +%.0f%%" % [Enums.stat_to_string(st as int as Enums.StatType), bonus.stat_modifiers[st]])
+				mod_strs.append(Enums.format_stat_value(st as int as Enums.StatType, float(bonus.stat_modifiers[st])) + " " + Enums.stat_to_string(st as int as Enums.StatType))
 			lines.append("| **%d Units** | %s | %s |" % [
 				bonus.required_count,
 				", ".join(mod_strs) if not mod_strs.is_empty() else "None",

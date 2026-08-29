@@ -25,5 +25,5 @@ base_speed = 50.0
 base_crit_chance = 0.08
 base_evasion = 0.08
 ability_name = "Acid Mist"
-ability_description = "Lobs an acid flask that coats enemies in a corrosive haze, dealing 160 AP damage and reducing armor by 15 for 4s."
+ability_description = "160 AP dmg, -15 Armor (4s)"
 ability_effect_id = "chemist_acid_mist"

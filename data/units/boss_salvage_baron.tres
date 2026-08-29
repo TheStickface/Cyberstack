@@ -25,5 +25,5 @@ base_speed = 36.0
 base_crit_chance = 0.05
 base_evasion = 0.05
 ability_name = "Bathyscaphe Slam"
-ability_description = "Slams submersible plating, gaining 300 shield and dealing 170 splash damage."
+ability_description = "300 Shield self, 170 splash dmg"
 ability_effect_id = "boss_bathyscaphe_slam"

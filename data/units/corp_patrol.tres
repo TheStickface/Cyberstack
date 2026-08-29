@@ -25,5 +25,5 @@ base_speed = 50.0
 base_crit_chance = 0.04
 base_evasion = 0.04
 ability_name = "Crowd Dispersion"
-ability_description = "Fires a sonic pulse dealing 120 damage and slowing enemy attack speed by 25% for 3s."
+ability_description = "120 dmg, -25% enemy Attack Speed (3s)"
 ability_effect_id = "patrol_crowd_dispersion"

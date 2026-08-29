@@ -25,5 +25,5 @@ base_speed = 54.0
 base_crit_chance = 0.1
 base_evasion = 0.08
 ability_name = "Hostile Liquidation"
-ability_description = "Liquidates enemy assets, dealing 230 AP damage and reducing enemy attack damage."
+ability_description = "230 AP dmg, reduce enemy Attack Damage"
 ability_effect_id = "boss_hostile_liquidation"

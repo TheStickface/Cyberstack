@@ -39,3 +39,64 @@ func get_tier_color_hex() -> String:
 
 func get_tier_name() -> String:
 	return Enums.tier_to_string(tier)
+
+## Stat readout in canonical StatType-ordinal order (not .tres authoring order),
+## so every surface lists a given augment's stats identically. e.g.
+## ["+12 Attack Damage", "+15% Crit Chance"]
+func get_stat_lines() -> Array[String]:
+	return Enums.format_stat_dict(stat_modifiers)
+
+func has_directional() -> bool:
+	return directional_target != Enums.GridDirection.NONE
+
+## e.g. "ADJACENT" / "FRONTLINE" / "SAME ROW". Empty when this augment grants
+## no positional bonus.
+func get_directional_header() -> String:
+	if not has_directional():
+		return ""
+	return Enums.grid_direction_to_string(directional_target).to_upper()
+
+## Stat readout for the positional bonus (directional_modifiers), same
+## canonical ordering and formatting as get_stat_lines().
+func get_directional_stat_lines() -> Array[String]:
+	if not has_directional():
+		return []
+	return Enums.format_stat_dict(directional_modifiers)
+
+func has_proc() -> bool:
+	return trigger_type != Enums.TriggerType.PASSIVE_STAT
+
+func get_proc_header() -> String:
+	if not has_proc():
+		return ""
+	return Enums.trigger_to_string(trigger_type).to_upper()
+
+## Terse proc effect fragment. Formatted from trigger_params when the known
+## keys are present (the authoritative source); falls back to the literal
+## `description` string for procs with no numeric magnitude in the data.
+## Empty when this augment has no proc at all.
+func get_proc_fragment() -> String:
+	if not has_proc():
+		return ""
+	if trigger_params.has("armor_pierce_pct"):
+		return "Pierce %d%% target armor" % roundi(float(trigger_params["armor_pierce_pct"]) * 100.0)
+	if trigger_params.has("armor_melt_pct"):
+		return "Melt %d%% target armor" % roundi(float(trigger_params["armor_melt_pct"]) * 100.0)
+	if trigger_params.has("mana_drain"):
+		return "Drain %s mana from enemy" % _trim_trailing_zero(trigger_params["mana_drain"])
+	if trigger_params.has("attack_speed_bonus") and trigger_params.has("duration"):
+		return "+%d%% Attack Speed for %ss" % [
+			roundi(float(trigger_params["attack_speed_bonus"]) * 100.0),
+			_trim_trailing_zero(trigger_params["duration"])
+		]
+	if trigger_params.has("enemy_attack_speed_pct"):
+		return "%d%% enemy Attack Speed" % roundi(float(trigger_params["enemy_attack_speed_pct"]) * 100.0)
+	if trigger_params.has("shared_mana_pct"):
+		return "Share %d%% mana pool crew-wide" % roundi(float(trigger_params["shared_mana_pct"]) * 100.0)
+	return description
+
+static func _trim_trailing_zero(value) -> String:
+	var f := float(value)
+	if f == int(f):
+		return str(int(f))
+	return str(f)

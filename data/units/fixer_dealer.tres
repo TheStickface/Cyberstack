@@ -25,5 +25,5 @@ base_speed = 55.0
 base_crit_chance = 0.15
 base_evasion = 0.12
 ability_name = "Black Market Cache"
-ability_description = "Supplies all allies with armor-piercing ammunition, granting +30% Armor Penetration and +20% Crit Chance for 5s."
+ability_description = "+30% Armor Penetration, +20% Crit Chance, allies (5s)"
 ability_effect_id = "dealer_black_market_cache"

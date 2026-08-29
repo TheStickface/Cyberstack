@@ -94,6 +94,24 @@ static func create_custom_tooltip_node(unit_res: UnitResource, impact_info: Dict
 		ability_desc.add_theme_font_size_override("font_size", 7)
 		ability_desc.add_theme_color_override("font_color", Color(0.75, 0.75, 0.85))
 		main_vbox.add_child(ability_desc)
+
+		if unit_res.has_directional():
+			var dir_header = Label.new()
+			dir_header.text = "◆ %s (%s)" % [
+				unit_res.directional_passive_description if not unit_res.directional_passive_description.is_empty() else "FORMATION BONUS",
+				unit_res.get_directional_header()
+			]
+			dir_header.add_theme_font_size_override("font_size", 8)
+			dir_header.add_theme_color_override("font_color", Color(0.5, 0.85, 1.0))
+			main_vbox.add_child(dir_header)
+
+			var dir_stats = Label.new()
+			dir_stats.text = ", ".join(unit_res.get_directional_stat_lines())
+			dir_stats.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			dir_stats.custom_minimum_size = Vector2(220, 0)
+			dir_stats.add_theme_font_size_override("font_size", 7)
+			dir_stats.add_theme_color_override("font_color", Color(0.75, 0.75, 0.85))
+			main_vbox.add_child(dir_stats)
 		
 	# Synergy Intel Box
 	var sep = HSeparator.new()
@@ -203,11 +221,41 @@ static func create_augment_tooltip_node(aug_res: AugmentResource) -> PanelContai
 	main_vbox.add_child(bio_label)
 	
 	var stats_label = Label.new()
-	stats_label.text = aug_res.description
+	stats_label.text = "\n".join(aug_res.get_stat_lines())
 	stats_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	stats_label.custom_minimum_size = Vector2(210, 0)
 	stats_label.add_theme_font_size_override("font_size", 8)
 	stats_label.add_theme_color_override("font_color", Color(0.8, 0.85, 0.95))
 	main_vbox.add_child(stats_label)
-	
+
+	if aug_res.has_directional():
+		var dir_header = Label.new()
+		dir_header.text = "◆ DIRECTIONAL (%s)" % aug_res.get_directional_header()
+		dir_header.add_theme_font_size_override("font_size", 8)
+		dir_header.add_theme_color_override("font_color", Color(0.5, 0.85, 1.0))
+		main_vbox.add_child(dir_header)
+
+		var dir_stats = Label.new()
+		dir_stats.text = "\n".join(aug_res.get_directional_stat_lines())
+		dir_stats.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		dir_stats.custom_minimum_size = Vector2(210, 0)
+		dir_stats.add_theme_font_size_override("font_size", 8)
+		dir_stats.add_theme_color_override("font_color", Color(0.8, 0.85, 0.95))
+		main_vbox.add_child(dir_stats)
+
+	if aug_res.has_proc():
+		var proc_header = Label.new()
+		proc_header.text = "⚡ %s" % aug_res.get_proc_header()
+		proc_header.add_theme_font_size_override("font_size", 8)
+		proc_header.add_theme_color_override("font_color", Color(1, 0.2, 0.6))
+		main_vbox.add_child(proc_header)
+
+		var proc_frag = Label.new()
+		proc_frag.text = aug_res.get_proc_fragment()
+		proc_frag.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		proc_frag.custom_minimum_size = Vector2(210, 0)
+		proc_frag.add_theme_font_size_override("font_size", 8)
+		proc_frag.add_theme_color_override("font_color", Color(0.8, 0.85, 0.95))
+		main_vbox.add_child(proc_frag)
+
 	return panel

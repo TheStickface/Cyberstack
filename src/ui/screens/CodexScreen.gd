@@ -110,12 +110,17 @@ func _populate_augments() -> void:
 		vbox.add_child(sub_lbl)
 		
 		var desc_lbl = Label.new()
-		desc_lbl.text = aug.description
+		var desc_lines: Array[String] = aug.get_stat_lines()
+		if aug.has_directional():
+			desc_lines.append("◆ %s: %s" % [aug.get_directional_header(), ", ".join(aug.get_directional_stat_lines())])
+		if aug.has_proc():
+			desc_lines.append("⚡ %s: %s" % [aug.get_proc_header(), aug.get_proc_fragment()])
+		desc_lbl.text = "\n".join(desc_lines)
 		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		desc_lbl.add_theme_font_size_override("font_size", 9)
 		desc_lbl.add_theme_color_override("font_color", Color(0.75, 0.75, 0.8))
 		vbox.add_child(desc_lbl)
-		
+
 		panel.add_child(vbox)
 		augments_container.add_child(panel)
 

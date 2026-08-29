@@ -25,5 +25,5 @@ base_speed = 50.0
 base_crit_chance = 0.06
 base_evasion = 0.06
 ability_name = "Foreclosure Protocol"
-ability_description = "Freezes target enemy for 2.5s, dealing 160 AP damage and siphoning 2 credits on victory."
+ability_description = "freeze target (2.5s), 160 AP dmg, +2 credits on kill"
 ability_effect_id = "auditor_foreclosure_protocol"

@@ -106,11 +106,12 @@ func _update_ui(player_gold: int) -> void:
 			var tag_names: Array[String] = []
 			for t in aug_res.tags:
 				tag_names.append(Enums.tag_to_string(t))
-			details_label.text = "[%s Tier | %s]\nTags: %s\n%s" % [
+			details_label.text = "[%s Tier | %s]\nTags: %s\n%s%s" % [
 				aug_res.get_tier_name(),
 				Enums.role_to_string(aug_res.slot_type as int as Enums.UnitRole),
 				", ".join(tag_names),
-				aug_res.description
+				"  ·  ".join(aug_res.get_stat_lines()),
+				" ⚡" if aug_res.has_proc() else ""
 			]
 			
 	if buy_btn:

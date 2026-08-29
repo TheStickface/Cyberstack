@@ -25,5 +25,5 @@ base_speed = 65.0
 base_crit_chance = 0.08
 base_evasion = 0.12
 ability_name = "Grid Surge"
-ability_description = "Surges 40 mana to the lowest-mana ally and increases their attack speed by 35% for 5s."
+ability_description = "+40 mana, +35% Attack Speed (lowest-mana ally) (5s)"
 ability_effect_id = "volt_grid_surge"

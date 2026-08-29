@@ -8,7 +8,7 @@ script = ExtResource("1_aug")
 icon = ExtResource("2_icon")
 id = "rare_neural_daemon"
 display_name = "Leech Daemon Subroutine"
-description = "Autonomous parasitic process that drains 15 mana from the enemy on attack."
+description = ""
 tier = 1
 slot_type = 1
 tags = Array[int]([3])
@@ -19,4 +19,4 @@ stat_modifiers = {
 }
 trigger_type = 2
 trigger_effect_id = "neural_daemon"
-trigger_params = {}
+trigger_params = {"mana_drain": 15}

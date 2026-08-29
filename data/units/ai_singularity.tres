@@ -25,5 +25,5 @@ base_speed = 65.0
 base_crit_chance = 0.35
 base_evasion = 0.20
 ability_name = "Event Horizon"
-ability_description = "Creates a micro-singularity that pulls all enemies inward, dealing 350 combined AD/AP damage and preventing movement for 3s."
+ability_description = "350 AD/AP dmg, pull enemies inward, root (3s)"
 ability_effect_id = "singularity_event_horizon"

@@ -25,5 +25,5 @@ base_speed = 55.0
 base_crit_chance = 0.2
 base_evasion = 0.1
 ability_name = "Orbital Lase"
-ability_description = "Calls down an orbital strike dealing 320 piercing damage to the weakest enemy operative."
+ability_description = "320 piercing dmg (weakest enemy)"
 ability_effect_id = "boss_orbital_lase"

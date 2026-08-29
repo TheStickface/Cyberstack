@@ -25,5 +25,5 @@ base_speed = 55.0
 base_crit_chance = 0.14
 base_evasion = 0.06
 ability_name = "Scrap Shrapnel"
-ability_description = "Fires a canister of rusted ball-bearings dealing 150% AD damage to the primary target and 50% to adjacent enemies."
+ability_description = "150% AD dmg (primary), 50% AD dmg (adjacent)"
 ability_effect_id = "scav_scrap_shrapnel"

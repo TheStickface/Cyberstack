@@ -25,5 +25,5 @@ base_speed = 40.0
 base_crit_chance = 0.05
 base_evasion = 0.05
 ability_name = "Shockwave Cleave"
-ability_description = "Strikes the frontline for 180 damage and deploys a 250 HP kinetic barrier to self."
+ability_description = "180 dmg (frontline), 250 HP barrier self"
 ability_effect_id = "boss_shockwave_cleave"

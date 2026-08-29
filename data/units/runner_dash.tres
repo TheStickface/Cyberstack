@@ -25,5 +25,5 @@ base_speed = 90.0
 base_crit_chance = 0.15
 base_evasion = 0.20
 ability_name = "Overclock Protocol"
-ability_description = "Surges with electrical current, delivering a shockwave dealing 120 AP damage to 2 nearby enemies."
+ability_description = "120 AP dmg (2 nearby enemies)"
 ability_effect_id = "dash_overclock"

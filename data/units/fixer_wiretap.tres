@@ -25,5 +25,5 @@ base_speed = 65.0
 base_crit_chance = 0.10
 base_evasion = 0.12
 ability_name = "Signal Siphon"
-ability_description = "Siphons 30 mana from the highest mana enemy, dealing 110 AP damage and generating 1 bonus credit on kill."
+ability_description = "-30 mana (highest-mana enemy), 110 AP dmg, +1 credit on kill"
 ability_effect_id = "wiretap_siphon"

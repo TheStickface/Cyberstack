@@ -25,5 +25,5 @@ base_speed = 62.0
 base_crit_chance = 0.12
 base_evasion = 0.14
 ability_name = "Recursive Null"
-ability_description = "Corrupts operative code, dealing 250 AP damage and preventing mana gain for 3s."
+ability_description = "250 AP dmg, block mana gain (3s)"
 ability_effect_id = "boss_recursive_null"

@@ -25,5 +25,5 @@ base_speed = 60.0
 base_crit_chance = 0.1
 base_evasion = 0.12
 ability_name = "Gridlock EMP"
-ability_description = "Detonates an electromagnetic pulse dealing 220 AP damage to 2 fastest enemies."
+ability_description = "220 AP dmg (2 fastest enemies)"
 ability_effect_id = "boss_gridlock_emp"

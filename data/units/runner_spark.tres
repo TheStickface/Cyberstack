@@ -25,5 +25,5 @@ base_speed = 75.0
 base_crit_chance = 0.08
 base_evasion = 0.15
 ability_name = "EMP Arc"
-ability_description = "Fires an electric chain that shocks 2 nearby enemies for 140 AP damage and drains 20 mana."
+ability_description = "140 AP dmg (2 nearby enemies), -20 mana"
 ability_effect_id = "spark_emp_arc"

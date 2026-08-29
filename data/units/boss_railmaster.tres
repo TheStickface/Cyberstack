@@ -25,5 +25,5 @@ base_speed = 50.0
 base_crit_chance = 0.25
 base_evasion = 0.08
 ability_name = "Hyperkinetic Railgun"
-ability_description = "Fires a high-caliber slug dealing 350 damage that ignores 50% target armor."
+ability_description = "350 dmg, ignore 50% Armor"
 ability_effect_id = "boss_hyperkinetic_railgun"

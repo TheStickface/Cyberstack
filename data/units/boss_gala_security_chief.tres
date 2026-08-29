@@ -25,5 +25,5 @@ base_speed = 40.0
 base_crit_chance = 0.08
 base_evasion = 0.06
 ability_name = "Aegis Lockdown"
-ability_description = "Deploys corporate aegis field granting 280 shield to self and adjacent ally."
+ability_description = "280 Shield self + adjacent ally"
 ability_effect_id = "boss_aegis_lockdown"

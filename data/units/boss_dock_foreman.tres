@@ -25,5 +25,5 @@ base_speed = 38.0
 base_crit_chance = 0.05
 base_evasion = 0.05
 ability_name = "Cargo Smash"
-ability_description = "Drops heavy freight container dealing 200 damage and granting 250 shield."
+ability_description = "200 dmg, 250 Shield self"
 ability_effect_id = "boss_cargo_smash"

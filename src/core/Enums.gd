@@ -170,6 +170,43 @@ static func stat_to_string(stat: StatType) -> String:
 		StatType.EVASION: return "Evasion"
 		_: return "Stat"
 
+## Stats stored as a 0-1 fraction (e.g. 0.20 = 20%) rather than a flat value.
+static func is_percent_stat(stat: StatType) -> bool:
+	return stat == StatType.ATTACK_SPEED or stat == StatType.CRIT_CHANCE or stat == StatType.EVASION
+
+## Formats a stat_modifiers value into a signed display string, e.g. "+12" or "+20%".
+static func format_stat_value(stat: StatType, value: float) -> String:
+	var sign_str := "+" if value >= 0.0 else "-"
+	if is_percent_stat(stat):
+		return "%s%d%%" % [sign_str, roundi(abs(value) * 100.0)]
+	return "%s%d" % [sign_str, roundi(abs(value))]
+
+## Formats a StatType(int)->float dict (stat_modifiers / directional_modifiers
+## shape) into display lines in canonical StatType-ordinal order, e.g.
+## ["+12 Attack Damage", "+15% Crit Chance"]. Shared by AugmentResource and
+## UnitResource so every surface lists a given stat dict identically.
+static func format_stat_dict(mods: Dictionary) -> Array[String]:
+	var keys = mods.keys()
+	keys.sort()
+	var lines: Array[String] = []
+	for k in keys:
+		var stat: StatType = k as int as StatType
+		lines.append("%s %s" % [format_stat_value(stat, float(mods[k])), stat_to_string(stat)])
+	return lines
+
+static func trigger_to_string(trigger: TriggerType) -> String:
+	match trigger:
+		TriggerType.PASSIVE_STAT: return ""
+		TriggerType.ON_COMBAT_START: return "On Combat Start"
+		TriggerType.ON_ATTACK: return "On Attack"
+		TriggerType.ON_HIT: return "On Hit"
+		TriggerType.ON_KILL: return "On Kill"
+		TriggerType.ON_ABILITY_CAST: return "On Ability Cast"
+		TriggerType.ON_ALLY_TAG_TRIGGER: return "On Ally Tag Trigger"
+		TriggerType.ON_DAMAGE_TAKEN: return "On Damage Taken"
+		TriggerType.ON_HEALTH_BELOW_THRESHOLD: return "On Health Below Threshold"
+		_: return "Trigger"
+
 enum GridDirection {
 	NONE,
 	LEFT,

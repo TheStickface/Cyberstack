@@ -25,5 +25,5 @@ base_speed = 55.0
 base_crit_chance = 0.05
 base_evasion = 0.05
 ability_name = "Buffer Overflow"
-ability_description = "Detonates digital logic bomb dealing 180 AP damage and draining 30 mana from targets."
+ability_description = "180 AP dmg, -30 mana"
 ability_effect_id = "glitch_buffer_overflow"

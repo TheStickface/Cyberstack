@@ -25,5 +25,5 @@ base_speed = 60.0
 base_crit_chance = 0.15
 base_evasion = 0.08
 ability_name = "Coherent Beam"
-ability_description = "Focuses an ultraviolet laser dealing 170% AD damage and burning the target for 40 thermal damage."
+ability_description = "170% AD dmg, burn 40 thermal dmg"
 ability_effect_id = "spindle_coherent_beam"

@@ -25,10 +25,10 @@ base_speed = 60.0
 base_crit_chance = 0.10
 base_evasion = 0.10
 ability_name = "Bandwidth Jam"
-ability_description = "Broadcasts a sensory overload wave dealing 220 AP damage to all enemies and silencing their abilities for 3s."
+ability_description = "220 AP dmg (all enemies), silence (3s)"
 ability_effect_id = "nexus_bandwidth_jam"
 directional_target = 7
-directional_passive_description = "Column Mesh Link: Operatives in the same column gain +20 Starting Mana."
+directional_passive_description = "Column Mesh Link"
 directional_modifiers = {
 6: 20.0
 }

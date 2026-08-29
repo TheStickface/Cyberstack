@@ -25,5 +25,5 @@ base_speed = 60.0
 base_crit_chance = 0.15
 base_evasion = 0.12
 ability_name = "Singularity Rupture"
-ability_description = "Unleashes a catastrophic singularity burst dealing 280 AP damage across all enemies."
+ability_description = "280 AP dmg (all enemies)"
 ability_effect_id = "boss_singularity_rupture"

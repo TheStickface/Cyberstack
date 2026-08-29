@@ -25,5 +25,5 @@ base_speed = 30.0
 base_crit_chance = 0.05
 base_evasion = 0.04
 ability_name = "Reanimated Core"
-ability_description = "Overclocks scrap core, regenerating 300 HP and dealing 160 area damage."
+ability_description = "300 HP heal self, 160 area dmg"
 ability_effect_id = "boss_reanimated_core"

@@ -25,10 +25,10 @@ base_speed = 50.0
 base_crit_chance = 0.05
 base_evasion = 0.08
 ability_name = "Combat Stim"
-ability_description = "Injects the lowest-health ally with concentrated adrenaline, restoring 260 health and granting +25% Attack Speed."
+ability_description = "260 HP heal, +25% Attack Speed (lowest-HP ally)"
 ability_effect_id = "doc_combat_stim"
 directional_target = 5
-directional_passive_description = "Field Triage: Grants +100 Max Health to adjacent allies (Left, Right, Above)."
+directional_passive_description = "Field Triage"
 directional_modifiers = {
 0: 100.0
 }
