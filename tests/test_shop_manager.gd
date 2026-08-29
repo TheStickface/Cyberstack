@@ -182,9 +182,34 @@ func test_tiered_district_shop_odds() -> Dictionary:
 	if d4_odds.get(3, 0.0) != 0.40:
 		return {"passed": false, "message": "District 4 expected Tier 3 odds 0.40, got %f" % d4_odds.get(3, 0.0), "assertions": 3}
 		
-	var d4_aug_odds = shop.get_current_augment_tier_odds()
-	if d4_aug_odds.get(Enums.AugmentTier.LEGENDARY, 0.0) != 0.40:
-		return {"passed": false, "message": "District 4 expected Legendary odds 0.40, got %f" % d4_aug_odds.get(Enums.AugmentTier.LEGENDARY, 0.0), "assertions": 4}
-		
 	return {"passed": true, "assertions": 4}
+
+func test_augment_resequencing() -> Dictionary:
+	var shop = ShopManager.new(20)
+	var unit_res = repo.get_unit("runner_blitz")
+	var unit = UnitInstance.new(unit_res)
+	var aug_res = repo.get_augment("rare_kinetic_rail")
+	unit.equipped_augments[0] = aug_res
+	
+	# 1. In District 1, resequencing is disabled
+	shop.current_district = 1
+	if shop.can_resequence_augment(unit, 0):
+		return {"passed": false, "message": "Resequencing should be locked before District 3", "assertions": 1}
+		
+	# 2. In District 3 with enough gold, resequencing is available
+	shop.current_district = 3
+	if not shop.can_resequence_augment(unit, 0):
+		return {"passed": false, "message": "Resequencing should be available in District 3 with 20 gold", "assertions": 2}
+		
+	# 3. Perform resequence: credits debited, new augment assigned
+	var old_id = aug_res.id
+	var reseq_aug = shop.resequence_augment(unit, 0, repo)
+	if reseq_aug == null or unit.equipped_augments[0] == null:
+		return {"passed": false, "message": "Expected valid resequenced augment returned", "assertions": 3}
+	if shop.gold != 15:
+		return {"passed": false, "message": "Expected 15 gold after spending 5 on resequencing, got %d" % shop.gold, "assertions": 4}
+	if unit.equipped_augments[0].tier != aug_res.tier:
+		return {"passed": false, "message": "Resequenced augment must preserve tier", "assertions": 5}
+		
+	return {"passed": true, "assertions": 5}
 

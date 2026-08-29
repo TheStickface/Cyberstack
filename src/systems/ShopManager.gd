@@ -309,6 +309,47 @@ func overdrive_augment(unit: UnitInstance, slot_idx: int, repo_instance: Object 
 		return upgraded_aug
 	return null
 
+const RESEQUENCE_COST: int = 5
+
+func get_resequence_cost() -> int:
+	return RESEQUENCE_COST
+
+func can_resequence_augment(unit: UnitInstance, slot_idx: int) -> bool:
+	if current_district < 3:
+		return false
+	if gold < RESEQUENCE_COST:
+		return false
+	if unit == null or slot_idx < 0 or slot_idx >= unit.equipped_augments.size():
+		return false
+	return unit.equipped_augments[slot_idx] != null
+
+func resequence_augment(unit: UnitInstance, slot_idx: int, repo_instance: Object = null) -> AugmentResource:
+	if not can_resequence_augment(unit, slot_idx):
+		return null
+	var current_aug = unit.equipped_augments[slot_idx]
+	var repo = repo_instance if repo_instance != null else _get_default_repo()
+	var all_augs = repo.get_all_augments()
+	
+	# Find augments of same slot type and same tier, but different augment
+	var candidate_pool: Array[AugmentResource] = []
+	for aug in all_augs:
+		if aug.id != current_aug.id and aug.slot_type == current_aug.slot_type and aug.tier == current_aug.tier:
+			candidate_pool.append(aug)
+			
+	if candidate_pool.is_empty():
+		for aug in all_augs:
+			if aug.id != current_aug.id and aug.tier == current_aug.tier:
+				candidate_pool.append(aug)
+				
+	if candidate_pool.is_empty():
+		return null
+		
+	var resequenced = candidate_pool[randi() % candidate_pool.size()]
+	if spend_gold(RESEQUENCE_COST):
+		unit.equipped_augments[slot_idx] = resequenced
+		return resequenced
+	return null
+
 func _roll_tier(odds: Dictionary) -> Enums.AugmentTier:
 	var roll = randf()
 	var cum_prob = 0.0

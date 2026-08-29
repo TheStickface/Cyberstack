@@ -977,14 +977,17 @@ static func _build_minion_enemy_comp(repo: Object, district_index: int) -> Array
 				{"unit": "ai_bastion", "augments": ["rare_thermal_exhaust"]},
 				{"unit": "ai_cipher", "augments": ["rare_neural_synapse"]},
 				{"unit": "runner_nexus", "augments": ["rare_neural_synapse"]},
-				{"unit": "fixer_chemist", "augments": ["rare_viral_siphon"]}
+				{"unit": "fixer_chemist", "augments": ["rare_viral_siphon"]},
+				{"unit": "corp_operative", "augments": ["common_kinetic_accelerator"]}
 			]
 		4:
 			return [
 				{"unit": "corp_breacher", "augments": ["rare_thermal_exhaust"]},
 				{"unit": "corp_deadeye", "augments": ["rare_kinetic_rail"]},
 				{"unit": "ai_dreadnought", "augments": ["rare_neural_daemon"]},
-				{"unit": "fixer_hitman", "augments": ["rare_viral_cascade"]}
+				{"unit": "fixer_hitman", "augments": ["rare_viral_cascade"]},
+				{"unit": "ai_singularity", "augments": ["rare_neural_daemon"]},
+				{"unit": "runner_slasher", "augments": ["common_kinetic_plating"]}
 			]
 		_:
 			return [{"unit": "runner_dash", "augments": []}]
