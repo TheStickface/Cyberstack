@@ -14,7 +14,8 @@ slot_type = 3
 tags = Array[int]([1])
 base_cost = 2
 stat_modifiers = {
-3: 0.08
+2: 10.0,
+3: 0.14
 }
 trigger_type = 0
 trigger_effect_id = ""

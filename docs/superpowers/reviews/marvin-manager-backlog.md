@@ -101,7 +101,7 @@ EFFORT:     data-only tune
 ## Pass 3 (2026-08-29)
 
 #9 Rare Kinetic Overdrive Attack Speed & Armor Reinforcement
-STATUS:     new
+STATUS:     done
 PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass3.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass3.md)
 ORIGIN:     Simon Seer — Overdrive Kinetic Recoil
 CHANGE:     Augment stats (data/augments/rare_kinetic_overdrive.tres) — Increase Attack Speed from +20% to +25% and Armor from +12 to +16.
@@ -111,7 +111,7 @@ RISK:       Very low; single .tres resource adjustment.
 EFFORT:     data-only tune
 
 #10 District 2 Shop Recruitment Odds Calibration
-STATUS:     new
+STATUS:     done
 PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass3.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass3.md)
 ORIGIN:     Simon Seer — Underground Brokerage Odds
 CHANGE:     Economy / Shop Odds (src/core/Constants.gd) — Set DISTRICT_UNIT_SHOP_ODDS[2] to { 1: 0.50, 2: 0.40, 3: 0.10 }.
@@ -121,7 +121,7 @@ RISK:       Low; single dictionary entry in Constants.gd.
 EFFORT:     data-only tune
 
 #11 Common Viral Nanites Attack Speed & AP Utility
-STATUS:     new
+STATUS:     done
 PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass3.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass3.md)
 ORIGIN:     Simon Seer — Nanite Contagion Cascade
 CHANGE:     Augment stats (data/augments/common_viral_nanites.tres) — Increase Attack Speed from +8% to +14% and add +10 Ability Power.
@@ -131,7 +131,7 @@ RISK:       Very low; single .tres resource update.
 EFFORT:     data-only tune
 
 #12 Underground Betting Ring High-Roller Stakes
-STATUS:     new
+STATUS:     done
 PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass3.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass3.md)
 ORIGIN:     Simon Seer — Skyline Wager High Stakes
 CHANGE:     Event choice balancing (data/events/event_underground_betting_ring.tres) — Choice 2 purse increased to 18 Credits with a 20.0 crew HP penalty cost (penalty_health_cost: 20.0).

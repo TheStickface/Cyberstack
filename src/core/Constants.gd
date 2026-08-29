@@ -111,7 +111,7 @@ const DISTRICT_SHOP_ODDS: Dictionary = {
 # District Unit Shop Odds (Cost 1-2 CR: Tier 1, Cost 3-4 CR: Tier 2, Cost 5 CR: Tier 3)
 const DISTRICT_UNIT_SHOP_ODDS: Dictionary = {
 	1: { 1: 1.00, 2: 0.00, 3: 0.00 },
-	2: { 1: 0.60, 2: 0.35, 3: 0.05 },
+	2: { 1: 0.50, 2: 0.40, 3: 0.10 },
 	3: { 1: 0.30, 2: 0.45, 3: 0.25 },
 	4: { 1: 0.15, 2: 0.45, 3: 0.40 },
 	5: { 1: 0.05, 2: 0.35, 3: 0.60 }

@@ -18,15 +18,15 @@ triggers_combat = false
 
 [sub_resource type="Resource" id="Resource_bet_2"]
 script = ExtResource("2_choice")
-text = "Enter the pit for an exhibition match [Requires TANK]"
-outcome_description = "Your Tank steps onto the bloodstained metal ring, absorbing crowd applause and champion purse (+12 Credits)."
+text = "Enter the pit for an exhibition match [Requires TANK] [Risk Combat Injury]"
+outcome_description = "Your Tank battles in the bloodstained metal ring, winning the champion purse (+18 Credits) but suffering 20 HP in injuries."
 required_gold = 0
 required_role = 0
 required_faction = 0
 reward_type = 0
-reward_gold = 12
+reward_gold = 18
 penalty_gold = 0
-penalty_health_cost = 0.0
+penalty_health_cost = 20.0
 triggers_combat = false
 
 [resource]
