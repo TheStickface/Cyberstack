@@ -42,16 +42,16 @@ func test_district_slot_unlock_curve() -> void:
 	var repo = DataRepoScript.new()
 	repo.load_all_data("res://data")
 	
-	# District 1: Bottom row (0, 1, 2) unlocked. Top row (3, 4, 5) locked.
+	# District 1: Bottom Left (0) and Bottom Center (1) unlocked (Max crew 2). Slot 2 (Bottom Right) and Top row (3, 4, 5) locked.
 	var crew_d1 = CrewManager.new(1, repo)
 	_assert(crew_d1.is_slot_unlocked(0), "D1: Slot 0 (Bottom Left) should be unlocked")
 	_assert(crew_d1.is_slot_unlocked(1), "D1: Slot 1 (Bottom Center) should be unlocked")
-	_assert(crew_d1.is_slot_unlocked(2), "D1: Slot 2 (Bottom Right) should be unlocked")
+	_assert(not crew_d1.is_slot_unlocked(2), "D1: Slot 2 (Bottom Right) should be locked when crew max is 2")
 	_assert(not crew_d1.is_slot_unlocked(4), "D1: Slot 4 (Top Center) should be locked")
 	_assert(not crew_d1.is_slot_unlocked(3), "D1: Slot 3 (Top Left) should be locked")
 	_assert(not crew_d1.is_slot_unlocked(5), "D1: Slot 5 (Top Right) should be locked")
 	
-	# District 2: Top Center (Slot 4) unlocks first past D1
+	# District 2: Bottom Right (Slot 2) and Top Center (Slot 4) unlock in D2 (Max crew 4)
 	var crew_d2 = CrewManager.new(2, repo)
 	_assert(crew_d2.is_slot_unlocked(0) and crew_d2.is_slot_unlocked(1) and crew_d2.is_slot_unlocked(2), "D2: Bottom row should be unlocked")
 	_assert(crew_d2.is_slot_unlocked(4), "D2: Slot 4 (Top Center) must be unlocked")

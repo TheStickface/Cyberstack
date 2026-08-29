@@ -9,6 +9,9 @@ extends Resource
 @export var tier: Enums.AugmentTier = Enums.AugmentTier.COMMON
 @export var slot_type: Enums.SlotType = Enums.SlotType.PASSIVE
 @export var tags: Array[Enums.AugmentTag] = []
+var primary_tag: Enums.AugmentTag:
+	get:
+		return tags[0] if not tags.is_empty() else Enums.AugmentTag.NONE
 @export var base_cost: int = 3
 @export var icon: Texture2D = null
 

@@ -24,6 +24,7 @@ func run_all_tests() -> Dictionary:
 	
 	test_operative_card_drag_payload()
 	test_operative_card_drop_validation()
+	test_empty_slot_drop_validation()
 	test_grid_and_bench_swapping_mechanics()
 	test_tactical_tether_overlay()
 	test_operative_card_formation_badges()
@@ -101,6 +102,52 @@ func test_operative_card_drop_validation() -> void:
 	_assert(card._can_drop_data(Vector2.ZERO, aug_drag), "Card should accept compatible augment drop")
 	
 	card.free()
+	tests_passed += 1
+
+func test_empty_slot_drop_validation() -> void:
+	var repo = DataRepoScript.new()
+	repo.load_all_data("res://data")
+	
+	# District 1: Max crew 2. Slots 0, 1 unlocked. Slot 2 locked.
+	var crew_mgr = CrewManager.new(1, repo)
+	var u1 = UnitInstance.new(repo.get_unit("runner_blitz"))
+	var u2 = UnitInstance.new(repo.get_unit("corp_sentinel"))
+	var u3 = UnitInstance.new(repo.get_unit("fixer_broker"))
+	
+	crew_mgr.place_unit_on_grid(u1, 0)
+	crew_mgr.place_unit_on_grid(u2, 1)
+	crew_mgr.benched_units.append(u3)
+	
+	var PrepScreenScript = preload("res://src/ui/screens/PrepScreen.gd")
+	var slot0_btn = PrepScreenScript.TacticalEmptySlot.new()
+	slot0_btn.slot_idx = 0
+	slot0_btn.crew_mgr = crew_mgr
+	
+	var slot2_btn = PrepScreenScript.TacticalEmptySlot.new()
+	slot2_btn.slot_idx = 2
+	slot2_btn.crew_mgr = crew_mgr
+	
+	# 1. Dragging benched unit u3 to locked slot 2 should be rejected
+	var benched_drag = {"type": "unit", "unit": u3, "is_fielded": false}
+	_assert(not slot2_btn._can_drop_data(Vector2.ZERO, benched_drag), "Empty slot 2 (locked in D1) must reject drop")
+	
+	# 2. Dragging benched unit u3 when crew cap (2/2) reached should be rejected even on unlocked slots
+	var slot1_btn = PrepScreenScript.TacticalEmptySlot.new()
+	slot1_btn.slot_idx = 1
+	slot1_btn.crew_mgr = crew_mgr
+	_assert(not slot1_btn._can_drop_data(Vector2.ZERO, benched_drag), "Benched unit cannot drop to empty slot when crew max 2 is reached")
+	
+	# 3. Fielded unit moving/repositioning should be allowed on unlocked slots
+	var fielded_drag = {"type": "unit", "unit": u1, "is_fielded": true, "source_slot": 0}
+	var empty_unlocked_btn = PrepScreenScript.TacticalEmptySlot.new()
+	empty_unlocked_btn.slot_idx = 1
+	empty_unlocked_btn.crew_mgr = crew_mgr
+	_assert(empty_unlocked_btn._can_drop_data(Vector2.ZERO, fielded_drag), "Fielded unit can move to unlocked empty slot")
+	
+	slot0_btn.free()
+	slot2_btn.free()
+	slot1_btn.free()
+	empty_unlocked_btn.free()
 	tests_passed += 1
 
 func test_grid_and_bench_swapping_mechanics() -> void:

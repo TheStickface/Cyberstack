@@ -192,6 +192,7 @@ func _build_grid_slot_cell(parent: HBoxContainer, slot_idx: int, formation_repor
 			var btn = TacticalEmptySlot.new()
 			btn.custom_minimum_size = Vector2(150, 112)
 			btn.slot_idx = slot_idx
+			btn.crew_mgr = crew_mgr
 			btn.text = "+ DEPLOY\n[SLOT %d]\n(CLICK/DROP)" % (slot_idx + 1)
 			btn.add_theme_font_size_override("font_size", 8)
 			btn.add_theme_color_override("font_color", Color(0, 0.85, 0.75, 0.7))
@@ -392,6 +393,7 @@ func _get_all_operative_cards(node: Node) -> Array[OperativeCard]:
 
 class TacticalEmptySlot extends Button:
 	var slot_idx: int = 0
+	var crew_mgr: Object = null
 	signal slot_clicked(slot: int)
 	signal unit_dropped(slot: int, data: Dictionary)
 	
@@ -399,8 +401,20 @@ class TacticalEmptySlot extends Button:
 		pressed.connect(func(): slot_clicked.emit(slot_idx))
 		
 	func _can_drop_data(_pos: Vector2, data: Variant) -> bool:
-		if not data is Dictionary: return false
-		return data.get("type") == "unit"
+		if not data is Dictionary:
+			return false
+		if data.get("type") != "unit":
+			return false
+		var incoming_unit = data.get("unit") as UnitInstance
+		if incoming_unit == null:
+			return false
+		if crew_mgr != null:
+			if not crew_mgr.is_slot_unlocked(slot_idx):
+				return false
+			var is_fielded = data.get("is_fielded", false)
+			if not is_fielded and crew_mgr.fielded_units.size() >= crew_mgr.get_max_field_units():
+				return false
+		return true
 		
 	func _drop_data(_pos: Vector2, data: Variant) -> void:
 		if _can_drop_data(_pos, data):
