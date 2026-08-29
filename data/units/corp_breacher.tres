@@ -28,7 +28,7 @@ ability_name = "Seismic Slam"
 ability_description = "stun frontline (2s), -15 Armor"
 ability_effect_id = "breacher_seismic_slam"
 directional_target = 9
-directional_passive_description = "Frontline Breacher: If in Frontline (Row 1), gains +20 Armor and +120 Max Health."
+directional_passive_description = "Frontline Breacher"
 directional_modifiers = {
 0: 120.0,
 4: 20.0

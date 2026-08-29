@@ -28,7 +28,7 @@ ability_name = "Target Lock"
 ability_description = "160% AD dmg (lowest-HP target)"
 ability_effect_id = "operative_target_lock"
 directional_target = 6
-directional_passive_description = "Tactical Uplink: Operatives in the same row gain +12% Attack Speed."
+directional_passive_description = "Tactical Uplink"
 directional_modifiers = {
 3: 0.12
 }

@@ -28,7 +28,7 @@ ability_name = "Particle Lance"
 ability_description = "300% AD dmg (line, all enemies)"
 ability_effect_id = "deadeye_particle_lance"
 directional_target = 10
-directional_passive_description = "Elevated Perch: If in Backline (Row 0), gains +20 Attack Damage and +15% Crit Chance."
+directional_passive_description = "Elevated Perch"
 directional_modifiers = {
 1: 20.0,
 8: 0.15

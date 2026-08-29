@@ -464,21 +464,34 @@ func test_numeric_preservation_across_all_units() -> Dictionary:
 	return {"passed": true, "assertions": n}
 
 # ---------------------------------------------------------------------------
-# Directional formation passives (9 units gained these in the tactical-grid
-# feature, commit 21a9e96). directional_passive_description becomes a short
-# name tag (it also doubles as a combat-log source tag, see
+# Directional formation passives. The tactical-grid feature (commit 21a9e96)
+# gave 15 units a directional_target/directional_modifiers pair — 9 that were
+# added alongside this standardization pass (fixed up directly) plus 6 that
+# were already present on disk and were missed in the first pass of this
+# change (caught in code review — see git history). directional_passive_description
+# becomes a short name tag (it also doubles as a combat-log source tag, see
 # CrewManager._apply_directional_mods) — the numbers live in
 # directional_modifiers and are rendered via get_directional_stat_lines().
 #
-# fixer_broker's directional_modifiers is fixed here: it was authored as
+# fixer_broker's directional_modifiers is fixed here too: it was authored as
 # {4: 10.0, 9: 0.10} ("+10 Armor" correct, but key 9 is SPEED, a flat stat —
 # stored 0.10 would render as "+0"). The passive's own text says "+10%
 # Evasion", i.e. key 10 (EVASION, percent-scaled). Corrected to {4: 10.0,
 # 10: 0.10} as part of this same drift-elimination pass.
+#
+# The count check in test_unit_directional_golden_table_is_complete guards
+# against exactly the kind of gap that let 6 units slip through unnoticed:
+# it fails loudly if a unit has directional_target set but isn't in this table.
 # ---------------------------------------------------------------------------
 
 func _unit_directional_golden() -> Dictionary:
 	return {
+		"ai_bastion": ["Hard-Light Canopy", "ABOVE", ["+160 Shield"]],
+		"ai_cipher": ["Subroutine Overclock", "SAME ROW", ["+20 Ability Power"]],
+		"ai_siphon": ["Energy Leech Relay", "ADJACENT", ["+80 Max Health"]],
+		"corp_breacher": ["Frontline Breacher", "FRONTLINE", ["+120 Max Health", "+20 Armor"]],
+		"corp_deadeye": ["Elevated Perch", "BACKLINE", ["+20 Attack Damage", "+15% Crit Chance"]],
+		"corp_operative": ["Tactical Uplink", "SAME ROW", ["+12% Attack Speed"]],
 		"corp_sentinel": ["Aegis Phalanx", "RIGHT", ["+150 Shield"]],
 		"fixer_bouncer": ["VIP Bodyguard", "RIGHT", ["+180 Shield"]],
 		"fixer_broker": ["Contract Risk Hedge", "ADJACENT", ["+10 Armor", "+10% Evasion"]],
@@ -489,6 +502,25 @@ func _unit_directional_golden() -> Dictionary:
 		"runner_slasher": ["Flank Cutter", "LEFT", ["+16 Attack Damage"]],
 		"street_ghost": ["Backline Ghosting", "BACKLINE", ["+15 Attack Damage", "+15 Speed"]],
 	}
+
+## Fails loudly if any unit on disk has directional_target set but isn't
+## covered by _unit_directional_golden() — this is the check that would have
+## caught the 6-unit gap immediately instead of leaving it for code review.
+func test_unit_directional_golden_table_is_complete() -> Dictionary:
+	var golden = _unit_directional_golden()
+	var actual_directional_ids: Array[String] = []
+	for unit in repo.get_all_units():
+		if unit.has_directional():
+			actual_directional_ids.append(unit.id)
+
+	if actual_directional_ids.size() != golden.size():
+		return {"passed": false, "message": "Expected %d units with directional_target set, found %d: %s" % [golden.size(), actual_directional_ids.size(), actual_directional_ids], "assertions": 1}
+
+	for id in actual_directional_ids:
+		if not golden.has(id):
+			return {"passed": false, "message": "Unit '%s' has directional_target set but is missing from _unit_directional_golden()" % id, "assertions": 1}
+
+	return {"passed": true, "assertions": 1}
 
 func test_unit_directional_golden_table() -> Dictionary:
 	var golden = _unit_directional_golden()

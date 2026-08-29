@@ -28,7 +28,7 @@ ability_name = "Quantum Cascade"
 ability_description = "3x 140 AP dmg (lowest-HP target)"
 ability_effect_id = "cipher_quantum_cascade"
 directional_target = 6
-directional_passive_description = "Subroutine Overclock: Grants +20 Ability Power to all operatives in the same row."
+directional_passive_description = "Subroutine Overclock"
 directional_modifiers = {
 2: 20.0
 }
