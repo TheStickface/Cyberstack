@@ -16,10 +16,15 @@ extends Resource
 ## Dictionary of Enums.StatType (int) -> float
 @export var stat_modifiers: Dictionary = {}
 
+## Directional formation synergy (e.g. grants buffs to adjacent units, same row, or backline)
+@export var directional_target: Enums.GridDirection = Enums.GridDirection.NONE
+@export var directional_modifiers: Dictionary = {}
+
 ## Trigger configuration for Rare and Legendary augments
 @export var trigger_type: Enums.TriggerType = Enums.TriggerType.PASSIVE_STAT
 @export var trigger_effect_id: String = ""
 @export var trigger_params: Dictionary = {}
+
 
 func has_tag(tag: Enums.AugmentTag) -> bool:
 	return tags.has(tag)

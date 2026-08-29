@@ -7,16 +7,21 @@
 script = ExtResource("1_aug")
 icon = ExtResource("2_icon")
 id = "legendary_kinetic_destroyer"
-display_name = "Singularity Rail Destroyer"
-description = "Heavy antimatter magnetic cannon delivering catastrophic impact that bursts to nearby enemies on kill."
+display_name = "Frontline Kinetic Railgun"
+description = "Heavy siege cannon. Frontline (Row 1): +50 Attack Damage and +15% Crit Chance."
 tier = 2
 slot_type = 2
 tags = Array[int]([4])
-base_cost = 7
+base_cost = 6
 stat_modifiers = {
 1: 45.0,
+4: 15.0
+}
+directional_target = 9
+directional_modifiers = {
+1: 50.0,
 8: 0.15
 }
-trigger_type = 4
-trigger_effect_id = "kinetic_destroyer"
+trigger_type = 2
+trigger_effect_id = "kinetic_destroyer_blast"
 trigger_params = {}

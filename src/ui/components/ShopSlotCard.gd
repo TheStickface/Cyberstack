@@ -24,6 +24,10 @@ func _ready() -> void:
 	mouse_entered.connect(_on_mouse_entered)
 	mouse_exited.connect(_on_mouse_exited)
 	_set_mouse_filter_recursive(self)
+	
+	if icon_rect:
+		icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 
 func _set_mouse_filter_recursive(node: Node) -> void:
 	for child in node.get_children():

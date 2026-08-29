@@ -170,15 +170,31 @@ static func stat_to_string(stat: StatType) -> String:
 		StatType.EVASION: return "Evasion"
 		_: return "Stat"
 
-static func trigger_to_string(trigger: TriggerType) -> String:
-	match trigger:
-		TriggerType.PASSIVE_STAT: return "Passive Stat"
-		TriggerType.ON_COMBAT_START: return "On Combat Start"
-		TriggerType.ON_ATTACK: return "On Attack"
-		TriggerType.ON_HIT: return "On Hit"
-		TriggerType.ON_KILL: return "On Kill"
-		TriggerType.ON_ABILITY_CAST: return "On Ability Cast"
-		TriggerType.ON_ALLY_TAG_TRIGGER: return "On Ally Tag Trigger"
-		TriggerType.ON_DAMAGE_TAKEN: return "On Damage Taken"
-		TriggerType.ON_HEALTH_BELOW_THRESHOLD: return "On Health Below Threshold"
+enum GridDirection {
+	NONE,
+	LEFT,
+	RIGHT,
+	ABOVE,
+	BELOW,
+	ADJACENT,
+	SAME_ROW,
+	SAME_COLUMN,
+	ALL_UNITS,
+	FRONTLINE,
+	BACKLINE
+}
+
+static func grid_direction_to_string(dir: GridDirection) -> String:
+	match dir:
+		GridDirection.LEFT: return "Left"
+		GridDirection.RIGHT: return "Right"
+		GridDirection.ABOVE: return "Above"
+		GridDirection.BELOW: return "Below"
+		GridDirection.ADJACENT: return "Adjacent"
+		GridDirection.SAME_ROW: return "Same Row"
+		GridDirection.SAME_COLUMN: return "Same Column"
+		GridDirection.ALL_UNITS: return "All Units"
+		GridDirection.FRONTLINE: return "Frontline"
+		GridDirection.BACKLINE: return "Backline"
 		_: return "None"
+

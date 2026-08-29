@@ -146,3 +146,42 @@ func test_unit_star_combination() -> Dictionary:
 		return {"passed": false, "message": "Unit should be star_level 3, got %d" % tier3_unit.star_level, "assertions": 6}
 		
 	return {"passed": true, "assertions": 6}
+
+func test_sell_and_replace_starting_unit() -> Dictionary:
+	var crew_mgr = CrewManager.new(1, repo)
+	var shop_mgr = ShopManager.new(20)
+	
+	var blitz = UnitInstance.new(repo.get_unit("runner_blitz"))
+	var dash = UnitInstance.new(repo.get_unit("runner_dash"))
+	var ghost = UnitInstance.new(repo.get_unit("street_ghost"))
+	
+	# Field 2 units (District 1 cap = 2), bench 1 unit
+	crew_mgr.add_unit(blitz)
+	crew_mgr.add_unit(dash)
+	crew_mgr.add_unit(ghost)
+	
+	if crew_mgr.fielded_units.size() != 2 or crew_mgr.benched_units.size() != 1:
+		return {"passed": false, "message": "Expected 2 fielded, 1 benched", "assertions": 1}
+		
+	# Sell starting unit blitz
+	var refund = shop_mgr.sell_unit(blitz, crew_mgr)
+	if refund <= 0:
+		return {"passed": false, "message": "Selling blitz should provide credit refund", "assertions": 2}
+	if crew_mgr.fielded_units.size() != 1:
+		return {"passed": false, "message": "Field size should be 1 after selling blitz", "assertions": 3}
+		
+	# Deploy benched ghost into the open slot
+	var deploy_ok = crew_mgr.field_unit(ghost)
+	if not deploy_ok:
+		return {"passed": false, "message": "field_unit(ghost) should successfully deploy ghost from bench", "assertions": 4}
+	if crew_mgr.fielded_units.size() != 2 or not crew_mgr.fielded_units.has(ghost):
+		return {"passed": false, "message": "Ghost should now be in fielded_units", "assertions": 5}
+	if not crew_mgr.benched_units.is_empty():
+		return {"passed": false, "message": "Bench should now be empty", "assertions": 6}
+		
+	# Bench ghost
+	var bench_ok = crew_mgr.bench_unit(ghost)
+	if not bench_ok or crew_mgr.fielded_units.size() != 1 or crew_mgr.benched_units.size() != 1:
+		return {"passed": false, "message": "bench_unit(ghost) should recall ghost to bench", "assertions": 7}
+		
+	return {"passed": true, "assertions": 7}

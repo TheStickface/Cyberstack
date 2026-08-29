@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/boss_ghost_daemon.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "boss_ghost_daemon"
+display_name = "Ghost Daemon"
+title = "The Undernet Darknet Specter"
+bio = "Deep-layer malicious program lurking in unregistered subnets to corrupt hostile firmware."
+role = 1
+faction = 3
+base_cost = 5
+base_max_health = 810.0
+base_attack_damage = 30.0
+base_ability_power = 75.0
+base_attack_speed = 1.05
+base_armor = 18.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 80.0
+base_speed = 62.0
+base_crit_chance = 0.12
+base_evasion = 0.14
+ability_name = "Recursive Null"
+ability_description = "Corrupts operative code, dealing 250 AP damage and preventing mana gain for 3s."
+ability_effect_id = "boss_recursive_null"

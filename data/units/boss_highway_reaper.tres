@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/boss_highway_reaper.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "boss_highway_reaper"
+display_name = "Highway Reaper"
+title = "Skyway Overpass Drone Sniper"
+bio = "High-altitude road pirate picking off corporate transports with hyper-velocity rifles."
+role = 2
+faction = 1
+base_cost = 5
+base_max_health = 820.0
+base_attack_damage = 68.0
+base_ability_power = 30.0
+base_attack_speed = 0.9
+base_armor = 24.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 80.0
+base_speed = 58.0
+base_crit_chance = 0.22
+base_evasion = 0.12
+ability_name = "Nitro Ricochet"
+ability_description = "Fires accelerated sniper round bouncing between 2 targets for 260 damage each."
+ability_effect_id = "boss_nitro_ricochet"

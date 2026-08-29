@@ -27,8 +27,14 @@ func _init() -> void:
 		"res://tests/test_debug_console.gd",
 		"res://tests/test_balance_exporter.gd",
 		"res://tests/test_telemetry_analytics.gd",
-		"res://tests/test_balance_simulator.gd"
+		"res://tests/test_balance_simulator.gd",
+		"res://tests/test_ui_dimensions.gd",
+		"res://tests/test_district_thematics.gd",
+		"res://tests/test_tactical_grid.gd",
+		"res://tests/test_tactical_drag_and_tethers.gd"
 	]
+
+
 	
 	for file_path in test_files:
 		_run_test_file(file_path)

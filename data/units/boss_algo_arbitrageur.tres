@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/boss_algo_arbitrageur.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "boss_algo_arbitrageur"
+display_name = "Algo Arbitrageur"
+title = "Vault Exchange Market Assassin"
+bio = "High-frequency corporate algorithmic trader weaponizing financial disruption and asset liquidation."
+role = 1
+faction = 2
+base_cost = 5
+base_max_health = 840.0
+base_attack_damage = 36.0
+base_ability_power = 65.0
+base_attack_speed = 0.95
+base_armor = 24.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 80.0
+base_speed = 54.0
+base_crit_chance = 0.1
+base_evasion = 0.08
+ability_name = "Hostile Liquidation"
+ability_description = "Liquidates enemy assets, dealing 230 AP damage and reducing enemy attack damage."
+ability_effect_id = "boss_hostile_liquidation"

@@ -27,3 +27,9 @@ base_evasion = 0.10
 ability_name = "Memory Patch"
 ability_description = "Repairs the most damaged ally for 220 health and removes all active debuffs."
 ability_effect_id = "siphon_memory_patch"
+directional_target = 5
+directional_passive_description = "Energy Leech Relay: When casting, heals adjacent allies for +80 HP."
+directional_modifiers = {
+0: 80.0
+}
+

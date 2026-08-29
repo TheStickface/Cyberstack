@@ -6,8 +6,14 @@
 script = ExtResource("1_dist")
 id = "freight_docks"
 display_name = "Freight Docks"
-description = "PLACEHOLDER: A smuggling-heavy cargo port of stacked shipping containers under sodium-orange floodlights and fog. Mechanics TBD."
-theme_color = Color(0.9, 0.55, 0.15, 1)
+description = "Cargo port smuggling zone under sodium-orange floodlights, rewarding steady payout dividends from container contracts."
+theme_color = Color(0.9, 0.6, 0.2, 1)
 is_final_boss = false
 node_sequence = Array[int]([0, 1, 0, 2, 1, 3])
-boss_unit_id = "boss_tbd_freight_docks"
+boss_unit_id = "boss_dock_foreman"
+preferred_tag = 0
+reroll_cost_override = -1
+bonus_crew_slots = 0
+bonus_augment_slots = 0
+scrap_refund_bonus = 0
+payout_bonus = 1

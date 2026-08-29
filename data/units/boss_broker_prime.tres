@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/boss_broker_prime.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "boss_broker_prime"
+display_name = "Broker Prime"
+title = "Contract Row Syndicate Architect"
+bio = "Master of city-wide black market bounties who orchestrates lethal focus-fire assassinations."
+role = 3
+faction = 4
+base_cost = 5
+base_max_health = 880.0
+base_attack_damage = 50.0
+base_ability_power = 45.0
+base_attack_speed = 0.9
+base_armor = 25.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 80.0
+base_speed = 50.0
+base_crit_chance = 0.1
+base_evasion = 0.08
+ability_name = "Bounty Execution"
+ability_description = "Marks the highest-AD enemy, dealing 260 damage and granting allies 100 shield."
+ability_effect_id = "boss_bounty_execution"

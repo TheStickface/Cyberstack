@@ -27,3 +27,9 @@ base_evasion = 0.0
 ability_name = "Bulwark Lockdown"
 ability_description = "Plants heavy energy shield, reducing incoming crew damage by 25% for 5s."
 ability_effect_id = "sentinel_bulwark_lockdown"
+directional_target = 2
+directional_passive_description = "Aegis Phalanx: Grants +150 Shield to the operative directly to the Right."
+directional_modifiers = {
+5: 150.0
+}
+

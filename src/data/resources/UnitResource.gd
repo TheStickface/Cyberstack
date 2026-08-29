@@ -33,6 +33,13 @@ extends Resource
 @export_multiline var ability_description: String = ""
 @export var ability_effect_id: String = ""
 
+# Directional & Positional Formation Passive
+@export_group("Directional Formation Passive")
+@export var directional_target: Enums.GridDirection = Enums.GridDirection.NONE
+@export var directional_passive_description: String = ""
+@export var directional_modifiers: Dictionary = {}
+
+
 func get_slot_types() -> Array[Enums.SlotType]:
 	var schema = Constants.ROLE_SLOT_SCHEMAS.get(role, [])
 	var result: Array[Enums.SlotType] = []

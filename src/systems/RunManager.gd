@@ -63,6 +63,7 @@ func _load_district(dist_idx: int) -> void:
 
 	crew_mgr.current_district = dist_idx
 	shop_mgr.current_district = dist_idx
+	shop_mgr.active_district_res = current_district
 	
 	_generate_district_nodes()
 
@@ -140,7 +141,7 @@ func complete_encounter(victory: bool = true, battle_stats: Dictionary = {}) -> 
 		else:
 			# Advance to Next District
 			_load_district(current_district_index + 1)
-			shop_mgr.generate_shop_offerings(current_district_index, _repo)
+			shop_mgr.generate_shop_offerings(current_district_index, _repo, Constants.DEFAULT_CREW_SHOP_SLOTS, Constants.DEFAULT_AUGMENT_SHOP_SLOTS, false, current_district)
 			return {
 				"status": "district_advanced",
 				"new_district": current_district_index,
@@ -149,7 +150,7 @@ func complete_encounter(victory: bool = true, battle_stats: Dictionary = {}) -> 
 			
 	# Next node in same district -> Auto-refresh shop offerings
 	district_nodes[current_node_index]["current"] = true
-	shop_mgr.generate_shop_offerings(current_district_index, _repo)
+	shop_mgr.generate_shop_offerings(current_district_index, _repo, Constants.DEFAULT_CREW_SHOP_SLOTS, Constants.DEFAULT_AUGMENT_SHOP_SLOTS, false, current_district)
 	return {
 		"status": "node_advanced",
 		"next_node_index": current_node_index,

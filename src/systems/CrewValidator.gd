@@ -55,7 +55,7 @@ static func validate_crew(crew: Array[UnitInstance], district_id: int = 1) -> Di
 		all_errors.append(size_check.error)
 		
 	if crew.is_empty():
-		warnings.append("Crew is empty. Minimum 1 unit required to enter combat.")
+		all_errors.append("Crew cannot be empty. Recruit and deploy at least 1 operative.")
 		
 	# Slot checks for each unit
 	for unit in crew:

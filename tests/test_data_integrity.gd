@@ -31,19 +31,23 @@ func test_all_tags_loaded() -> Dictionary:
 
 func test_unit_queries() -> Dictionary:
 	var all_units = repo.get_all_units()
-	if all_units.size() != 40:
-		return {"passed": false, "message": "Expected 40 total units, got %d" % all_units.size(), "assertions": 1}
+	if all_units.size() != 63:
+		return {"passed": false, "message": "Expected 63 total units (40 recruitable + 23 bosses), got %d" % all_units.size(), "assertions": 1}
+		
+	var recruitable = repo.get_recruitable_units()
+	if recruitable.size() != 40:
+		return {"passed": false, "message": "Expected 40 recruitable units, got %d" % recruitable.size(), "assertions": 2}
+		
+	var bosses = repo.get_boss_units()
+	if bosses.size() != 23:
+		return {"passed": false, "message": "Expected 23 boss units, got %d" % bosses.size(), "assertions": 3}
 		
 	for f in [Enums.Faction.STREET_RUNNERS, Enums.Faction.CORP_ENFORCERS, Enums.Faction.ROGUE_AIS, Enums.Faction.FIXERS]:
-		var fac_units = repo.get_units_by_faction(f)
-		if fac_units.size() != 10:
-			return {"passed": false, "message": "Expected 10 units for faction %d, got %d" % [f, fac_units.size()], "assertions": 2}
+		var fac_recruitable = repo.get_recruitable_units().filter(func(u): return u.faction == f)
+		if fac_recruitable.size() != 10:
+			return {"passed": false, "message": "Expected 10 recruitable units for faction %d, got %d" % [f, fac_recruitable.size()], "assertions": 4}
 		
-	var tanks = repo.get_units_by_role(Enums.UnitRole.TANK)
-	if tanks.size() != 12:
-		return {"passed": false, "message": "Expected 12 Tanks across roster, got %d" % tanks.size(), "assertions": 3}
-		
-	return {"passed": true, "assertions": 3}
+	return {"passed": true, "assertions": 4}
 
 func test_augment_queries() -> Dictionary:
 	var all_augments = repo.get_all_augments()

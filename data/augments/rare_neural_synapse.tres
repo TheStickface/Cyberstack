@@ -7,16 +7,21 @@
 script = ExtResource("1_aug")
 icon = ExtResource("2_icon")
 id = "rare_neural_synapse"
-display_name = "Hyper-Synaptic Relay"
-description = "Accelerates cranial calculations, drastically boosting spellpower and attack speed."
+display_name = "Cross-Grid Neural Relay"
+description = "High-bandwidth data link. Grants +25 Starting Mana and +10 Speed to the operative directly Above / Behind in the column."
 tier = 1
 slot_type = 1
 tags = Array[int]([3])
 base_cost = 4
 stat_modifiers = {
-2: 35.0,
-3: 0.15
+6: 25.0,
+9: 15.0
 }
-trigger_type = 0
-trigger_effect_id = ""
+directional_target = 3
+directional_modifiers = {
+6: 25.0,
+9: 10.0
+}
+trigger_type = 1
+trigger_effect_id = "neural_synapse_burst"
 trigger_params = {}

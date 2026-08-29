@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/boss_foundry_overseer.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "boss_foundry_overseer"
+display_name = "Foundry Overseer"
+title = "Thermal Foundry Heavy Master"
+bio = "Furnace boss clad in heat-sync armor plates capable of withstanding molten slag."
+role = 0
+faction = 1
+base_cost = 5
+base_max_health = 1000.0
+base_attack_damage = 50.0
+base_ability_power = 40.0
+base_attack_speed = 0.8
+base_armor = 35.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 80.0
+base_speed = 35.0
+base_crit_chance = 0.05
+base_evasion = 0.05
+ability_name = "Magma Surge"
+ability_description = "Superheats the floor, dealing 150 damage and generating a 300 HP thermal shield."
+ability_effect_id = "boss_magma_surge"

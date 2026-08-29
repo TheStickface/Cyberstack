@@ -68,6 +68,20 @@ func get_all_units() -> Array[UnitResource]:
 		list.append(u as UnitResource)
 	return list
 
+func get_recruitable_units() -> Array[UnitResource]:
+	var list: Array[UnitResource] = []
+	for u in units.values():
+		if not u.id.begins_with("boss_"):
+			list.append(u as UnitResource)
+	return list
+
+func get_boss_units() -> Array[UnitResource]:
+	var list: Array[UnitResource] = []
+	for u in units.values():
+		if u.id.begins_with("boss_"):
+			list.append(u as UnitResource)
+	return list
+
 func get_units_by_faction(faction: Enums.Faction) -> Array[UnitResource]:
 	var result: Array[UnitResource] = []
 	for u in units.values():

@@ -7,16 +7,20 @@
 script = ExtResource("1_aug")
 icon = ExtResource("2_icon")
 id = "rare_viral_siphon"
-display_name = "Corrosive Viral Siphon"
-description = "Bio-weaponized claws that strip organic armor and accelerate physical attacks."
+display_name = "Adjacent Viral Bio-Link"
+description = "Bio-synthetic nanite conduit. Grants +80 Max Health to adjacent allies (Left, Right, Above)."
 tier = 1
 slot_type = 2
 tags = Array[int]([1])
 base_cost = 4
 stat_modifiers = {
-1: 22.0,
-3: 0.15
+0: 120.0,
+1: 15.0
 }
-trigger_type = 0
-trigger_effect_id = ""
+directional_target = 5
+directional_modifiers = {
+0: 80.0
+}
+trigger_type = 2
+trigger_effect_id = "viral_siphon_leech"
 trigger_params = {}

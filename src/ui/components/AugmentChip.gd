@@ -23,6 +23,11 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_PASS
 	mouse_entered.connect(_on_chip_mouse_entered)
 	mouse_exited.connect(_on_chip_mouse_exited)
+	
+	if icon_rect:
+		icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		
 	for child in get_children():
 		if child is Control:
 			child.mouse_filter = Control.MOUSE_FILTER_PASS

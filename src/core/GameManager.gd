@@ -31,7 +31,7 @@ func change_state(new_state: GameState) -> void:
 func start_new_game(starter_unit_id: String = "runner_blitz", repo_instance: Object = null) -> void:
 	active_run_manager = RunManager.new(repo_instance)
 	active_run_manager.start_new_run(starter_unit_id)
-	active_run_manager.shop_mgr.generate_shop_offerings(1, active_run_manager._repo)
+	active_run_manager.shop_mgr.generate_shop_offerings(1, active_run_manager._repo, Constants.DEFAULT_CREW_SHOP_SLOTS, Constants.DEFAULT_AUGMENT_SHOP_SLOTS, false, active_run_manager.current_district)
 	SaveManager.save_active_run(active_run_manager)
 	change_state(GameState.PREP)
 
@@ -66,16 +66,20 @@ func start_combat_encounter(is_boss: bool = false, repo_instance: Object = null)
 	var crew = active_run_manager.crew_mgr.fielded_units
 	var synergies = active_run_manager.crew_mgr.active_synergy_report
 	var district_id = active_run_manager.current_district_index
+	var district_res = active_run_manager.current_district
 	
 	active_combat_payload = CombatBridge.package_combat_payload(
 		crew,
 		synergies,
 		district_id,
 		is_boss,
-		repo_instance
+		repo_instance,
+		district_res,
+		active_run_manager.crew_mgr.tactical_grid
 	)
 	
 	change_state(GameState.COMBAT)
+
 
 func finish_combat_encounter(victory: bool, battle_stats: Dictionary = {}) -> Dictionary:
 	if active_run_manager == null:

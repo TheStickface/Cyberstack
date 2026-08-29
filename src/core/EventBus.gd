@@ -14,6 +14,9 @@ signal augment_purchased(augment: Resource)
 signal augment_sold(augment: Resource)
 signal augment_drag_started(augment_res: Resource)
 signal augment_drag_ended()
+signal unit_drag_started(unit: RefCounted, source_slot: int, is_fielded: bool)
+signal unit_drag_ended()
+
 
 # Economy Signals
 signal gold_changed(new_amount: int, delta: int)

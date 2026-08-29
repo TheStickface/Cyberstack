@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/boss_mindbreaker.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "boss_mindbreaker"
+display_name = "Mindbreaker"
+title = "Neural Exchange Psionic Leech"
+bio = "Illegal neural hacker specialized in frying wetware synaptic networks."
+role = 1
+faction = 3
+base_cost = 5
+base_max_health = 820.0
+base_attack_damage = 30.0
+base_ability_power = 65.0
+base_attack_speed = 0.95
+base_armor = 20.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 80.0
+base_speed = 55.0
+base_crit_chance = 0.1
+base_evasion = 0.1
+ability_name = "Synaptic Overload"
+ability_description = "Shocks the enemy mind, dealing 240 AP damage and silencing ability charge for 3s."
+ability_effect_id = "boss_synaptic_overload"

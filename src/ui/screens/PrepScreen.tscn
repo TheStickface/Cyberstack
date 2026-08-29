@@ -86,19 +86,22 @@ theme_override_constants/separation = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0.95, 0.83, 1)
 theme_override_font_sizes/font_size = 10
-text = "FIELDED OPERATIVES (Click slots to equip selected augment):"
+text = "TACTICAL FORMATION MATRIX (Click or Drag to place operatives):"
 
 [node name="FieldScroll" type="ScrollContainer" parent="Margin/VBox/MainBody/BoardArea/FieldSection"]
-custom_minimum_size = Vector2(0, 160)
+custom_minimum_size = Vector2(0, 230)
 layout_mode = 2
+size_flags_vertical = 3
 mouse_filter = 1
-vertical_scroll_mode = 0
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 1
 
-[node name="FieldContainer" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/FieldSection/FieldScroll"]
+[node name="FieldContainer" type="VBoxContainer" parent="Margin/VBox/MainBody/BoardArea/FieldSection/FieldScroll"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/separation = 8
+theme_override_constants/separation = 6
+
 
 [node name="BenchSection" type="VBoxContainer" parent="Margin/VBox/MainBody/BoardArea"]
 layout_mode = 2

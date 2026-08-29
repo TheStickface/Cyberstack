@@ -6,6 +6,9 @@ extends Control
 class CombatantState:
 	var unit: UnitInstance
 	var is_player: bool = true
+	var grid_slot: int = 0
+	var grid_row: int = 0
+	var grid_col: int = 0
 	var max_hp: float = 500.0
 	var current_hp: float = 500.0
 	var shield: float = 0.0
@@ -14,6 +17,7 @@ class CombatantState:
 	var attack_damage: float = 40.0
 	var ability_power: float = 20.0
 	var attack_speed: float = 1.0 # Attacks per second
+	var crit_chance: float = 0.05
 	var attack_timer: float = 0.0
 	var alive: bool = true
 	
@@ -22,6 +26,7 @@ class CombatantState:
 	var hp_label: Label = null
 	var mana_bar: ProgressBar = null
 	var status_label: Label = null
+	var formation_label: Label = null
 
 @onready var district_label: Label = $Margin/VBox/TopBar/DistrictLabel
 @onready var combat_type_label: Label = $Margin/VBox/TopBar/CombatTypeLabel
@@ -60,15 +65,21 @@ func _ready() -> void:
 		
 	_setup_arena()
 
+const TacticalTetherOverlayScript = preload("res://src/ui/components/TacticalTetherOverlay.gd")
+
+var player_tether_overlay: Control = null
+var enemy_tether_overlay: Control = null
+
 func _setup_arena() -> void:
 	if combat_payload.is_empty():
 		return
 		
 	var dist_id = combat_payload.get("district_id", 1)
 	var is_boss = combat_payload.get("is_boss", false)
+	var dist_name = combat_payload.get("district_name", "DISTRICT %d" % dist_id)
 	
 	if district_label:
-		district_label.text = "DISTRICT %d COMBAT ARENA" % dist_id
+		district_label.text = "%s TACTICAL ARENA" % dist_name.to_upper()
 	if combat_type_label:
 		combat_type_label.text = "★ DISTRICT BOSS CLASH" if is_boss else "⚔ SECURITY PATROL ENCOUNTER"
 		combat_type_label.add_theme_color_override("font_color", Color(1, 0.1, 0.2) if is_boss else Color(1, 0.3, 0.5))
@@ -77,14 +88,74 @@ func _setup_arena() -> void:
 	var max_cap = Constants.DISTRICT_CREW_LIMITS.get(dist_id, 2)
 	var player_header: Label = get_node_or_null("Margin/VBox/Arena/PlayerSide/PlayerHeader")
 	if player_header:
-		player_header.text = "PLAYER SQUAD (%d / %d FIELDED IN COMBAT):" % [crew_size, max_cap]
+		player_header.text = "PLAYER FORMATION (%d / %d CREW DEPLOYED):" % [crew_size, max_cap]
 		
 	_initialize_squads()
+	_apply_start_of_combat_formations(player_states, true)
+	_apply_start_of_combat_formations(enemy_states, false)
+	
+	# Create holographic tether overlays for battle cards
+	if player_container and (player_tether_overlay == null or not is_instance_valid(player_tether_overlay)):
+		player_tether_overlay = TacticalTetherOverlayScript.new()
+		player_tether_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		player_container.get_parent().add_child(player_tether_overlay)
+		
+	if enemy_container and (enemy_tether_overlay == null or not is_instance_valid(enemy_tether_overlay)):
+		enemy_tether_overlay = TacticalTetherOverlayScript.new()
+		enemy_tether_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		enemy_container.get_parent().add_child(enemy_tether_overlay)
+		
+	call_deferred("_update_combat_tethers")
+	
 	battle_time = 0.0
 	battle_active = true
 	battle_resolved = false
 	
-	_log("[color=#00f5d4][SYSTEM][/color] Combat loop initiated. Both squads armed and deployed.")
+	_log("[color=#00f5d4][SYSTEM][/color] Tactical deployment initialized. Formation auras active.")
+
+func _update_combat_tethers() -> void:
+	if player_tether_overlay:
+		_draw_squad_tethers(player_states, player_tether_overlay)
+	if enemy_tether_overlay:
+		_draw_squad_tethers(enemy_states, enemy_tether_overlay)
+
+func _draw_squad_tethers(squad: Array[CombatantState], overlay: Control) -> void:
+	overlay.clear_tethers()
+	var state_pos: Dictionary = {}
+	for st in squad:
+		if st.box_panel and st.alive:
+			state_pos[st] = overlay.to_local(st.box_panel.global_position + st.box_panel.size * 0.5)
+			
+	for st in squad:
+		if not st.alive or not state_pos.has(st) or not st.unit or not st.unit.unit_resource:
+			continue
+		var p1 = state_pos[st]
+		var role = st.unit.unit_resource.role
+		var row = st.grid_row
+		var col = st.grid_col
+		
+		# 1. Tank Lateral Guards
+		if role == Enums.UnitRole.TANK:
+			for other in squad:
+				if other != st and other.alive and other.grid_row == row and abs(other.grid_col - col) == 1:
+					if state_pos.has(other):
+						overlay.add_tether(p1, state_pos[other], TacticalTetherOverlayScript.COLOR_TANK_GUARD, "Guard")
+						
+		# 2. Hacker Row Uplinks
+		if role == Enums.UnitRole.HACKER:
+			for other in squad:
+				if other != st and other.alive and other.grid_row == row:
+					if state_pos.has(other):
+						overlay.add_tether(p1, state_pos[other], TacticalTetherOverlayScript.COLOR_HACKER_UPLINK, "Uplink")
+						
+		# 3. Fixer Adjacent Bio-Links
+		if role == Enums.UnitRole.FIXER:
+			for other in squad:
+				if other != st and other.alive and ((other.grid_row == row and abs(other.grid_col - col) == 1) or (other.grid_col == col and abs(other.grid_row - row) == 1)):
+					if state_pos.has(other):
+						overlay.add_tether(p1, state_pos[other], TacticalTetherOverlayScript.COLOR_FIXER_LINK, "Bio-Link")
+
+
 
 func _initialize_squads() -> void:
 	player_states.clear()
@@ -97,24 +168,41 @@ func _initialize_squads() -> void:
 		for c in enemy_container.get_children():
 			c.queue_free()
 			
-	var player_crew: Array = combat_payload.get("player_crew", [])
-	for unit in player_crew:
-		var state = _create_combatant(unit as UnitInstance, true)
-		player_states.append(state)
-		if player_container:
-			player_container.add_child(state.box_panel)
-			
-	var enemy_squad: Array = combat_payload.get("enemy_squad", [])
-	for unit in enemy_squad:
-		var state = _create_combatant(unit as UnitInstance, false)
-		enemy_states.append(state)
-		if enemy_container:
-			enemy_container.add_child(state.box_panel)
+	# Initialize Player 2x3 Grid
+	var player_grid: Array = combat_payload.get("player_grid", [])
+	if player_grid.is_empty():
+		player_grid = combat_payload.get("player_crew", [])
+		
+	for i in range(player_grid.size()):
+		var unit = player_grid[i] as UnitInstance
+		if unit != null:
+			var slot_idx = unit.grid_slot if unit.grid_slot >= 0 else i
+			var state = _create_combatant(unit, true, slot_idx)
+			player_states.append(state)
+			if player_container:
+				player_container.add_child(state.box_panel)
+				
+	# Initialize Enemy 2x3 Grid
+	var enemy_grid: Array = combat_payload.get("enemy_grid", [])
+	if enemy_grid.is_empty():
+		enemy_grid = combat_payload.get("enemy_squad", [])
+		
+	for i in range(enemy_grid.size()):
+		var unit = enemy_grid[i] as UnitInstance
+		if unit != null:
+			var slot_idx = unit.grid_slot if unit.grid_slot >= 0 else i
+			var state = _create_combatant(unit, false, slot_idx)
+			enemy_states.append(state)
+			if enemy_container:
+				enemy_container.add_child(state.box_panel)
 
-func _create_combatant(unit: UnitInstance, is_player: bool) -> CombatantState:
+func _create_combatant(unit: UnitInstance, is_player: bool, slot_idx: int = 0) -> CombatantState:
 	var state = CombatantState.new()
 	state.unit = unit
 	state.is_player = is_player
+	state.grid_slot = slot_idx
+	state.grid_row = slot_idx / 3
+	state.grid_col = slot_idx % 3
 	
 	if unit:
 		state.max_hp = unit.calculate_effective_stat(Enums.StatType.MAX_HEALTH)
@@ -123,12 +211,15 @@ func _create_combatant(unit: UnitInstance, is_player: bool) -> CombatantState:
 		state.ability_power = unit.calculate_effective_stat(Enums.StatType.ABILITY_POWER)
 		var spd = unit.calculate_effective_stat(Enums.StatType.SPEED)
 		state.attack_speed = clampf(spd / 50.0, 0.6, 2.5)
+		state.crit_chance = unit.calculate_effective_stat(Enums.StatType.CRIT_CHANCE)
 	else:
 		state.max_hp = 450.0
 		state.current_hp = 450.0
 		state.attack_damage = 35.0
 		state.ability_power = 20.0
 		state.attack_speed = 1.0
+		state.crit_chance = 0.05
+
 		
 	# Scale enemy combatants by district progression and boss tier
 	if not is_player:
@@ -270,12 +361,104 @@ func _tick_squad(attackers: Array[CombatantState], defenders: Array[CombatantSta
 			att.attack_timer -= req_time
 			_perform_auto_attack(att, defenders)
 
+func _apply_start_of_combat_formations(squad: Array[CombatantState], is_player: bool) -> void:
+	for state in squad:
+		if not state.unit or not state.unit.unit_resource:
+			continue
+		var u_name = state.unit.unit_resource.display_name
+		var role = state.unit.unit_resource.role
+		var row = state.grid_row
+		var col = state.grid_col
+		
+		# 1. Tank Adjacent Shielding (Kinetic Guard)
+		for other in squad:
+			if other != state and other.unit and other.unit.unit_resource:
+				if other.unit.unit_resource.role == Enums.UnitRole.TANK and other.grid_row == row and abs(other.grid_col - col) == 1:
+					state.shield += 120.0
+					_spawn_floating_combat_text(state, "🛡️ GUARD +120", Color(0.2, 0.85, 1.0), false)
+					_log("   🛡️ [b]%s[/b] receives +120 kinetic shield from adjacent Tank %s!" % [u_name, other.unit.unit_resource.display_name])
+					
+		# 2. Hacker Row Uplink (+15 Mana & +15% Speed)
+		for other in squad:
+			if other != state and other.unit and other.unit.unit_resource:
+				if other.unit.unit_resource.role == Enums.UnitRole.HACKER and other.grid_row == row:
+					state.current_mana = minf(state.current_mana + 15.0, 100.0)
+					state.attack_speed *= 1.15
+					_spawn_floating_combat_text(state, "⚡ UPLINK +15M", Color(0.0, 1.0, 0.85), false)
+					_log("   ⚡ [b]%s[/b] boosted by Hacker Row Uplink (+15 Mana, +15%% Haste)!" % u_name)
+					
+		# 3. Sniper Backline Spotter (+25% Crit in Row 0)
+		if row == 0 and role == Enums.UnitRole.SNIPER:
+			state.crit_chance += 0.25
+			_spawn_floating_combat_text(state, "🎯 OVERWATCH +25%", Color(1.0, 0.85, 0.1), false)
+			_log("   🎯 [b]%s[/b] secures elevated Backline Overwatch (+25%% Crit Chance)!" % u_name)
+			
+		# 4. Operative-Specific Directional Formation Passives
+		var u_res = state.unit.unit_resource
+		if u_res and u_res.directional_target != Enums.GridDirection.NONE:
+			_apply_combat_directional_mods(state, squad, u_res.directional_target, u_res.directional_modifiers, u_res.directional_passive_description)
+			
+		# 5. Equipped Augment Directional Formation Modifiers
+		for aug in state.unit.equipped_augments:
+			if aug and aug.directional_target != Enums.GridDirection.NONE:
+				_apply_combat_directional_mods(state, squad, aug.directional_target, aug.directional_modifiers, "%s Synergy" % aug.display_name)
+
+func _apply_combat_directional_mods(source: CombatantState, squad: Array[CombatantState], dir: Enums.GridDirection, mods: Dictionary, desc: String) -> void:
+	var s_row = source.grid_row
+	var s_col = source.grid_col
+	
+	if dir == Enums.GridDirection.FRONTLINE:
+		if s_row == 1:
+			_apply_mods_to_combat_state(source, mods, desc)
+		return
+	elif dir == Enums.GridDirection.BACKLINE:
+		if s_row == 0:
+			_apply_mods_to_combat_state(source, mods, desc)
+		return
+		
+	for other in squad:
+		if not other.alive: continue
+		var o_row = other.grid_row
+		var o_col = other.grid_col
+		var matches = false
+		match dir:
+			Enums.GridDirection.LEFT: matches = (o_row == s_row and o_col == s_col - 1)
+			Enums.GridDirection.RIGHT: matches = (o_row == s_row and o_col == s_col + 1)
+			Enums.GridDirection.ABOVE: matches = (o_row == s_row - 1 and o_col == s_col)
+			Enums.GridDirection.BELOW: matches = (o_row == s_row + 1 and o_col == s_col)
+			Enums.GridDirection.ADJACENT: matches = ((o_row == s_row and abs(o_col - s_col) == 1) or (o_col == s_col and abs(o_row - s_row) == 1))
+			Enums.GridDirection.SAME_ROW: matches = (o_row == s_row and other != source)
+			Enums.GridDirection.SAME_COLUMN: matches = (o_col == s_col and other != source)
+			Enums.GridDirection.ALL_UNITS: matches = (other != source)
+			
+		if matches:
+			_apply_mods_to_combat_state(other, mods, desc)
+
+func _apply_mods_to_combat_state(target: CombatantState, mods: Dictionary, desc: String) -> void:
+	for k in mods:
+		var v = mods[k]
+		match int(k):
+			Enums.StatType.MAX_HEALTH:
+				target.max_hp += v
+				target.current_hp += v
+			Enums.StatType.ATTACK_DAMAGE: target.attack_damage += v
+			Enums.StatType.ABILITY_POWER: target.ability_power += v
+			Enums.StatType.ATTACK_SPEED: target.attack_speed += v
+			Enums.StatType.ARMOR: target.armor += v
+			Enums.StatType.SHIELD: target.shield += v
+			Enums.StatType.STARTING_MANA: target.current_mana = minf(target.current_mana + v, 100.0)
+			Enums.StatType.CRIT_CHANCE: target.crit_chance += v
+			Enums.StatType.EVASION: target.evasion += v
+	if not desc.is_empty():
+		_log("   ✨ [b]%s[/b] receives formation effect: %s" % [target.unit.unit_resource.display_name, desc])
+
+
 func _perform_auto_attack(att: CombatantState, defenders: Array[CombatantState]) -> void:
-	var target = _find_target(defenders)
+	var target = _find_tactical_target(att, defenders)
 	if target == null:
 		return
 		
-	var crit_chance = att.unit.calculate_effective_stat(Enums.StatType.CRIT_CHANCE) if att.unit else 0.05
+	var crit_chance = att.crit_chance
 	var is_crit = randf() < crit_chance
 	var mult = 1.5 if is_crit else 1.0
 	var dmg = att.attack_damage * randf_range(0.9, 1.1) * mult
@@ -291,6 +474,7 @@ func _cast_ability(caster: CombatantState, defenders: Array[CombatantState]) -> 
 	caster.current_mana = 0.0
 	var u_name = caster.unit.unit_resource.display_name if caster.unit else "Operative"
 	var ab_name = caster.unit.unit_resource.ability_name if caster.unit else "Overclock Strike"
+	var u_id = caster.unit.unit_resource.id if caster.unit else ""
 	
 	_log("[b][color=%s]⚡ %s triggers %s![/color][/b]" % [
 		"#00f5d4" if caster.is_player else "#ff3366",
@@ -298,20 +482,54 @@ func _cast_ability(caster: CombatantState, defenders: Array[CombatantState]) -> 
 		ab_name
 	])
 	
-	AudioManager.play_ability_cast()
+	_play_sfx("play_ability_cast")
 	_flash_card(caster.box_panel, Color(2.0, 1.8, 0.5), 0.35)
 	_spawn_floating_combat_text(caster, "⚡ " + ab_name + "!", Color(0, 1, 0.9) if caster.is_player else Color(1, 0.2, 0.6), true)
 	
-	# Ability mechanics by role
+	# Check if unit is a specialized boss with bespoke mechanics
+	if u_id.begins_with("boss_"):
+		if u_id == "boss_nemesis_synthetic" or u_id == "boss_machine_prophet":
+			var aoe_dmg = 140.0 + (caster.ability_power * 1.6)
+			for d in defenders:
+				if d.alive:
+					_apply_damage(d, aoe_dmg, caster, true, false)
+			_log("   💥 %s unleashes a catastrophic team-wide burst!" % u_name)
+			return
+		elif u_id == "boss_ai_prime_overmind" or u_id == "boss_transit_warden" or u_id == "boss_highway_reaper":
+			var count = 0
+			for d in defenders:
+				if d.alive and count < 2:
+					var multi_dmg = 120.0 + (caster.ability_power * 1.8)
+					_apply_damage(d, multi_dmg, caster, true, false)
+					d.current_mana = maxf(d.current_mana - 25.0, 0.0)
+					count += 1
+			_log("   ⚡ %s discharges multi-target overload!" % u_name)
+			return
+		elif u_id == "boss_corp_commander" or u_id == "boss_railmaster" or u_id == "boss_director_panopticon":
+			var weakest = _find_weakest_target(defenders)
+			if weakest:
+				var pierce_dmg = (caster.attack_damage * 2.5) + (caster.ability_power * 1.5)
+				_apply_damage(weakest, pierce_dmg, caster, true, true)
+				_log("   🎯 %s locks on for a high-caliber execution strike!" % u_name)
+			return
+			
+	# Standard ability mechanics by role
 	var role = caster.unit.unit_resource.role if caster.unit else Enums.UnitRole.TANK
+	var allies = player_states if caster.is_player else enemy_states
+	
 	match role:
 		Enums.UnitRole.TANK:
 			var added_shield = 180.0 + (caster.ability_power * 1.5)
 			caster.shield += added_shield
 			_spawn_floating_combat_text(caster, "🛡 +%.0f SHIELD" % added_shield, Color(0.2, 0.75, 1.0))
 			_log("   🛡 %s generates a %.0f kinetic barrier!" % [u_name, caster.shield])
+			# Tank pulses shield to adjacent allies on cast
+			for ally in allies:
+				if ally != caster and ally.alive and abs(ally.grid_row - caster.grid_row) + abs(ally.grid_col - caster.grid_col) == 1:
+					ally.shield += 80.0
+					_spawn_floating_combat_text(ally, "🛡 +80 SHIELD", Color(0.2, 0.75, 1.0), false)
 		Enums.UnitRole.HACKER:
-			var target = _find_target(defenders)
+			var target = _find_tactical_target(caster, defenders)
 			if target:
 				var ap_dmg = 120.0 + (caster.ability_power * 2.2)
 				_apply_damage(target, ap_dmg, caster, true, false)
@@ -325,10 +543,63 @@ func _cast_ability(caster: CombatantState, defenders: Array[CombatantState]) -> 
 			caster.current_hp = minf(caster.current_hp + 150.0 + caster.ability_power, caster.max_hp)
 			_spawn_floating_combat_text(caster, "💉 +%.0f HP" % healed, Color(0.2, 1.0, 0.5))
 			_log("   💉 %s repairs systems, recovering health!" % u_name)
+			# Fixer heals adjacent allies on cast (Bio-Link Relay)
+			for ally in allies:
+				if ally != caster and ally.alive and abs(ally.grid_row - caster.grid_row) + abs(ally.grid_col - caster.grid_col) == 1:
+					var a_healed = minf(100.0 + (caster.ability_power * 0.5), ally.max_hp - ally.current_hp)
+					ally.current_hp = minf(ally.current_hp + a_healed, ally.max_hp)
+					_spawn_floating_combat_text(ally, "💉 +%.0f HP" % a_healed, Color(0.2, 1.0, 0.5), false)
 		_:
-			var target = _find_target(defenders)
+			var target = _find_tactical_target(caster, defenders)
 			if target:
 				_apply_damage(target, caster.attack_damage * 1.5, caster, true, false)
+
+func _find_tactical_target(attacker: CombatantState, defenders: Array[CombatantState]) -> CombatantState:
+	# 1. Look for Frontline (Row 0) defenders first
+	var front_alive: Array[CombatantState] = []
+	var back_alive: Array[CombatantState] = []
+	
+	for d in defenders:
+		if d.alive:
+			if d.grid_row == 0:
+				front_alive.append(d)
+			else:
+				back_alive.append(d)
+				
+	if not front_alive.is_empty():
+		# Try to target matching or closest column in Frontline
+		var best_target: CombatantState = null
+		var min_dist = 999
+		for d in front_alive:
+			var dist = abs(d.grid_col - attacker.grid_col)
+			if dist < min_dist:
+				min_dist = dist
+				best_target = d
+		return best_target
+		
+	# 2. If Frontline is breached, target Backline (Row 1)
+	if not back_alive.is_empty():
+		var best_target: CombatantState = null
+		var min_dist = 999
+		for d in back_alive:
+			var dist = abs(d.grid_col - attacker.grid_col)
+			if dist < min_dist:
+				min_dist = dist
+				best_target = d
+		return best_target
+		
+	# Fallback
+	for d in defenders:
+		if d.alive:
+			return d
+	return null
+
+func _find_target(defenders: Array[CombatantState]) -> CombatantState:
+	for d in defenders:
+		if d.alive:
+			return d
+	return null
+
 
 func _apply_damage(target: CombatantState, raw_dmg: float, attacker: CombatantState, is_ability: bool = false, is_crit: bool = false) -> void:
 	var remaining_dmg = raw_dmg
@@ -346,14 +617,14 @@ func _apply_damage(target: CombatantState, raw_dmg: float, attacker: CombatantSt
 	
 	# Spawn Floating Numbers & Visual Flash
 	if is_crit:
-		AudioManager.play_combat_crit()
+		_play_sfx("play_combat_crit")
 		_spawn_floating_combat_text(target, "⚡ CRIT -%.0f!" % raw_dmg, Color(1.0, 0.88, 0.2), true)
 		_flash_card(target.box_panel, Color(2.0, 0.8, 0.2), 0.2)
 	elif is_ability:
 		_spawn_floating_combat_text(target, "💥 -%.0f AP" % raw_dmg, Color(1.0, 0.2, 0.7), true)
 		_flash_card(target.box_panel, Color(1.8, 0.2, 0.8), 0.2)
 	else:
-		AudioManager.play_combat_hit()
+		_play_sfx("play_combat_hit")
 		var dmg_col = Color(0.9, 0.95, 1.0) if attacker.is_player else Color(1.0, 0.45, 0.45)
 		_spawn_floating_combat_text(target, "-%.0f" % raw_dmg, dmg_col, false)
 		_flash_card(target.box_panel, Color(1.3, 0.4, 0.4), 0.15)
@@ -510,3 +781,9 @@ func _on_finish_btn_pressed() -> void:
 				"damage_taken": total_enemy_damage
 			}
 		)
+
+func _play_sfx(method_name: String) -> void:
+	if get_node_or_null("/root/AudioManager"):
+		var am = get_node("/root/AudioManager")
+		if am.has_method(method_name):
+			am.call(method_name)

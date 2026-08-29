@@ -27,3 +27,9 @@ base_evasion = 0.04
 ability_name = "Heavy Haymaker"
 ability_description = "Lands a brutal kinetic punch that knocks back the target, stunning them for 2s and dealing 220% AD damage."
 ability_effect_id = "bouncer_heavy_haymaker"
+directional_target = 2
+directional_passive_description = "VIP Bodyguard: Grants +180 Shield to the operative directly to the Right."
+directional_modifiers = {
+5: 180.0
+}
+

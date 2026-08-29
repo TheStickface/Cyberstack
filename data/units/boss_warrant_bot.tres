@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/boss_warrant_bot.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "boss_warrant_bot"
+display_name = "Warrant Bot"
+title = "Precinct Ruins Riot Enforcer"
+bio = "Repurposed law enforcement automaton built for riot suppression and heavy defensive lockdown."
+role = 0
+faction = 2
+base_cost = 5
+base_max_health = 1050.0
+base_attack_damage = 45.0
+base_ability_power = 30.0
+base_attack_speed = 0.8
+base_armor = 40.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 80.0
+base_speed = 35.0
+base_crit_chance = 0.05
+base_evasion = 0.05
+ability_name = "Riot Suppression"
+ability_description = "Deploys heavy riot barrier gaining 320 shield and reflecting 40 damage."
+ability_effect_id = "boss_riot_suppression"

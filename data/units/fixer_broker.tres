@@ -27,3 +27,10 @@ base_evasion = 0.05
 ability_name = "Black Market Surplus"
 ability_description = "Supplies the lowest health ally with 250 shield and hypercharges highest DPS ally with +40% attack speed."
 ability_effect_id = "fixer_black_market_surplus"
+directional_target = 5
+directional_passive_description = "Contract Risk Hedge: Grants +10% Evasion and +10 Armor to all adjacent allies."
+directional_modifiers = {
+4: 10.0,
+9: 0.10
+}
+

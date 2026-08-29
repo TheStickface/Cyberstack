@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/boss_machine_prophet.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "boss_machine_prophet"
+display_name = "Machine Prophet"
+title = "Megachurch Digital Hierophant"
+bio = "Fanatical preacher of synthetic transcendence who shields cult constructs with holy static."
+role = 1
+faction = 3
+base_cost = 5
+base_max_health = 870.0
+base_attack_damage = 32.0
+base_ability_power = 68.0
+base_attack_speed = 0.92
+base_armor = 22.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 80.0
+base_speed = 52.0
+base_crit_chance = 0.08
+base_evasion = 0.1
+ability_name = "Digital Rapture"
+ability_description = "Channels digital psalm granting 200 shield to all allies and dealing 180 AP damage."
+ability_effect_id = "boss_digital_rapture"

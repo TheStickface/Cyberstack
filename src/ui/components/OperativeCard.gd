@@ -11,6 +11,7 @@ signal unit_sell_requested(unit: UnitInstance)
 signal card_mouse_entered(unit: UnitInstance, card_pos: Vector2)
 signal card_mouse_exited()
 signal augment_dropped(unit: UnitInstance, target_slot: int, drag_data: Dictionary)
+signal unit_dropped_on_card(target_unit: UnitInstance, drag_data: Dictionary)
 
 const SynergyTooltipScript = preload("res://src/ui/components/SynergyTooltip.gd")
 
@@ -33,7 +34,12 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_PASS
 	mouse_entered.connect(_on_card_mouse_entered)
 	mouse_exited.connect(_on_card_mouse_exited)
+	gui_input.connect(_on_card_gui_input)
 	_set_mouse_filter_recursive(self)
+	
+	if portrait_icon:
+		portrait_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		portrait_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	
 	if get_theme_stylebox("panel") is StyleBoxFlat:
 		default_style = (get_theme_stylebox("panel") as StyleBoxFlat).duplicate()
@@ -42,6 +48,8 @@ func _ready() -> void:
 		var eb = get_node("/root/EventBus")
 		eb.augment_drag_started.connect(_on_augment_drag_started)
 		eb.augment_drag_ended.connect(_on_augment_drag_ended)
+		eb.unit_drag_started.connect(_on_unit_drag_started)
+		eb.unit_drag_ended.connect(_on_unit_drag_ended)
 
 func _exit_tree() -> void:
 	if get_node_or_null("/root/EventBus"):
@@ -50,6 +58,97 @@ func _exit_tree() -> void:
 			eb.augment_drag_started.disconnect(_on_augment_drag_started)
 		if eb.augment_drag_ended.is_connected(_on_augment_drag_ended):
 			eb.augment_drag_ended.disconnect(_on_augment_drag_ended)
+		if eb.unit_drag_started.is_connected(_on_unit_drag_started):
+			eb.unit_drag_started.disconnect(_on_unit_drag_started)
+		if eb.unit_drag_ended.is_connected(_on_unit_drag_ended):
+			eb.unit_drag_ended.disconnect(_on_unit_drag_ended)
+
+func _on_card_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_RIGHT:
+			# Quick toggle on right click
+			unit_toggle_field_requested.emit(unit_instance)
+		elif event.button_index == MOUSE_BUTTON_LEFT:
+			card_clicked.emit(unit_instance)
+
+func _get_drag_data(_pos: Vector2) -> Variant:
+	if unit_instance == null or unit_instance.unit_resource == null:
+		return null
+		
+	if is_inside_tree() and get_node_or_null("/root/EventBus"):
+		get_node("/root/EventBus").unit_drag_started.emit(unit_instance, unit_instance.grid_slot, is_fielded)
+
+		
+	var preview = PanelContainer.new()
+	preview.custom_minimum_size = Vector2(150, 50)
+	var pstyle = StyleBoxFlat.new()
+	pstyle.bg_color = Color(0.08, 0.05, 0.16, 0.95)
+	pstyle.border_width_left = 2
+	pstyle.border_width_top = 2
+	pstyle.border_width_right = 2
+	pstyle.border_width_bottom = 2
+	pstyle.border_color = Color(0.0, 0.95, 0.83, 1.0)
+	pstyle.corner_radius_top_left = 6
+	pstyle.corner_radius_top_right = 6
+	pstyle.corner_radius_bottom_right = 6
+	pstyle.corner_radius_bottom_left = 6
+	pstyle.shadow_color = Color(0, 0.95, 0.83, 0.4)
+	pstyle.shadow_size = 6
+	preview.add_theme_stylebox_override("panel", pstyle)
+	
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 8)
+	margin.add_theme_constant_override("margin_right", 8)
+	margin.add_theme_constant_override("margin_top", 4)
+	margin.add_theme_constant_override("margin_bottom", 4)
+	preview.add_child(margin)
+	
+	var vbox = VBoxContainer.new()
+	margin.add_child(vbox)
+	
+	var name_lbl = Label.new()
+	name_lbl.text = "%s %s" % ["★".repeat(unit_instance.star_level), unit_instance.unit_resource.display_name]
+	name_lbl.add_theme_font_size_override("font_size", 10)
+	name_lbl.add_theme_color_override("font_color", Color(0.0, 0.95, 0.83))
+	vbox.add_child(name_lbl)
+	
+	var role_lbl = Label.new()
+	role_lbl.text = "[%s] %s" % [unit_instance.unit_resource.get_role_name().to_upper(), unit_instance.unit_resource.get_faction_name().to_upper()]
+	role_lbl.add_theme_font_size_override("font_size", 8)
+	role_lbl.add_theme_color_override("font_color", Color(0.7, 0.7, 0.85))
+	vbox.add_child(role_lbl)
+	
+	if is_inside_tree():
+		set_drag_preview(preview)
+	else:
+		preview.free()
+
+	
+	return {
+		"type": "unit",
+		"unit": unit_instance,
+		"source_slot": unit_instance.grid_slot,
+		"is_fielded": is_fielded
+	}
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_DRAG_END:
+		if get_node_or_null("/root/EventBus"):
+			get_node("/root/EventBus").unit_drag_ended.emit()
+
+func _on_unit_drag_started(dragged_unit: RefCounted, _src_slot: int, _drag_is_fielded: bool) -> void:
+	if dragged_unit != unit_instance:
+		var swap_style = default_style.duplicate() if default_style else StyleBoxFlat.new()
+		swap_style.border_color = Color(0.8, 0.3, 1.0, 0.8)
+		swap_style.border_width_left = 2
+		swap_style.border_width_top = 2
+		swap_style.border_width_right = 2
+		swap_style.border_width_bottom = 2
+		add_theme_stylebox_override("panel", swap_style)
+
+func _on_unit_drag_ended() -> void:
+	if default_style:
+		add_theme_stylebox_override("panel", default_style)
 
 func _on_augment_drag_started(aug_res: Resource) -> void:
 	if not is_fielded or unit_instance == null or not aug_res is AugmentResource:
@@ -59,7 +158,6 @@ func _on_augment_drag_started(aug_res: Resource) -> void:
 	var has_compat = false
 	var slot_types = unit_instance.unit_resource.get_slot_types()
 	
-	# Check compatibility across slots
 	for i in range(Constants.MAX_AUGMENT_SLOTS_PER_UNIT):
 		var slot_type = slot_types[i] if i < slot_types.size() else Enums.SlotType.PASSIVE
 		var is_compat = (aug.slot_type == slot_type or aug.slot_type == Enums.SlotType.FLEX or slot_type == Enums.SlotType.FLEX)
@@ -91,27 +189,32 @@ func _on_augment_drag_ended() -> void:
 	_refresh_slots()
 
 func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
-	if not is_fielded or unit_instance == null:
-		return false
 	if not data is Dictionary:
 		return false
 	var dtype = data.get("type", "")
-	if dtype != "augment" and dtype != "slotted_augment":
-		return false
-	var aug_res = data.get("resource", null) as AugmentResource
-	if aug_res == null:
-		return false
-		
-	# Check if any slot is compatible
-	var slot_types = unit_instance.unit_resource.get_slot_types()
-	for i in range(Constants.MAX_AUGMENT_SLOTS_PER_UNIT):
-		var slot_type = slot_types[i] if i < slot_types.size() else Enums.SlotType.PASSIVE
-		if aug_res.slot_type == slot_type or aug_res.slot_type == Enums.SlotType.FLEX or slot_type == Enums.SlotType.FLEX:
-			return true
+	if dtype == "unit":
+		var dragged_u = data.get("unit") as UnitInstance
+		return dragged_u != null and dragged_u != unit_instance
+	elif dtype == "augment" or dtype == "slotted_augment":
+		if not is_fielded or unit_instance == null:
+			return false
+		var aug_res = data.get("resource", null) as AugmentResource
+		if aug_res == null:
+			return false
+		var slot_types = unit_instance.unit_resource.get_slot_types()
+		for i in range(Constants.MAX_AUGMENT_SLOTS_PER_UNIT):
+			var slot_type = slot_types[i] if i < slot_types.size() else Enums.SlotType.PASSIVE
+			if aug_res.slot_type == slot_type or aug_res.slot_type == Enums.SlotType.FLEX or slot_type == Enums.SlotType.FLEX:
+				return true
 	return false
 
 func _drop_data(at_position: Vector2, data: Variant) -> void:
 	if not _can_drop_data(at_position, data):
+		return
+		
+	var dtype = data.get("type", "")
+	if dtype == "unit":
+		unit_dropped_on_card.emit(unit_instance, data)
 		return
 		
 	var aug_res = data.get("resource", null) as AugmentResource
@@ -132,7 +235,6 @@ func _drop_data(at_position: Vector2, data: Variant) -> void:
 					break
 					
 	if target_slot == -1:
-		# Pick first empty compatible slot, or first compatible slot
 		for i in range(Constants.MAX_AUGMENT_SLOTS_PER_UNIT):
 			var slot_type = slot_types[i] if i < slot_types.size() else Enums.SlotType.PASSIVE
 			if aug_res.slot_type == slot_type or aug_res.slot_type == Enums.SlotType.FLEX or slot_type == Enums.SlotType.FLEX:
@@ -144,6 +246,7 @@ func _drop_data(at_position: Vector2, data: Variant) -> void:
 					
 	if target_slot != -1:
 		augment_dropped.emit(unit_instance, target_slot, data)
+
 
 func _set_mouse_filter_recursive(node: Node) -> void:
 	for child in node.get_children():

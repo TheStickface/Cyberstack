@@ -8,6 +8,7 @@ const DataRepoScript = preload("res://src/systems/DataRepository.gd")
 var gold: int = Constants.DEFAULT_STARTING_GOLD
 var current_district: int = 1
 var is_locked: bool = false
+var active_district_res: DistrictResource = null
 var unit_slots: Array[Dictionary] = [] # Array of 4 (expandable to 6) pure operative slots
 var augment_slots: Array[Dictionary] = [] # Array of 2 (expandable to 5) pure augment slots
 var shop_slots: Array[Dictionary] = [] # Unified array [unit_slots + augment_slots]
@@ -26,9 +27,6 @@ func add_gold(amount: int) -> void:
 	if amount <= 0:
 		return
 	gold += amount
-	if Engine.has_singleton("EventBus") or ResourceLoader.exists("res://src/core/EventBus.gd"):
-		# Safe emission if EventBus is active
-		pass
 
 func spend_gold(amount: int) -> bool:
 	if amount < 0 or gold < amount:
@@ -41,17 +39,31 @@ func calculate_interest(_gold_amount: int = -1) -> int:
 	return 0
 
 func collect_round_income(base_income: int = 5, win_bonus: int = 0) -> Dictionary:
-	var total_earned = base_income + win_bonus
+	var payout_boost = active_district_res.payout_bonus if active_district_res else 0
+	var total_earned = base_income + win_bonus + payout_boost
 	gold += total_earned
 	return {
 		"base": base_income,
 		"interest": 0,
 		"win_bonus": win_bonus,
+		"payout_bonus": payout_boost,
 		"total": total_earned,
 		"new_balance": gold
 	}
 
-func generate_shop_offerings(district_id: int = 1, repo_instance: Object = null, num_crew: int = Constants.DEFAULT_CREW_SHOP_SLOTS, num_augments: int = Constants.DEFAULT_AUGMENT_SHOP_SLOTS, force_refresh: bool = false) -> Array[Dictionary]:
+func get_reroll_cost() -> int:
+	if active_district_res and active_district_res.reroll_cost_override >= 0:
+		return active_district_res.reroll_cost_override
+	return Constants.BASE_REROLL_COST
+
+func generate_shop_offerings(district_id: int = 1, repo_instance: Object = null, num_crew: int = Constants.DEFAULT_CREW_SHOP_SLOTS, num_augments: int = Constants.DEFAULT_AUGMENT_SHOP_SLOTS, force_refresh: bool = false, district_res: DistrictResource = null) -> Array[Dictionary]:
+	if district_res != null:
+		active_district_res = district_res
+		
+	if active_district_res != null:
+		num_crew = clampi(num_crew + active_district_res.bonus_crew_slots, 1, Constants.MAX_CREW_SHOP_SLOTS)
+		num_augments = clampi(num_augments + active_district_res.bonus_augment_slots, 1, Constants.MAX_AUGMENT_SHOP_SLOTS)
+
 	if is_locked and not force_refresh and not unit_slots.is_empty():
 		current_district = district_id
 		is_locked = false # Consumed for this round transition
@@ -66,8 +78,13 @@ func generate_shop_offerings(district_id: int = 1, repo_instance: Object = null,
 	augment_slots.clear()
 	shop_slots.clear()
 	
-	# 1. Generate Pure Operative / Crew Slots (Tiered by District Odds)
-	var all_units = repo.get_all_units()
+	# 1. Generate Pure Operative / Crew Slots (Tiered by District Odds, excluding boss units)
+	var raw_units = repo.get_all_units()
+	var all_units: Array[UnitResource] = []
+	for u in raw_units:
+		if not u.id.begins_with("boss_"):
+			all_units.append(u)
+			
 	for i in range(num_crew):
 		var target_tier = _roll_unit_tier(unit_odds)
 		var filtered_units: Array[UnitResource] = []
@@ -97,12 +114,22 @@ func generate_shop_offerings(district_id: int = 1, repo_instance: Object = null,
 			unit_slots.append(empty_slot)
 			shop_slots.append(empty_slot)
 			
-	# 2. Generate Pure Augment Slots (Tiered by District Odds)
+	# 2. Generate Pure Augment Slots (Tiered by District Odds & Preferred Tag Bias)
+	var pref_tag = active_district_res.preferred_tag if active_district_res else Enums.AugmentTag.NONE
 	for i in range(num_augments):
 		var chosen_tier = _roll_tier(aug_odds)
 		var aug_pool = repo.get_augments_by_tier(chosen_tier)
 		if aug_pool.is_empty():
 			aug_pool = repo.get_all_augments()
+			
+		# Apply thematic tag bias (65% chance if district has preferred tag)
+		if pref_tag != Enums.AugmentTag.NONE and randf() < 0.65:
+			var biased_pool: Array[AugmentResource] = []
+			for a in aug_pool:
+				if a.tags.has(pref_tag):
+					biased_pool.append(a)
+			if not biased_pool.is_empty():
+				aug_pool = biased_pool
 			
 		if not aug_pool.is_empty():
 			var aug_res: AugmentResource = aug_pool[randi() % aug_pool.size()]
@@ -132,11 +159,13 @@ func _roll_unit_tier(odds: Dictionary) -> int:
 
 func reroll_shop(repo_instance: Object = null, free_reroll: bool = false) -> bool:
 	if not free_reroll:
-		if not spend_gold(Constants.BASE_REROLL_COST):
+		if not spend_gold(get_reroll_cost()):
 			return false
 			
 	is_locked = false
-	generate_shop_offerings(current_district, repo_instance, Constants.DEFAULT_CREW_SHOP_SLOTS, Constants.DEFAULT_AUGMENT_SHOP_SLOTS, true)
+	var crew_count = Constants.DEFAULT_CREW_SHOP_SLOTS + (active_district_res.bonus_crew_slots if active_district_res else 0)
+	var aug_count = Constants.DEFAULT_AUGMENT_SHOP_SLOTS + (active_district_res.bonus_augment_slots if active_district_res else 0)
+	generate_shop_offerings(current_district, repo_instance, crew_count, aug_count, true, active_district_res)
 	return true
 
 func buy_unit_slot(slot_index: int, crew_mgr: Object) -> Dictionary:
@@ -217,7 +246,9 @@ func sell_augment(inventory_index: int, crew_mgr: Object) -> int:
 	if aug == null:
 		return 0
 		
-	var refund_gold: int = Constants.AUGMENT_SELL_VALUES.get(aug.tier, 1)
+	var base_refund: int = Constants.AUGMENT_SELL_VALUES.get(aug.tier, 1)
+	var bonus = active_district_res.scrap_refund_bonus if active_district_res else 0
+	var refund_gold = base_refund + bonus
 	add_gold(refund_gold)
 	return refund_gold
 

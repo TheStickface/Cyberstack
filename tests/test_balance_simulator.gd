@@ -74,3 +74,107 @@ func test_report_generation() -> Dictionary:
 		return {"passed": false, "message": "Report generation missing expected starter strings", "assertions": 1}
 		
 	return {"passed": true, "assertions": 1}
+
+func test_simulation_tactical_grid_placement() -> Dictionary:
+	var crew_mgr = CrewManager.new(2, repo) # District 2 unlocks Backline Center (Slot 4)
+	var sniper_res = repo.get_unit("corp_deadeye")
+	var tank_res = repo.get_unit("corp_sentinel")
+	
+	var sniper_inst = UnitInstance.new(sniper_res)
+	var tank_inst = UnitInstance.new(tank_res)
+	crew_mgr.benched_units.append(sniper_inst)
+	crew_mgr.benched_units.append(tank_inst)
+	
+	BalanceSimulatorScript._place_unit_tactically(crew_mgr, sniper_inst, 2)
+	BalanceSimulatorScript._place_unit_tactically(crew_mgr, tank_inst, 2)
+	
+	if sniper_inst.grid_slot != 4:
+		return {"passed": false, "message": "Sniper should be placed in Backline slot 4, got: %d" % sniper_inst.grid_slot, "assertions": 1}
+	if tank_inst.grid_slot != 1 and tank_inst.grid_slot != 0 and tank_inst.grid_slot != 2:
+		return {"passed": false, "message": "Tank should be placed in Frontline (0, 1, or 2), got: %d" % tank_inst.grid_slot, "assertions": 2}
+		
+	return {"passed": true, "assertions": 2}
+
+func test_simulation_synergy_stat_integration() -> Dictionary:
+	var u1 = UnitInstance.new(repo.get_unit("runner_blitz"))
+	var u2 = UnitInstance.new(repo.get_unit("runner_nexus"))
+	var report = SynergyEngine.evaluate_crew([u1, u2], repo.factions, repo.tags)
+	
+	var c_without = BalanceSimulatorScript._create_combatant(u1, repo, true, 1, false, null)
+	var c_with = BalanceSimulatorScript._create_combatant(u1, repo, true, 1, false, report)
+	
+	# Street Runner 2-piece gives +15% attack speed
+	if c_with["attack_speed"] <= c_without["attack_speed"]:
+		return {"passed": false, "message": "Synergy report should boost attack speed for Street Runner 2-piece", "assertions": 1}
+		
+	return {"passed": true, "assertions": 1}
+
+func test_simulation_district_hazards() -> Dictionary:
+	var p_comb = [{"hp": 500.0, "mana": 30.0, "healing_mult": 1.0}]
+	var e_comb = [{"shield": 0.0, "has_enrage": false}]
+	
+	BalanceSimulatorScript._apply_district_environmental_hazards(p_comb, e_comb, 2)
+	if e_comb[0]["shield"] != 120.0:
+		return {"passed": false, "message": "District 2 should grant enemies 120 barrier shield", "assertions": 1}
+		
+	BalanceSimulatorScript._apply_district_environmental_hazards(p_comb, e_comb, 3)
+	if p_comb[0]["mana"] != 15.0: # 30 - 15 = 15
+		return {"passed": false, "message": "District 3 should dampen player mana by 15", "assertions": 2}
+		
+	BalanceSimulatorScript._apply_district_environmental_hazards(p_comb, e_comb, 4)
+	if not e_comb[0]["has_enrage"]:
+		return {"passed": false, "message": "District 4 should set has_enrage on enemies", "assertions": 3}
+		
+	return {"passed": true, "assertions": 3}
+
+func test_simulation_tag_chains_and_combos() -> Dictionary:
+	# Test 1: Thermal armor reduction on attack
+	var attacker = {
+		"hp": 500.0,
+		"max_hp": 500.0,
+		"shield": 0.0,
+		"armor": 0.0,
+		"attack_damage": 50.0,
+		"attack_speed": 1.0,
+		"ability_power": 30.0,
+		"mana": 0.0,
+		"max_mana": 100.0,
+		"crit_chance": 0.0,
+		"evasion": 0.0,
+		"attack_timer": 0.0,
+		"tags": {Enums.AugmentTag.THERMAL: 3},
+		"triggers": [],
+		"active_dots": []
+	}
+	var defender = {
+		"hp": 500.0,
+		"max_hp": 500.0,
+		"shield": 0.0,
+		"armor": 30.0,
+		"evasion": 0.0,
+		"mana": 0.0,
+		"max_mana": 100.0,
+		"triggers": [],
+		"active_dots": [],
+		"row": 1
+	}
+	
+	BalanceSimulatorScript._step_combatant(attacker, [defender], [attacker], 0.1, 1)
+	
+	# Defender armor should have burned down from 30
+	if defender["armor"] >= 30.0:
+		return {"passed": false, "message": "Thermal tags should reduce target armor on attack", "assertions": 1}
+		
+	# Test 2: Viral tag applies DoT on spellcast
+	attacker["mana"] = 100.0 # Ready to cast
+	attacker["tags"] = {Enums.AugmentTag.VIRAL: 2}
+	attacker["attack_timer"] = 0.0
+	
+	BalanceSimulatorScript._step_combatant(attacker, [defender], [attacker], 0.1, 1)
+	
+	if defender["active_dots"].is_empty():
+		return {"passed": false, "message": "Viral tag should apply active DoT on spellcast", "assertions": 2}
+		
+	return {"passed": true, "assertions": 2}
+
+

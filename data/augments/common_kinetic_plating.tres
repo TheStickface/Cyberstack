@@ -7,16 +7,21 @@
 script = ExtResource("1_aug")
 icon = ExtResource("2_icon")
 id = "common_kinetic_plating"
-display_name = "Reinforced Kinetic Plating"
-description = "Layered composite ballistic alloy reducing ballistic impact."
+display_name = "Lateral Kinetic Plating"
+description = "Ballistic composite alloy. Grants +60 HP to self and +80 Shield to adjacent allies to the Left and Right."
 tier = 0
 slot_type = 0
 tags = Array[int]([4])
 base_cost = 2
 stat_modifiers = {
-0: 100.0,
+0: 60.0,
 4: 8.0
+}
+directional_target = 5
+directional_modifiers = {
+5: 80.0
 }
 trigger_type = 0
 trigger_effect_id = ""
 trigger_params = {}
+

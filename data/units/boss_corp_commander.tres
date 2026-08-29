@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/boss_corp_commander.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "boss_corp_commander"
+display_name = "Corp Commander"
+title = "Arcology Security Overseer"
+bio = "Elite corporate commander equipped with tactical targeting uplinks and high-altitude orbital lances."
+role = 2
+faction = 2
+base_cost = 5
+base_max_health = 800.0
+base_attack_damage = 65.0
+base_ability_power = 35.0
+base_attack_speed = 0.9
+base_armor = 25.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 80.0
+base_speed = 55.0
+base_crit_chance = 0.2
+base_evasion = 0.1
+ability_name = "Orbital Lase"
+ability_description = "Calls down an orbital strike dealing 320 piercing damage to the weakest enemy operative."
+ability_effect_id = "boss_orbital_lase"

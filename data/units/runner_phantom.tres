@@ -27,3 +27,10 @@ base_evasion = 0.25
 ability_name = "Decoy Strike"
 ability_description = "Creates a holographic clone, becoming untargetable for 2s while delivering a 250% critical strike."
 ability_effect_id = "phantom_decoy_strike"
+directional_target = 10
+directional_passive_description = "Shadow Infiltration: If in Backline (Row 0), gains +15 Speed and +15% Crit Chance."
+directional_modifiers = {
+8: 0.15,
+9: 15.0
+}
+

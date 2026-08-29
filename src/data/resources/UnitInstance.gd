@@ -8,8 +8,51 @@ var instance_id: String = ""
 var level: int = 1 # Legacy alias for tier
 var star_level: int = 1 # 1 = Tier 1 (★), 2 = Tier 2 (★★), 3 = Tier 3 (★★★)
 
+## 2x3 Tactical Grid placement: slot index 0..5
+## Bottom Row (Row 1, Frontline): 0 (Left), 1 (Center), 2 (Right)
+## Top Row (Row 0, Backline): 3 (Top Left - Dist 3), 4 (Top Center - Dist 2), 5 (Top Right - Dist 4)
+var grid_slot: int = -1
+
+static func slot_to_coords(slot: int) -> Vector2i:
+	match slot:
+		0: return Vector2i(1, 0) # Row 1, Col 0 (Bottom Left)
+		1: return Vector2i(1, 1) # Row 1, Col 1 (Bottom Center)
+		2: return Vector2i(1, 2) # Row 1, Col 2 (Bottom Right)
+		3: return Vector2i(0, 0) # Row 0, Col 0 (Top Left)
+		4: return Vector2i(0, 1) # Row 0, Col 1 (Top Center)
+		5: return Vector2i(0, 2) # Row 0, Col 2 (Top Right)
+		_: return Vector2i(-1, -1)
+
+static func coords_to_slot(row: int, col: int) -> int:
+	if row == 1:
+		if col >= 0 and col <= 2:
+			return col
+	elif row == 0:
+		match col:
+			0: return 3 # Top Left
+			1: return 4 # Top Center
+			2: return 5 # Top Right
+	return -1
+
+func get_grid_row() -> int:
+	return slot_to_coords(grid_slot).x
+
+func get_grid_col() -> int:
+	return slot_to_coords(grid_slot).y
+
+func set_grid_coords(row: int, col: int) -> void:
+	grid_slot = coords_to_slot(row, col)
+
+func is_frontline() -> bool:
+	return get_grid_row() == 1
+
+func is_backline() -> bool:
+	return get_grid_row() == 0
+
+
 ## 3 Augment slots: index 0 (Primary), index 1 (Secondary), index 2 (Passive)
 var equipped_augments: Array[AugmentResource] = [null, null, null]
+
 
 func get_star_string() -> String:
 	match star_level:

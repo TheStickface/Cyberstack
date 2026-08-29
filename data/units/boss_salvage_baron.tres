@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/boss_salvage_baron.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "boss_salvage_baron"
+display_name = "Salvage Baron"
+title = "Sunken District Deep Scavenger"
+bio = "Subsea warlord harvesting wreckage from the flooded lower city beneath impenetrable pressure suits."
+role = 0
+faction = 4
+base_cost = 5
+base_max_health = 1020.0
+base_attack_damage = 46.0
+base_ability_power = 32.0
+base_attack_speed = 0.8
+base_armor = 38.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 80.0
+base_speed = 36.0
+base_crit_chance = 0.05
+base_evasion = 0.05
+ability_name = "Bathyscaphe Slam"
+ability_description = "Slams submersible plating, gaining 300 shield and dealing 170 splash damage."
+ability_effect_id = "boss_bathyscaphe_slam"

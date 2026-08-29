@@ -27,3 +27,10 @@ base_evasion = 0.05
 ability_name = "Plasma Penetrator"
 ability_description = "Fires high-velocity piercing round dealing 280 physical damage in a straight line."
 ability_effect_id = "ghost_plasma_penetrator"
+directional_target = 10
+directional_passive_description = "Backline Ghosting: If deployed in Backline (Row 0), gains +15 Attack Damage and +15 Speed."
+directional_modifiers = {
+1: 15.0,
+9: 15.0
+}
+

@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/boss_house_dealer.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "boss_house_dealer"
+display_name = "House Dealer"
+title = "Skyline High-Roller Pit Boss"
+bio = "Calculating casino boss who tilts every fight with high-stakes probability manipulation."
+role = 3
+faction = 4
+base_cost = 5
+base_max_health = 900.0
+base_attack_damage = 45.0
+base_ability_power = 50.0
+base_attack_speed = 0.9
+base_armor = 25.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 80.0
+base_speed = 45.0
+base_crit_chance = 0.15
+base_evasion = 0.1
+ability_name = "High-Roller Roulette"
+ability_description = "Gambles on luck: heals self for 250 HP or deals 260 AP damage to a random target."
+ability_effect_id = "boss_high_roller_roulette"

@@ -6,8 +6,14 @@
 script = ExtResource("1_dist")
 id = "skyline_casino"
 display_name = "Skyline Casino"
-description = "A hot-magenta neon-and-chrome vice tower where Corp-backed bouncers guard high-stakes augmented gladiator pits."
-theme_color = Color(1, 0.1, 0.75, 1)
+description = "High-altitude magenta pleasure hub offering low-cost shop rerolls and high-stakes probability manipulation."
+theme_color = Color(1, 0.1, 0.8, 1)
 is_final_boss = false
 node_sequence = Array[int]([0, 1, 0, 2, 1, 3])
 boss_unit_id = "boss_house_dealer"
+preferred_tag = 0
+reroll_cost_override = 1
+bonus_crew_slots = 0
+bonus_augment_slots = 0
+scrap_refund_bonus = 0
+payout_bonus = 0

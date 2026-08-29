@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/boss_warren_overlord.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "boss_warren_overlord"
+display_name = "Warren Overlord"
+title = "The Warrens Tunnel Kingpin"
+bio = "Cunning tunnel chieftain ruling the subterranean slums through ambush and extortion."
+role = 3
+faction = 1
+base_cost = 5
+base_max_health = 920.0
+base_attack_damage = 48.0
+base_ability_power = 48.0
+base_attack_speed = 0.9
+base_armor = 28.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 80.0
+base_speed = 46.0
+base_crit_chance = 0.12
+base_evasion = 0.08
+ability_name = "Tunnel Ambush"
+ability_description = "Summons hidden ambush dealing 240 damage and applying 15% speed slow."
+ability_effect_id = "boss_tunnel_ambush"

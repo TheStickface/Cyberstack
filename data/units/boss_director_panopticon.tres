@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/boss_director_panopticon.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "boss_director_panopticon"
+display_name = "Director Panopticon"
+title = "Panopticon Surveillance Director"
+bio = "Chief surveillance architect watching every movement across the city with lethal predictive lasers."
+role = 2
+faction = 2
+base_cost = 5
+base_max_health = 830.0
+base_attack_damage = 66.0
+base_ability_power = 38.0
+base_attack_speed = 0.9
+base_armor = 26.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 80.0
+base_speed = 52.0
+base_crit_chance = 0.2
+base_evasion = 0.1
+ability_name = "Surveillance Strike"
+ability_description = "Focuses total surveillance array, dealing 330 piercing damage to highest-HP enemy."
+ability_effect_id = "boss_surveillance_strike"

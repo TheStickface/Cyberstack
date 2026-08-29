@@ -42,10 +42,13 @@ func _refresh_map() -> void:
 func _refresh_header() -> void:
 	if district_title and run_mgr.current_district:
 		district_title.text = "DISTRICT %d: %s" % [run_mgr.current_district_index, run_mgr.current_district.display_name.to_upper()]
+		district_title.add_theme_color_override("font_color", run_mgr.current_district.theme_color)
 	if crew_count_label:
 		crew_count_label.text = "CREW: %d / %d" % [run_mgr.crew_mgr.fielded_units.size(), run_mgr.crew_mgr.get_max_field_units()]
 	if gold_label:
 		gold_label.text = "%s: %d" % [Constants.CURRENCY_NAME.to_upper(), run_mgr.shop_mgr.gold]
+	if status_label and run_mgr.current_district:
+		status_label.text = "★ %s | %s" % [run_mgr.current_district.display_name, run_mgr.current_district.get_perk_description()]
 
 func _refresh_nodes() -> void:
 	if not nodes_container:

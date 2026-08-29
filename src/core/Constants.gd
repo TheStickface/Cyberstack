@@ -14,12 +14,11 @@ const DISTRICT_CREW_LIMITS: Dictionary = {
 	1: 2,
 	2: 4,
 	3: 5,
-	4: 6
+	4: 6,
+	5: 6
 }
 
 # Number of non-final districts drawn from the pool per run, before the final-boss district.
-# Total run length stays at 4 (matching DISTRICT_CREW_LIMITS / DISTRICT_SHOP_ODDS) until
-# 3-vs-4-district run-length variance gets its own scaling curve designed.
 const NORMAL_DISTRICTS_PER_RUN: int = 3
 
 # Faction & Tag Synergies
@@ -76,7 +75,8 @@ const DISTRICT_ENCOUNTER_PAYOUTS: Dictionary = {
 	1: 4,
 	2: 6,
 	3: 8,
-	4: 10
+	4: 10,
+	5: 12
 }
 
 # District Shop Rarity Probabilities (Common, Rare, Legendary)
@@ -100,6 +100,11 @@ const DISTRICT_SHOP_ODDS: Dictionary = {
 		Enums.AugmentTier.COMMON: 0.00,
 		Enums.AugmentTier.RARE: 0.65,
 		Enums.AugmentTier.LEGENDARY: 0.35
+	},
+	5: {
+		Enums.AugmentTier.COMMON: 0.00,
+		Enums.AugmentTier.RARE: 0.50,
+		Enums.AugmentTier.LEGENDARY: 0.50
 	}
 }
 
@@ -108,7 +113,8 @@ const DISTRICT_UNIT_SHOP_ODDS: Dictionary = {
 	1: { 1: 0.75, 2: 0.25, 3: 0.00 },
 	2: { 1: 0.45, 2: 0.45, 3: 0.10 },
 	3: { 1: 0.25, 2: 0.50, 3: 0.25 },
-	4: { 1: 0.15, 2: 0.50, 3: 0.35 }
+	4: { 1: 0.15, 2: 0.50, 3: 0.35 },
+	5: { 1: 0.05, 2: 0.45, 3: 0.50 }
 }
 
 # Enemy Stat Scaling Multipliers per District (HP, Damage)
@@ -116,7 +122,8 @@ const DISTRICT_ENEMY_SCALING: Dictionary = {
 	1: { "hp_mult": 1.00, "dmg_mult": 1.00 },
 	2: { "hp_mult": 1.20, "dmg_mult": 1.15 },
 	3: { "hp_mult": 1.45, "dmg_mult": 1.30 },
-	4: { "hp_mult": 1.70, "dmg_mult": 1.45 }
+	4: { "hp_mult": 1.70, "dmg_mult": 1.45 },
+	5: { "hp_mult": 2.00, "dmg_mult": 1.60 }
 }
 
 # Sell Refund Values

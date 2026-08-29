@@ -6,6 +6,7 @@ extends Control
 const OperativeCardScene = preload("res://src/ui/components/OperativeCard.tscn")
 const AugmentChipScene = preload("res://src/ui/components/AugmentChip.tscn")
 const ShopSlotCardScene = preload("res://src/ui/components/ShopSlotCard.tscn")
+const TacticalTetherOverlayScript = preload("res://src/ui/components/TacticalTetherOverlay.gd")
 const DataRepoScript = preload("res://src/systems/DataRepository.gd")
 
 var repo: Object = null
@@ -61,7 +62,11 @@ func _refresh_all() -> void:
 
 func _refresh_top_bar() -> void:
 	if district_label:
-		district_label.text = "DISTRICT %d" % crew_mgr.current_district
+		if shop_mgr.active_district_res:
+			district_label.text = "DISTRICT %d: %s" % [crew_mgr.current_district, shop_mgr.active_district_res.display_name.to_upper()]
+			district_label.add_theme_color_override("font_color", shop_mgr.active_district_res.theme_color)
+		else:
+			district_label.text = "DISTRICT %d" % crew_mgr.current_district
 	if crew_count_label:
 		var max_units = crew_mgr.get_max_field_units()
 		var cur_units = crew_mgr.fielded_units.size()
@@ -74,19 +79,64 @@ func _refresh_top_bar() -> void:
 	if gold_label:
 		gold_label.text = "%s: %d" % [Constants.CURRENCY_NAME.to_upper(), shop_mgr.gold]
 
+var tether_overlay: Control = null
+var hovered_grid_card: OperativeCard = null
+
 func _refresh_field_and_bench() -> void:
 	if field_container:
 		for c in field_container.get_children():
 			c.queue_free()
-		for unit in crew_mgr.fielded_units:
-			var card: OperativeCard = OperativeCardScene.instantiate()
-			field_container.add_child(card)
-			card.setup(unit, true)
-			card.slot_clicked.connect(_on_unit_slot_clicked)
-			card.slot_unequip_requested.connect(_on_unit_slot_unequip_requested)
-			card.unit_toggle_field_requested.connect(_on_unit_toggle_field)
-			card.unit_sell_requested.connect(_on_unit_sell)
-			card.augment_dropped.connect(_on_augment_dropped_on_unit)
+			
+		var formation_report = crew_mgr.calculate_formation_bonuses()
+		
+		# Overlay for holographic formation tethers
+		if tether_overlay == null or not is_instance_valid(tether_overlay):
+			tether_overlay = TacticalTetherOverlayScript.new()
+			tether_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			field_container.get_parent().add_child(tether_overlay)
+			
+		tether_overlay.clear_tethers()
+
+		
+		# Grid Container: 2 Rows (Top Row = Backline slots [3, 4, 5], Bottom Row = Frontline slots [0, 1, 2])
+		var grid_vbox = VBoxContainer.new()
+		grid_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		grid_vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		grid_vbox.add_theme_constant_override("separation", 6)
+		field_container.add_child(grid_vbox)
+		
+		# 1. TOP ROW (BACKLINE: Slots 3 [Left - D3], 4 [Center - D2], 5 [Right - D4])
+		var top_header = Label.new()
+		top_header.text = "▲ BACKLINE (Protected Row — Snipers & Hackers)"
+		top_header.add_theme_font_size_override("font_size", 9)
+		top_header.add_theme_color_override("font_color", Color(0.6, 0.4, 1.0))
+		grid_vbox.add_child(top_header)
+		
+		var top_row_hbox = HBoxContainer.new()
+		top_row_hbox.add_theme_constant_override("separation", 8)
+		grid_vbox.add_child(top_row_hbox)
+		
+		var top_slots = [3, 4, 5]
+		for slot_idx in top_slots:
+			_build_grid_slot_cell(top_row_hbox, slot_idx, formation_report)
+			
+		# 2. BOTTOM ROW (FRONTLINE: Slots 0 [Left], 1 [Center], 2 [Right] — Unlocked in D1)
+		var bot_header = Label.new()
+		bot_header.text = "▼ FRONTLINE (Aggro Absorption & Directional Shields)"
+		bot_header.add_theme_font_size_override("font_size", 9)
+		bot_header.add_theme_color_override("font_color", Color(0, 0.95, 0.83))
+		grid_vbox.add_child(bot_header)
+		
+		var bot_row_hbox = HBoxContainer.new()
+		bot_row_hbox.add_theme_constant_override("separation", 8)
+		grid_vbox.add_child(bot_row_hbox)
+		
+		var bot_slots = [0, 1, 2]
+		for slot_idx in bot_slots:
+			_build_grid_slot_cell(bot_row_hbox, slot_idx, formation_report)
+			
+		# Schedule tether line calculation after UI layout pass
+		call_deferred("_recalculate_formation_tethers")
 
 	if bench_container:
 		for c in bench_container.get_children():
@@ -100,6 +150,230 @@ func _refresh_field_and_bench() -> void:
 			card.unit_toggle_field_requested.connect(_on_unit_toggle_field)
 			card.unit_sell_requested.connect(_on_unit_sell)
 			card.augment_dropped.connect(_on_augment_dropped_on_unit)
+			card.unit_dropped_on_card.connect(_on_unit_dropped_on_card)
+
+func _build_grid_slot_cell(parent: HBoxContainer, slot_idx: int, formation_report: Dictionary) -> void:
+	var is_unlocked = crew_mgr.is_slot_unlocked(slot_idx)
+	var unlock_dist = crew_mgr.get_slot_unlock_district(slot_idx)
+	var unit = crew_mgr.tactical_grid[slot_idx]
+	
+	if is_unlocked:
+		if unit != null:
+			var card: OperativeCard = OperativeCardScene.instantiate()
+			parent.add_child(card)
+			card.setup(unit, true)
+			card.slot_clicked.connect(_on_unit_slot_clicked)
+			card.slot_unequip_requested.connect(_on_unit_slot_unequip_requested)
+			card.unit_toggle_field_requested.connect(_on_unit_toggle_field)
+			card.unit_sell_requested.connect(_on_unit_sell)
+			card.augment_dropped.connect(_on_augment_dropped_on_unit)
+			card.unit_dropped_on_card.connect(_on_unit_dropped_on_card)
+			card.mouse_entered.connect(func(): _on_grid_card_hovered(card, unit))
+			card.mouse_exited.connect(func(): _on_grid_card_unhovered(card))
+			
+			# Attach formation badge if bonuses are active
+			if formation_report.has(unit):
+				var tags = formation_report[unit].get("formation_tags", [])
+				if not tags.is_empty() and card.ability_label:
+					card.ability_label.text = "%s\n%s" % [card.ability_label.text, " ".join(tags)]
+		else:
+			# Empty unlocked tactical slot with drag/drop acceptance
+			var btn = TacticalEmptySlot.new()
+			btn.custom_minimum_size = Vector2(150, 155)
+			btn.slot_idx = slot_idx
+			btn.text = "+ DEPLOY\n[SLOT %d]\n(CLICK OR DROP)" % (slot_idx + 1)
+			btn.add_theme_font_size_override("font_size", 9)
+			btn.add_theme_color_override("font_color", Color(0, 0.85, 0.75, 0.7))
+			var style = StyleBoxFlat.new()
+			style.bg_color = Color(0.04, 0.03, 0.08, 0.6)
+			style.border_width_left = 1
+			style.border_width_top = 1
+			style.border_width_right = 1
+			style.border_width_bottom = 1
+			style.border_color = Color(0, 0.85, 0.75, 0.4)
+			style.corner_radius_top_left = 6
+			style.corner_radius_top_right = 6
+			style.corner_radius_bottom_right = 6
+			style.corner_radius_bottom_left = 6
+			btn.add_theme_stylebox_override("normal", style)
+			btn.slot_clicked.connect(_on_empty_slot_clicked)
+			btn.unit_dropped.connect(_on_unit_dropped_on_empty_slot)
+			parent.add_child(btn)
+	else:
+		# Locked slot
+		var panel = PanelContainer.new()
+		panel.custom_minimum_size = Vector2(150, 155)
+		var style = StyleBoxFlat.new()
+		style.bg_color = Color(0.03, 0.02, 0.05, 0.9)
+		style.border_width_left = 1
+		style.border_width_top = 1
+		style.border_width_right = 1
+		style.border_width_bottom = 1
+		style.border_color = Color(0.3, 0.2, 0.4, 0.5)
+		style.corner_radius_top_left = 6
+		style.corner_radius_top_right = 6
+		style.corner_radius_bottom_right = 6
+		style.corner_radius_bottom_left = 6
+		panel.add_theme_stylebox_override("panel", style)
+		
+		var lbl = Label.new()
+		lbl.text = "🔒 LOCKED\n(UNLOCKS IN\nDISTRICT %d)" % unlock_dist
+		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		lbl.add_theme_font_size_override("font_size", 9)
+		lbl.add_theme_color_override("font_color", Color(0.6, 0.4, 0.7, 0.6))
+		panel.add_child(lbl)
+		parent.add_child(panel)
+
+func _on_unit_dropped_on_card(target_unit: UnitInstance, drag_data: Dictionary) -> void:
+	var incoming_unit = drag_data.get("unit") as UnitInstance
+	if incoming_unit == null or incoming_unit == target_unit:
+		return
+		
+	var is_incoming_fielded = drag_data.get("is_fielded", false)
+	var src_slot = drag_data.get("source_slot", -1)
+	var tgt_slot = target_unit.grid_slot
+	
+	if is_incoming_fielded and src_slot >= 0 and tgt_slot >= 0:
+		# Grid to Grid Swap
+		crew_mgr.swap_grid_slots(src_slot, tgt_slot)
+		_set_status("Swapped positions of %s and %s." % [incoming_unit.unit_resource.display_name, target_unit.unit_resource.display_name], false)
+	else:
+		# Bench to Field Swap
+		var b_idx = crew_mgr.benched_units.find(incoming_unit)
+		if b_idx != -1 and tgt_slot >= 0:
+			crew_mgr.deploy_bench_to_grid(b_idx, tgt_slot)
+			_set_status("Deployed %s to slot %d (swapped %s to bench)." % [
+				incoming_unit.unit_resource.display_name, tgt_slot + 1, target_unit.unit_resource.display_name
+			], false)
+			
+	_play_sfx("play_ui_click")
+	_refresh_all()
+
+func _on_unit_dropped_on_empty_slot(slot_idx: int, drag_data: Dictionary) -> void:
+	var incoming_unit = drag_data.get("unit") as UnitInstance
+	if incoming_unit == null:
+		return
+		
+	var is_incoming_fielded = drag_data.get("is_fielded", false)
+	if is_incoming_fielded:
+		crew_mgr.place_unit_on_grid(incoming_unit, slot_idx)
+		_set_status("Moved %s to Tactical Slot %d." % [incoming_unit.unit_resource.display_name, slot_idx + 1], false)
+	else:
+		var b_idx = crew_mgr.benched_units.find(incoming_unit)
+		if b_idx != -1:
+			crew_mgr.deploy_bench_to_grid(b_idx, slot_idx)
+			_set_status("Deployed %s to Tactical Slot %d." % [incoming_unit.unit_resource.display_name, slot_idx + 1], false)
+			
+	_play_sfx("play_ui_click")
+	_refresh_all()
+
+func _on_empty_slot_clicked(slot_idx: int) -> void:
+	if not crew_mgr.benched_units.is_empty():
+		var deployed = crew_mgr.deploy_bench_to_grid(0, slot_idx)
+		if deployed:
+			_set_status("Operative deployed to Tactical Slot %d." % (slot_idx + 1), false)
+			_play_sfx("play_ui_click")
+			_refresh_all()
+	else:
+		_set_status("No reserve operatives on bench to deploy.", true)
+
+func _on_grid_card_hovered(card: OperativeCard, unit: UnitInstance) -> void:
+
+	hovered_grid_card = card
+	_recalculate_formation_tethers(unit)
+
+func _on_grid_card_unhovered(card: OperativeCard) -> void:
+	if hovered_grid_card == card:
+		hovered_grid_card = null
+		_recalculate_formation_tethers()
+
+func _recalculate_formation_tethers(focused_unit: UnitInstance = null) -> void:
+	if tether_overlay == null or not is_instance_valid(tether_overlay):
+		return
+		
+	tether_overlay.clear_tethers()
+	var card_map: Dictionary = {}
+	
+	# Find all card centers in field_container
+	if field_container:
+		for card in _get_all_operative_cards(field_container):
+			if card.unit_instance != null:
+				card_map[card.unit_instance] = tether_overlay.to_local(card.global_position + card.size * 0.5)
+				
+	for slot_idx in range(6):
+		var unit = crew_mgr.tactical_grid[slot_idx]
+		if unit == null or not card_map.has(unit):
+			continue
+			
+		if focused_unit != null and focused_unit != unit:
+			# If a specific unit is hovered, only draw links directly involving that unit
+			continue
+			
+		var u_pos = card_map[unit]
+		var coords = UnitInstance.slot_to_coords(slot_idx)
+		var row = coords.x
+		var col = coords.y
+		var role = unit.unit_resource.role if unit.unit_resource else Enums.UnitRole.TANK
+		
+		# 1. Tank Lateral Shield Tethers (Electric Blue)
+		if role == Enums.UnitRole.TANK:
+			var left_u = crew_mgr.get_unit_at_coords(row, col - 1)
+			var right_u = crew_mgr.get_unit_at_coords(row, col + 1)
+			if left_u and card_map.has(left_u):
+				tether_overlay.add_tether(u_pos, card_map[left_u], TacticalTetherOverlayScript.COLOR_TANK_GUARD, "Guard")
+			if right_u and card_map.has(right_u):
+				tether_overlay.add_tether(u_pos, card_map[right_u], TacticalTetherOverlayScript.COLOR_TANK_GUARD, "Guard")
+				
+		# 2. Hacker Row Uplink Tethers (Cyan)
+		if role == Enums.UnitRole.HACKER:
+			var row_units = crew_mgr.get_adjacent_units(row, col, Enums.GridDirection.SAME_ROW)
+			for r_u in row_units:
+				if card_map.has(r_u):
+					tether_overlay.add_tether(u_pos, card_map[r_u], TacticalTetherOverlayScript.COLOR_HACKER_UPLINK, "Uplink")
+					
+		# 3. Fixer Adjacent Bio-Links (Emerald)
+		if role == Enums.UnitRole.FIXER:
+			var adj_units = crew_mgr.get_adjacent_units(row, col, Enums.GridDirection.ADJACENT)
+			for a_u in adj_units:
+				if card_map.has(a_u):
+					tether_overlay.add_tether(u_pos, card_map[a_u], TacticalTetherOverlayScript.COLOR_FIXER_LINK, "Bio-Link")
+					
+		# 4. Operative & Augment Directional Modifiers
+		var u_res = unit.unit_resource
+		if u_res and u_res.directional_target != Enums.GridDirection.NONE:
+			var targets = crew_mgr.get_adjacent_units(row, col, u_res.directional_target)
+			for t_u in targets:
+				if card_map.has(t_u):
+					tether_overlay.add_tether(u_pos, card_map[t_u], TacticalTetherOverlayScript.COLOR_GENERIC_LINK, u_res.display_name)
+
+
+func _get_all_operative_cards(node: Node) -> Array[OperativeCard]:
+	var result: Array[OperativeCard] = []
+	for c in node.get_children():
+		if c is OperativeCard:
+			result.append(c)
+		else:
+			result.append_array(_get_all_operative_cards(c))
+	return result
+
+class TacticalEmptySlot extends Button:
+	var slot_idx: int = 0
+	signal slot_clicked(slot: int)
+	signal unit_dropped(slot: int, data: Dictionary)
+	
+	func _ready() -> void:
+		pressed.connect(func(): slot_clicked.emit(slot_idx))
+		
+	func _can_drop_data(_pos: Vector2, data: Variant) -> bool:
+		if not data is Dictionary: return false
+		return data.get("type") == "unit"
+		
+	func _drop_data(_pos: Vector2, data: Variant) -> void:
+		if _can_drop_data(_pos, data):
+			unit_dropped.emit(slot_idx, data)
+
+
 
 func _refresh_augment_tray() -> void:
 	if not augment_tray:
@@ -148,8 +422,9 @@ func _refresh_shop() -> void:
 			freeze_btn.add_theme_color_override("font_color", Color(0.7, 0.7, 0.85))
 			
 	if reroll_btn:
-		reroll_btn.text = "REROLL (%s)" % Constants.format_currency(Constants.BASE_REROLL_COST, true)
-		reroll_btn.disabled = (shop_mgr.gold < Constants.BASE_REROLL_COST)
+		var cost = shop_mgr.get_reroll_cost()
+		reroll_btn.text = "REROLL (%s)" % Constants.format_currency(cost, true)
+		reroll_btn.disabled = (shop_mgr.gold < cost)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
@@ -164,7 +439,7 @@ func _on_freeze_pressed() -> void:
 		_set_status("Shop FROZEN 🔒 — Current offerings will be saved across rounds.", false)
 	else:
 		_set_status("Shop UNLOCKED 🔓 — Offerings will auto-refresh on next round.", false)
-	AudioManager.play_ui_click()
+	_play_sfx("play_ui_click")
 	_refresh_shop()
 
 func _refresh_synergies() -> void:
@@ -181,7 +456,7 @@ func _on_crew_buy_requested(slot_index: int) -> void:
 		if not crew_mgr.last_combinations.is_empty():
 			var last_comb = crew_mgr.last_combinations.back()
 			_show_star_upgrade_banner(last_comb.unit_name, last_comb.new_star_level)
-			AudioManager.play_star_upgrade()
+			_play_sfx("play_star_upgrade")
 	else:
 		_set_status("Recruitment failed: %s" % result.error, true)
 	_refresh_all()
@@ -295,7 +570,7 @@ func _on_augment_dropped_on_unit(unit: UnitInstance, target_slot: int, drag_data
 			var success = crew_mgr.equip_augment_to_unit(unit, target_slot, inv_idx)
 			if success:
 				_set_status("Equipped [%s] to %s." % [aug_res.display_name, unit.unit_resource.display_name], false)
-				AudioManager.play_ui_click()
+				_play_sfx("play_ui_click")
 			else:
 				_set_status("Incompatible slot! Check tags & slot requirements.", true)
 	elif dtype == "slotted_augment":
@@ -310,14 +585,14 @@ func _on_augment_dropped_on_unit(unit: UnitInstance, target_slot: int, drag_data
 				unit.slotted_augments[src_slot] = target_aug
 				crew_mgr.recalculate_synergies()
 				_set_status("Moved [%s] to slot %d." % [src_aug.display_name, target_slot + 1], false)
-				AudioManager.play_ui_click()
+				_play_sfx("play_ui_click")
 			else:
 				# Transfer between operatives
 				if crew_mgr.unequip_augment_from_unit(src_unit, src_slot):
 					var new_inv_idx = crew_mgr.augment_inventory.size() - 1
 					if crew_mgr.equip_augment_to_unit(unit, target_slot, new_inv_idx):
 						_set_status("Transferred [%s] to %s." % [src_aug.display_name, unit.unit_resource.display_name], false)
-						AudioManager.play_ui_click()
+						_play_sfx("play_ui_click")
 					else:
 						_set_status("Incompatible slot on target operative.", true)
 	_refresh_all()
@@ -381,10 +656,16 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
 		var unequipped_aug = src_unit.slotted_augments[src_slot]
 		if crew_mgr.unequip_augment_from_unit(src_unit, src_slot):
 			_set_status("Unequipped [%s] back to inventory." % (unequipped_aug.display_name if unequipped_aug else ""), false)
-			AudioManager.play_ui_click()
+			_play_sfx("play_ui_click")
 			_refresh_all()
 		else:
 			_set_status("Cannot unequip: Inventory is full (Max %d)." % Constants.MAX_INVENTORY_AUGMENTS, true)
+
+func _play_sfx(method_name: String) -> void:
+	if get_node_or_null("/root/AudioManager"):
+		var am = get_node("/root/AudioManager")
+		if am.has_method(method_name):
+			am.call(method_name)
 
 func _set_status(msg: String, is_error: bool = false) -> void:
 	if status_label:

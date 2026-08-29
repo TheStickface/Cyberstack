@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/boss_transit_warden.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "boss_transit_warden"
+display_name = "Transit Warden"
+title = "Undercity Tunnel Controller"
+bio = "Subterranean rail controller who fries approaching crews with massive gridlock EMP discharges."
+role = 1
+faction = 1
+base_cost = 5
+base_max_health = 860.0
+base_attack_damage = 40.0
+base_ability_power = 55.0
+base_attack_speed = 1.0
+base_armor = 25.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 80.0
+base_speed = 60.0
+base_crit_chance = 0.1
+base_evasion = 0.12
+ability_name = "Gridlock EMP"
+ability_description = "Detonates an electromagnetic pulse dealing 220 AP damage to 2 fastest enemies."
+ability_effect_id = "boss_gridlock_emp"

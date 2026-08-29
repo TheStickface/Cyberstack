@@ -27,3 +27,9 @@ base_evasion = 0.05
 ability_name = "Junk Fortress"
 ability_description = "Slams down a riot barrier, absorbing 350 incoming damage and reflecting 25% back as kinetic shrapnel."
 ability_effect_id = "rampart_junk_fortress"
+directional_target = 5
+directional_passive_description = "Junk Bastion: Grants +140 Shield to adjacent allies (Left & Right) at combat start."
+directional_modifiers = {
+5: 140.0
+}
+

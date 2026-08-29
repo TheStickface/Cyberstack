@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/boss_ai_prime_overmind.png" id="2_portrait"]
+
+[resource]
+script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
+id = "boss_ai_prime_overmind"
+display_name = "Prime Overmind"
+title = "Server Vault Sentient Core"
+bio = "A rogue supercomputing entity capable of collapsing cyberware networks and neural pathways."
+role = 1
+faction = 3
+base_cost = 5
+base_max_health = 850.0
+base_attack_damage = 35.0
+base_ability_power = 70.0
+base_attack_speed = 0.95
+base_armor = 20.0
+base_shield = 0.0
+base_starting_mana = 0.0
+base_max_mana = 80.0
+base_speed = 50.0
+base_crit_chance = 0.05
+base_evasion = 0.08
+ability_name = "System Cascade"
+ability_description = "Overloads hostile cyberware, dealing 200 AP damage to 2 enemies and draining 30 mana."
+ability_effect_id = "boss_system_cascade"
