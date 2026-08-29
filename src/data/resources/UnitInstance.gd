@@ -56,6 +56,11 @@ func is_backline() -> bool:
 
 ## 3 Augment slots: index 0 (Primary), index 1 (Secondary), index 2 (Passive)
 var equipped_augments: Array[AugmentResource] = [null, null, null]
+var slotted_augments: Array[AugmentResource]:
+	get:
+		return equipped_augments
+	set(val):
+		equipped_augments = val
 
 
 func get_star_string() -> String:

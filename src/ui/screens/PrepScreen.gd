@@ -213,8 +213,10 @@ func _build_grid_slot_cell(parent: HBoxContainer, slot_idx: int, formation_repor
 			parent.add_child(btn)
 	else:
 		# Locked slot
-		var panel = PanelContainer.new()
+		var panel = TacticalLockedSlot.new()
 		panel.custom_minimum_size = Vector2(150, 112)
+		panel.slot_idx = slot_idx
+		panel.unlock_district = unlock_dist
 		var style = StyleBoxFlat.new()
 		style.bg_color = Color(0.03, 0.02, 0.05, 0.9)
 		style.border_width_left = 1
@@ -419,6 +421,19 @@ class TacticalEmptySlot extends Button:
 	func _drop_data(_pos: Vector2, data: Variant) -> void:
 		if _can_drop_data(_pos, data):
 			unit_dropped.emit(slot_idx, data)
+
+class TacticalLockedSlot extends PanelContainer:
+	var slot_idx: int = 0
+	var unlock_district: int = 2
+	
+	func _ready() -> void:
+		mouse_filter = Control.MOUSE_FILTER_PASS
+		
+	func _can_drop_data(_pos: Vector2, _data: Variant) -> bool:
+		return false
+		
+	func _drop_data(_pos: Vector2, _data: Variant) -> void:
+		pass
 
 
 
@@ -811,21 +826,33 @@ func _on_abandon_btn_pressed() -> void:
 func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 	if not data is Dictionary:
 		return false
-	return data.get("type", "") == "slotted_augment"
+	var dtype = data.get("type", "")
+	return dtype == "slotted_augment" or dtype == "unit" or dtype == "augment"
 
 func _drop_data(_at_position: Vector2, data: Variant) -> void:
-	if not _can_drop_data(_at_position, data):
+	if not data is Dictionary:
 		return
-	var src_unit = data.get("source_unit", null) as UnitInstance
-	var src_slot = data.get("source_slot", -1) as int
-	if src_unit != null and src_slot >= 0:
-		var unequipped_aug = src_unit.slotted_augments[src_slot]
-		if crew_mgr.unequip_augment_from_unit(src_unit, src_slot):
-			_set_status("Unequipped [%s] back to inventory." % (unequipped_aug.display_name if unequipped_aug else ""), false)
-			_play_sfx("play_ui_click")
-			_refresh_all()
-		else:
-			_set_status("Cannot unequip: Inventory is full (Max %d)." % Constants.MAX_INVENTORY_AUGMENTS, true)
+	var dtype = data.get("type", "")
+	if dtype == "slotted_augment":
+		var src_unit = data.get("source_unit", null) as UnitInstance
+		var src_slot = data.get("source_slot", -1) as int
+		if src_unit != null and src_slot >= 0:
+			var unequipped_aug = src_unit.equipped_augments[src_slot]
+			if crew_mgr.unequip_augment_from_unit(src_unit, src_slot):
+				_set_status("Unequipped [%s] back to inventory." % (unequipped_aug.display_name if unequipped_aug else ""), false)
+				_play_sfx("play_ui_click")
+				_refresh_all()
+			else:
+				_set_status("Cannot unequip: Inventory is full (Max %d)." % Constants.MAX_INVENTORY_AUGMENTS, true)
+	elif dtype == "unit":
+		var dragged_u = data.get("unit") as UnitInstance
+		if dragged_u:
+			_set_status("Cannot deploy %s to locked slot or invalid area." % dragged_u.unit_resource.display_name, true)
+		_play_sfx("play_ui_error")
+		_refresh_all()
+	elif dtype == "augment":
+		_set_status("Augment returned to inventory.", false)
+		_refresh_all()
 
 func _play_sfx(method_name: String) -> void:
 	if get_node_or_null("/root/AudioManager"):

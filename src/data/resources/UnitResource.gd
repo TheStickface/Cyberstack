@@ -40,6 +40,10 @@ extends Resource
 @export var directional_modifiers: Dictionary = {}
 
 
+var slot_layout: Array[Enums.SlotType]:
+	get:
+		return get_slot_types()
+
 func get_slot_types() -> Array[Enums.SlotType]:
 	var schema = Constants.ROLE_SLOT_SCHEMAS.get(role, [])
 	var result: Array[Enums.SlotType] = []
