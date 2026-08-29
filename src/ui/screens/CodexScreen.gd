@@ -40,7 +40,7 @@ func _populate_operatives() -> void:
 		
 	for unit in repo.get_all_units():
 		var panel = PanelContainer.new()
-		panel.custom_minimum_size = Vector2(240, 160)
+		panel.custom_minimum_size = Vector2(240, 200)
 		
 		var vbox = VBoxContainer.new()
 		vbox.add_theme_constant_override("separation", 4)
@@ -74,7 +74,27 @@ func _populate_operatives() -> void:
 		bio_lbl.add_theme_font_size_override("font_size", 9)
 		bio_lbl.add_theme_color_override("font_color", Color(0.7, 0.7, 0.8) if is_unlocked else Color(0.3, 0.3, 0.4))
 		vbox.add_child(bio_lbl)
-		
+
+		if is_unlocked and not unit.ability_name.is_empty():
+			var ability_lbl = Label.new()
+			ability_lbl.text = "⚡ %s: %s" % [unit.ability_name, unit.ability_description]
+			ability_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			ability_lbl.add_theme_font_size_override("font_size", 9)
+			ability_lbl.add_theme_color_override("font_color", Color(1, 0.2, 0.6))
+			vbox.add_child(ability_lbl)
+
+		if is_unlocked and unit.has_directional():
+			var dir_lbl = Label.new()
+			dir_lbl.text = "◆ %s (%s): %s" % [
+				unit.directional_passive_description,
+				unit.get_directional_header(),
+				", ".join(unit.get_directional_stat_lines())
+			]
+			dir_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			dir_lbl.add_theme_font_size_override("font_size", 9)
+			dir_lbl.add_theme_color_override("font_color", Color(0.5, 0.85, 1.0))
+			vbox.add_child(dir_lbl)
+
 		panel.add_child(vbox)
 		operatives_container.add_child(panel)
 

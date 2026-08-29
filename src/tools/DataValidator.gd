@@ -49,6 +49,12 @@ func _init() -> void:
 		if unit.base_max_health <= 0:
 			printerr("    [ERROR] Unit %s has 0 or negative base health!" % unit.display_name)
 			errors_count += 1
+		if unit.has_directional() and unit.directional_passive_description.is_empty():
+			printerr("    [ERROR] Unit %s has directional_target set (%s) but no directional_passive_description name tag!" % [unit.display_name, unit.get_directional_header()])
+			errors_count += 1
+		if unit.has_directional() and unit.directional_modifiers.is_empty():
+			printerr("    [ERROR] Unit %s has directional_target set (%s) but empty directional_modifiers!" % [unit.display_name, unit.get_directional_header()])
+			errors_count += 1
 
 	print("\n[+] Registered Augments: %d" % repo.augments.size())
 	for a_id in repo.augments.keys():
@@ -65,6 +71,12 @@ func _init() -> void:
 		if aug.tags.is_empty():
 			printerr("    [WARNING] Augment %s has no tags assigned!" % aug.display_name)
 			warnings_count += 1
+		if aug.has_proc() and aug.get_proc_fragment().is_empty():
+			printerr("    [ERROR] Augment %s has a proc trigger (%s) but no visible effect text (trigger_params has no recognized key and description is empty)!" % [aug.display_name, aug.get_proc_header()])
+			errors_count += 1
+		if aug.has_directional() and aug.directional_modifiers.is_empty():
+			printerr("    [ERROR] Augment %s has directional_target set (%s) but empty directional_modifiers!" % [aug.display_name, aug.get_directional_header()])
+			errors_count += 1
 
 	print("\n[+] Registered Districts: %d" % repo.districts.size())
 	for d_id in repo.districts.keys():

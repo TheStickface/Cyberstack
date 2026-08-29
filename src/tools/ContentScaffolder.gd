@@ -37,7 +37,7 @@ static func create_augment(
 	tags: Array[Enums.AugmentTag],
 	stat_modifiers: Dictionary,
 	cost: int = 2,
-	trigger_type: Enums.TriggerType = Enums.TriggerType.NONE,
+	trigger_type: Enums.TriggerType = Enums.TriggerType.PASSIVE_STAT,
 	trigger_effect_id: String = ""
 ) -> AugmentResource:
 	var res = AugmentResource.new()
