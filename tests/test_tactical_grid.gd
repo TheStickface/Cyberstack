@@ -42,7 +42,7 @@ func test_district_slot_unlock_curve() -> void:
 	var repo = DataRepoScript.new()
 	repo.load_all_data("res://data")
 	
-	# District 1: Full bottom row (0, 1, 2) unlocked (Max crew 2). Top row (3, 4, 5) locked.
+	# District 1: Full bottom row (0, 1, 2) unlocked (Max crew 3). Top row (3, 4, 5) locked.
 	var crew_d1 = CrewManager.new(1, repo)
 	_assert(crew_d1.is_slot_unlocked(0), "D1: Slot 0 (Bottom Left) should be unlocked")
 	_assert(crew_d1.is_slot_unlocked(1), "D1: Slot 1 (Bottom Center) should be unlocked")
