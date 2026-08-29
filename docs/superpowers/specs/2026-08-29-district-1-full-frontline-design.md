@@ -131,3 +131,33 @@ balance knob rather than a magic number inlined in combat logic
 - Enemy squad *composition* changes (faction, tier, augment loadout).
 - Dialing back the `19f7c91` early synergy shop bias (only revisited if the sim
   report shows D1 became too easy).
+
+## Outcome (2026-08-29)
+
+Implemented across commits `78d9821` (slot ungating), `5f992d9` (D1 field cap
+2→3, `DISTRICT_ENEMY_COUNTS`, `CombatBridge` + test fallout), and `eeb48e7`
+(stale test comment). Full suite green (20 suites / 564 assertions).
+
+**10k-run `BalanceSimulator` re-sim** (`5023c6b`, `data/balance_simulation_report.md`):
+
+| Metric | Baseline | After |
+|---|---|---|
+| D1 player eliminations | 6.0% | 0.0% (0 / 10,000) |
+| D1 stomp rate | 69.4% | 89.5% |
+| D1 nailbiters | 0.9% | 0.0% |
+| Global run clear rate | 69.0% | 73.2% |
+| D2 mortality | 13.3% | 8.6% |
+| D4 mortality | 9.9% | 16.1% |
+| Gold entering D2 | 30.3 | 23.4 (extra unit bought in D1 — no inflation) |
+
+Acceptance criteria 1–5 met. Economy watch-item cleared (D2-entry gold fell, not
+rose). The "early synergy acceleration" risk materialized as expected: **D1 is
+now a zero-stakes district.**
+
+**Decision: ship as-is.** D1 as a safe build-identity phase is acceptable for a
+roguelite opener; the run stays in genuine doubt through D4. The early-synergy
+shop-bias lever was deliberately left untouched.
+
+**Follow-up (not actioned):** D4 mortality rose to 16.1% — difficulty relocated
+to the endgame rather than being removed. Worth a look in the next balance pass;
+tracked here only, not yet in the Marvin backlog.
