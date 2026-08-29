@@ -805,9 +805,16 @@ func _on_lock_in_pressed() -> void:
 	if result.valid:
 		_set_status("Deployment authorized. Entering combat...", false)
 		_play_sfx("play_ui_click")
+		
+		# If this prep phase was entered for a dedicated SHOP node on the map, complete and advance the encounter
+		if run_mgr and run_mgr.get_current_encounter_type() == Enums.EncounterType.SHOP:
+			run_mgr.complete_encounter(true)
+			
 		if get_node_or_null("/root/GameManager"):
 			var gm = get_node("/root/GameManager")
 			if gm.active_run_manager:
+				if gm.active_run_manager.get_current_encounter_type() == Enums.EncounterType.SHOP:
+					gm.active_run_manager.complete_encounter(true)
 				SaveManager.save_active_run(gm.active_run_manager)
 			gm.open_map()
 	else:

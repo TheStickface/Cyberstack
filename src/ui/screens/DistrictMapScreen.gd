@@ -134,10 +134,12 @@ func _complete_current_encounter(victory: bool = true) -> void:
 	var status = result.get("status", "")
 	
 	if status == "district_advanced":
-		status_label.text = "DISTRICT CLEARED! Advanced to District %d. Crew cap increased to %d." % [
-			result.get("new_district", 1),
+		status_label.text = "DISTRICT CLEARED! Advanced to %s. Crew cap increased to %d." % [
+			result.get("stage", ""),
 			result.get("new_crew_cap", 2)
 		]
+	elif status == "subdistrict_advanced":
+		status_label.text = "PERIMETER CLEARED! Advancing to Stronghold (%s)." % result.get("stage", "")
 	elif status == "victory":
 		status_label.text = "VICTORY! All 4 city districts conquered!"
 	elif status == "game_over":
