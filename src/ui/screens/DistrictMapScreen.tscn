@@ -61,11 +61,18 @@ theme_override_font_sizes/font_size = 14
 text = "CREDITS: 12"
 
 [node name="ManageCrewBtn" type="Button" parent="Margin/VBox/TopBar"]
-custom_minimum_size = Vector2(160, 34)
+custom_minimum_size = Vector2(150, 34)
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0.95, 0.83, 1)
 theme_override_font_sizes/font_size = 11
-text = "⚙ MANAGE CREW / SHOP"
+text = "⚙ MANAGE / SHOP"
+
+[node name="AbandonBtn" type="Button" parent="Margin/VBox/TopBar"]
+custom_minimum_size = Vector2(110, 34)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.25, 0.35, 1)
+theme_override_font_sizes/font_size = 11
+text = "✖ ABANDON"
 
 [node name="CenterArea" type="VBoxContainer" parent="Margin/VBox"]
 layout_mode = 2
@@ -114,4 +121,5 @@ visible = false
 layout_mode = 1
 
 [connection signal="pressed" from="Margin/VBox/TopBar/ManageCrewBtn" to="." method="_on_manage_crew_btn_pressed"]
+[connection signal="pressed" from="Margin/VBox/TopBar/AbandonBtn" to="." method="_on_abandon_btn_pressed"]
 [connection signal="pressed" from="Margin/VBox/BottomBar/ActionBtn" to="." method="_on_action_btn_pressed"]

@@ -8,6 +8,10 @@ var instance_id: String = ""
 var level: int = 1 # Legacy alias for tier
 var star_level: int = 1 # 1 = Tier 1 (★), 2 = Tier 2 (★★), 3 = Tier 3 (★★★)
 
+var display_name: String:
+	get:
+		return unit_resource.display_name if unit_resource else "Operative"
+
 ## 2x3 Tactical Grid placement: slot index 0..5
 ## Bottom Row (Row 1, Frontline): 0 (Left), 1 (Center), 2 (Right)
 ## Top Row (Row 0, Backline): 3 (Top Left - Dist 3), 4 (Top Center - Dist 2), 5 (Top Right - Dist 4)

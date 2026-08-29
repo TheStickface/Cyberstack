@@ -7,11 +7,11 @@
 script = ExtResource("2_syn")
 id = "corp_2"
 name = "Aegis Protocol I"
-description = "Corp Enforcers start combat with +150 Shield and +15 Armor."
+description = "Corp Enforcers start combat with +180 Shield and +20 Armor."
 required_count = 2
 stat_modifiers = {
-4: 15.0,
-5: 150.0
+4: 20.0,
+5: 180.0
 }
 trigger_effect_id = ""
 

@@ -153,3 +153,24 @@ func test_calculate_synergy_impact() -> Dictionary:
 		return {"passed": false, "message": "Expected is_duplicate to be true for duplicate Blitz", "assertions": 3}
 		
 	return {"passed": true, "assertions": 3}
+
+func test_synergy_hud_hover_tooltips() -> Dictionary:
+	var fac_res = repo.get_faction(Enums.Faction.STREET_RUNNERS)
+	if fac_res == null:
+		return {"passed": false, "message": "Street Runners faction resource missing", "assertions": 1}
+		
+	var tooltip_node = SynergyTooltip.create_faction_tooltip_node(fac_res, 2)
+	if tooltip_node == null:
+		return {"passed": false, "message": "create_faction_tooltip_node returned null", "assertions": 2}
+		
+	var tag_res = repo.get_tag(Enums.AugmentTag.KINETIC)
+	if tag_res == null:
+		return {"passed": false, "message": "Kinetic tag resource missing", "assertions": 3}
+		
+	var tag_tooltip_node = SynergyTooltip.create_tag_tooltip_node(tag_res, 1)
+	if tag_tooltip_node == null:
+		return {"passed": false, "message": "create_tag_tooltip_node returned null", "assertions": 4}
+		
+	tooltip_node.free()
+	tag_tooltip_node.free()
+	return {"passed": true, "assertions": 4}

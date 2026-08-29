@@ -108,8 +108,8 @@ func test_shop_manager_thematic_integration() -> void:
 	
 	# 2. Test Slum Market Bonus Crew Slots
 	var slum = repo.get_district("district_1_slum_market")
-	shop_mgr.generate_shop_offerings(1, repo, 4, 2, true, slum)
-	_assert(shop_mgr.unit_slots.size() == 5, "Slum Market should generate 5 crew slots (4 base + 1 bonus)")
+	shop_mgr.generate_shop_offerings(1, repo, 5, 2, true, slum)
+	_assert(shop_mgr.unit_slots.size() == 6, "Slum Market should generate 6 crew slots (5 base + 1 bonus)")
 	
 	# 3. Test Scrap Refund Bonus in Kinetic Yards
 	var kinetic = repo.get_district("kinetic_yards")

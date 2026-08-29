@@ -259,3 +259,197 @@ static func create_augment_tooltip_node(aug_res: AugmentResource) -> PanelContai
 		main_vbox.add_child(proc_frag)
 
 	return panel
+
+static func create_faction_tooltip_node(fac_res: FactionResource, current_count: int) -> PanelContainer:
+	var panel = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(250, 0)
+	panel.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	panel.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.04, 0.03, 0.10, 0.98)
+	style.border_width_left = 1
+	style.border_width_top = 1
+	style.border_width_right = 1
+	style.border_width_bottom = 1
+	style.border_color = fac_res.theme_color if fac_res else Color(0, 0.95, 0.83)
+	style.corner_radius_top_left = 4
+	style.corner_radius_top_right = 4
+	style.corner_radius_bottom_left = 4
+	style.corner_radius_bottom_right = 4
+	style.shadow_color = Color(0, 0, 0, 0.85)
+	style.shadow_size = 6
+	panel.add_theme_stylebox_override("panel", style)
+	
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 10)
+	margin.add_theme_constant_override("margin_right", 10)
+	margin.add_theme_constant_override("margin_top", 8)
+	margin.add_theme_constant_override("margin_bottom", 8)
+	panel.add_child(margin)
+	
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 4)
+	margin.add_child(vbox)
+	
+	if fac_res == null:
+		return panel
+		
+	# Header Row
+	var title = Label.new()
+	title.text = "%s Faction" % fac_res.display_name
+	title.add_theme_font_size_override("font_size", 11)
+	title.add_theme_color_override("font_color", fac_res.theme_color)
+	vbox.add_child(title)
+	
+	# Current Count Status
+	var status_lbl = Label.new()
+	var active_bonus = fac_res.get_highest_bonus_for_count(current_count)
+	if current_count >= 2:
+		status_lbl.text = "◆ %d Fielded (Active: %s)" % [current_count, active_bonus.name if active_bonus else "Active"]
+		status_lbl.add_theme_color_override("font_color", Color(0, 1.0, 0.85))
+	else:
+		status_lbl.text = "◇ %d Fielded (Inactive — Need 2 to activate)" % current_count
+		status_lbl.add_theme_color_override("font_color", Color(0.65, 0.65, 0.75))
+	status_lbl.add_theme_font_size_override("font_size", 8)
+	vbox.add_child(status_lbl)
+	
+	# Bio / Overview
+	if not fac_res.description.is_empty():
+		var desc = Label.new()
+		desc.text = fac_res.description
+		desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		desc.custom_minimum_size = Vector2(230, 0)
+		desc.add_theme_font_size_override("font_size", 7)
+		desc.add_theme_color_override("font_color", Color(0.6, 0.6, 0.7))
+		vbox.add_child(desc)
+		
+	# Threshold Levels
+	var thresh_header = Label.new()
+	thresh_header.text = "--- TRAIT THRESHOLDS ---"
+	thresh_header.add_theme_font_size_override("font_size", 8)
+	thresh_header.add_theme_color_override("font_color", Color(1, 0.85, 0.2))
+	vbox.add_child(thresh_header)
+	
+	for bonus in fac_res.threshold_bonuses:
+		var is_unlocked = (current_count >= bonus.required_count)
+		var b_row = VBoxContainer.new()
+		b_row.add_theme_constant_override("separation", 1)
+		vbox.add_child(b_row)
+		
+		var b_title = Label.new()
+		if is_unlocked:
+			b_title.text = "▶ (%d) %s [ACTIVE]" % [bonus.required_count, bonus.name]
+			b_title.add_theme_color_override("font_color", Color(0, 0.95, 0.83))
+		else:
+			b_title.text = "▷ (%d) %s (Need %d — %d/%d)" % [bonus.required_count, bonus.name, bonus.required_count, current_count, bonus.required_count]
+			b_title.add_theme_color_override("font_color", Color(0.5, 0.5, 0.6))
+		b_title.add_theme_font_size_override("font_size", 8)
+		b_row.add_child(b_title)
+		
+		var b_desc = Label.new()
+		b_desc.text = bonus.description
+		b_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		b_desc.custom_minimum_size = Vector2(230, 0)
+		b_desc.add_theme_font_size_override("font_size", 7)
+		b_desc.add_theme_color_override("font_color", Color(0.85, 0.9, 1.0) if is_unlocked else Color(0.45, 0.45, 0.55))
+		b_row.add_child(b_desc)
+		
+	return panel
+
+static func create_tag_tooltip_node(tag_res: TagResource, current_count: int) -> PanelContainer:
+	var panel = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(250, 0)
+	panel.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	panel.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.04, 0.03, 0.10, 0.98)
+	style.border_width_left = 1
+	style.border_width_top = 1
+	style.border_width_right = 1
+	style.border_width_bottom = 1
+	style.border_color = tag_res.theme_color if tag_res else Color(0.7, 0.3, 1.0)
+	style.corner_radius_top_left = 4
+	style.corner_radius_top_right = 4
+	style.corner_radius_bottom_left = 4
+	style.corner_radius_bottom_right = 4
+	style.shadow_color = Color(0, 0, 0, 0.85)
+	style.shadow_size = 6
+	panel.add_theme_stylebox_override("panel", style)
+	
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 10)
+	margin.add_theme_constant_override("margin_right", 10)
+	margin.add_theme_constant_override("margin_top", 8)
+	margin.add_theme_constant_override("margin_bottom", 8)
+	panel.add_child(margin)
+	
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 4)
+	margin.add_child(vbox)
+	
+	if tag_res == null:
+		return panel
+		
+	# Header Row
+	var title = Label.new()
+	title.text = "%s Tag Chain" % tag_res.display_name
+	title.add_theme_font_size_override("font_size", 11)
+	title.add_theme_color_override("font_color", tag_res.theme_color)
+	vbox.add_child(title)
+	
+	# Current Count Status
+	var status_lbl = Label.new()
+	var active_bonus = tag_res.get_highest_chain_bonus(current_count)
+	if current_count >= 2:
+		status_lbl.text = "◆ %d Chips Equipped (Active: %s)" % [current_count, active_bonus.name if active_bonus else "Active"]
+		status_lbl.add_theme_color_override("font_color", Color(0.7, 0.3, 1.0))
+	else:
+		status_lbl.text = "◇ %d Chips Equipped (Inactive — Need 2 to activate)" % current_count
+		status_lbl.add_theme_color_override("font_color", Color(0.65, 0.65, 0.75))
+	status_lbl.add_theme_font_size_override("font_size", 8)
+	vbox.add_child(status_lbl)
+	
+	# Description
+	if not tag_res.description.is_empty():
+		var desc = Label.new()
+		desc.text = tag_res.description
+		desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		desc.custom_minimum_size = Vector2(230, 0)
+		desc.add_theme_font_size_override("font_size", 7)
+		desc.add_theme_color_override("font_color", Color(0.6, 0.6, 0.7))
+		vbox.add_child(desc)
+		
+	# Chain Levels
+	var thresh_header = Label.new()
+	thresh_header.text = "--- CHAIN THRESHOLDS ---"
+	thresh_header.add_theme_font_size_override("font_size", 8)
+	thresh_header.add_theme_color_override("font_color", Color(1, 0.85, 0.2))
+	vbox.add_child(thresh_header)
+	
+	for bonus in tag_res.chain_bonuses:
+		var is_unlocked = (current_count >= bonus.required_count)
+		var b_row = VBoxContainer.new()
+		b_row.add_theme_constant_override("separation", 1)
+		vbox.add_child(b_row)
+		
+		var b_title = Label.new()
+		if is_unlocked:
+			b_title.text = "▶ (%d) %s [ACTIVE]" % [bonus.required_count, bonus.name]
+			b_title.add_theme_color_override("font_color", Color(0.7, 0.4, 1.0))
+		else:
+			b_title.text = "▷ (%d) %s (Need %d — %d/%d)" % [bonus.required_count, bonus.name, bonus.required_count, current_count, bonus.required_count]
+			b_title.add_theme_color_override("font_color", Color(0.5, 0.5, 0.6))
+		b_title.add_theme_font_size_override("font_size", 8)
+		b_row.add_child(b_title)
+		
+		var b_desc = Label.new()
+		b_desc.text = bonus.description
+		b_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		b_desc.custom_minimum_size = Vector2(230, 0)
+		b_desc.add_theme_font_size_override("font_size", 7)
+		b_desc.add_theme_color_override("font_color", Color(0.9, 0.85, 1.0) if is_unlocked else Color(0.45, 0.45, 0.55))
+		b_row.add_child(b_desc)
+		
+	return panel

@@ -144,5 +144,9 @@ func _complete_current_encounter(victory: bool = true) -> void:
 		
 	_refresh_map()
 
+func _on_abandon_btn_pressed() -> void:
+	if get_node_or_null("/root/GameManager"):
+		get_node("/root/GameManager").abandon_run()
+
 func _on_node_clicked(node_idx: int) -> void:
 	pass

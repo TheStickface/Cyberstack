@@ -25,15 +25,20 @@ static func record_run_summary(
 	event.victory = summary.get("victory", false)
 	event.district_index = summary.get("district", 1)
 	event.duration_seconds = summary.get("duration", randf_range(180.0, 720.0))
-	event.gold_spent = summary.get("gold_earned", 25)
-	
+	event.gold_spent = int(summary.get("gold_spent", 0))
+
 	for unit in crew:
 		if unit and unit.unit_resource:
 			event.fielded_unit_ids.append(unit.unit_resource.id)
+			var fac_id := int(unit.unit_resource.faction)
+			event.active_factions[fac_id] = int(event.active_factions.get(fac_id, 0)) + 1
 			for aug in unit.get_equipped_augments():
 				if aug:
 					event.equipped_augment_ids.append(aug.id)
-					
+			for tag in unit.get_all_tags():
+				var tag_id := int(tag)
+				event.active_tags[tag_id] = int(event.active_tags.get(tag_id, 0)) + 1
+
 	var records = load_all_records(path)
 	records.append(event)
 	save_records(records, path)
@@ -120,11 +125,16 @@ static func generate_community_sample_data(count: int = 50, repo_instance: Objec
 		for u_idx in range(crew_size):
 			var u: UnitResource = shuffled_units[u_idx]
 			ev.fielded_unit_ids.append(u.id)
-			
+			var fac_id := int(u.faction)
+			ev.active_factions[fac_id] = int(ev.active_factions.get(fac_id, 0)) + 1
+
 			# Add random augments
 			if not all_augs.is_empty() and randf() < 0.75:
 				var a: AugmentResource = all_augs[randi() % all_augs.size()]
 				ev.equipped_augment_ids.append(a.id)
+				for tag in a.tags:
+					var tag_id := int(tag)
+					ev.active_tags[tag_id] = int(ev.active_tags.get(tag_id, 0)) + 1
 				
 		sample_records.append(ev)
 		

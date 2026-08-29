@@ -24,14 +24,17 @@ var selected_inventory_idx: int = -1
 @onready var gold_label: Label = $Margin/VBox/TopBar/GoldLabel
 @onready var lock_in_btn: Button = $Margin/VBox/TopBar/LockInBtn
 
-@onready var field_container: HBoxContainer = $Margin/VBox/MainBody/BoardArea/FieldSection/FieldScroll/FieldContainer
+@onready var field_container: VBoxContainer = $Margin/VBox/MainBody/BoardArea/FieldSection/FieldScroll/FieldContainer
 @onready var bench_container: HBoxContainer = $Margin/VBox/MainBody/BoardArea/BenchSection/BenchScroll/BenchContainer
 @onready var crew_shop_container: HBoxContainer = $Margin/VBox/MainBody/BoardArea/CrewShop/CrewShopScroll/CrewShopContainer
-@onready var augment_shop_container: HBoxContainer = $Margin/VBox/MainBody/BoardArea/AugmentShop/AugmentShopScroll/AugmentShopContainer
+@onready var augment_shop_container: HBoxContainer = $Margin/VBox/MainBody/Sidebar/AugmentShop/AugmentShopScroll/AugmentShopContainer
 @onready var freeze_btn: Button = $Margin/VBox/MainBody/BoardArea/CrewShop/CrewShopHeader/FreezeBtn
 @onready var reroll_btn: Button = $Margin/VBox/MainBody/BoardArea/CrewShop/CrewShopHeader/RerollBtn
+@onready var tier_odds_label: RichTextLabel = get_node_or_null("Margin/VBox/MainBody/BoardArea/CrewShop/CrewShopHeader/TierOddsLabel")
 
 @onready var synergy_hud: SynergyTrackerHUD = $Margin/VBox/MainBody/Sidebar/SynergyTrackerHUD
+@onready var overdrive_section: VBoxContainer = get_node_or_null("Margin/VBox/MainBody/Sidebar/OverdriveSection")
+@onready var overdrive_btn: Button = get_node_or_null("Margin/VBox/MainBody/Sidebar/OverdriveSection/OverdriveBtn")
 @onready var augment_tray: HBoxContainer = $Margin/VBox/MainBody/Sidebar/AugmentTray/AugmentScroll/AugmentContainer
 @onready var status_label: Label = $Margin/VBox/StatusLabel
 
@@ -174,7 +177,8 @@ func _build_grid_slot_cell(parent: HBoxContainer, slot_idx: int, formation_repor
 		if unit != null:
 			var card: OperativeCard = OperativeCardScene.instantiate()
 			parent.add_child(card)
-			card.setup(unit, true)
+			var tags = formation_report[unit].get("formation_tags", []) if formation_report.has(unit) else []
+			card.setup(unit, true, tags)
 			card.slot_clicked.connect(_on_unit_slot_clicked)
 			card.slot_unequip_requested.connect(_on_unit_slot_unequip_requested)
 			card.unit_toggle_field_requested.connect(_on_unit_toggle_field)
@@ -183,19 +187,13 @@ func _build_grid_slot_cell(parent: HBoxContainer, slot_idx: int, formation_repor
 			card.unit_dropped_on_card.connect(_on_unit_dropped_on_card)
 			card.mouse_entered.connect(func(): _on_grid_card_hovered(card, unit))
 			card.mouse_exited.connect(func(): _on_grid_card_unhovered(card))
-			
-			# Attach formation badge if bonuses are active
-			if formation_report.has(unit):
-				var tags = formation_report[unit].get("formation_tags", [])
-				if not tags.is_empty() and card.ability_label:
-					card.ability_label.text = "%s\n%s" % [card.ability_label.text, " ".join(tags)]
 		else:
 			# Empty unlocked tactical slot with drag/drop acceptance
 			var btn = TacticalEmptySlot.new()
-			btn.custom_minimum_size = Vector2(150, 155)
+			btn.custom_minimum_size = Vector2(150, 112)
 			btn.slot_idx = slot_idx
-			btn.text = "+ DEPLOY\n[SLOT %d]\n(CLICK OR DROP)" % (slot_idx + 1)
-			btn.add_theme_font_size_override("font_size", 9)
+			btn.text = "+ DEPLOY\n[SLOT %d]\n(CLICK/DROP)" % (slot_idx + 1)
+			btn.add_theme_font_size_override("font_size", 8)
 			btn.add_theme_color_override("font_color", Color(0, 0.85, 0.75, 0.7))
 			var style = StyleBoxFlat.new()
 			style.bg_color = Color(0.04, 0.03, 0.08, 0.6)
@@ -215,7 +213,7 @@ func _build_grid_slot_cell(parent: HBoxContainer, slot_idx: int, formation_repor
 	else:
 		# Locked slot
 		var panel = PanelContainer.new()
-		panel.custom_minimum_size = Vector2(150, 155)
+		panel.custom_minimum_size = Vector2(150, 112)
 		var style = StyleBoxFlat.new()
 		style.bg_color = Color(0.03, 0.02, 0.05, 0.9)
 		style.border_width_left = 1
@@ -230,10 +228,10 @@ func _build_grid_slot_cell(parent: HBoxContainer, slot_idx: int, formation_repor
 		panel.add_theme_stylebox_override("panel", style)
 		
 		var lbl = Label.new()
-		lbl.text = "🔒 LOCKED\n(UNLOCKS IN\nDISTRICT %d)" % unlock_dist
+		lbl.text = "🔒 LOCKED\n(DISTRICT %d)" % unlock_dist
 		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		lbl.add_theme_font_size_override("font_size", 9)
+		lbl.add_theme_font_size_override("font_size", 8)
 		lbl.add_theme_color_override("font_color", Color(0.6, 0.4, 0.7, 0.6))
 		panel.add_child(lbl)
 		parent.add_child(panel)
@@ -275,14 +273,29 @@ func _on_unit_dropped_on_empty_slot(slot_idx: int, drag_data: Dictionary) -> voi
 	else:
 		var b_idx = crew_mgr.benched_units.find(incoming_unit)
 		if b_idx != -1:
-			crew_mgr.deploy_bench_to_grid(b_idx, slot_idx)
-			_set_status("Deployed %s to Tactical Slot %d." % [incoming_unit.unit_resource.display_name, slot_idx + 1], false)
+			if crew_mgr.fielded_units.size() >= crew_mgr.get_max_field_units() and crew_mgr.tactical_grid[slot_idx] == null:
+				_set_status("Cannot deploy %s: District crew limit reached (%d/%d max fielded)." % [
+					incoming_unit.unit_resource.display_name, crew_mgr.fielded_units.size(), crew_mgr.get_max_field_units()
+				], true)
+				_play_sfx("play_ui_error")
+				return
+			var deployed = crew_mgr.deploy_bench_to_grid(b_idx, slot_idx)
+			if deployed:
+				_set_status("Deployed %s to Tactical Slot %d." % [incoming_unit.unit_resource.display_name, slot_idx + 1], false)
+			else:
+				_set_status("Failed to deploy %s to slot %d." % [incoming_unit.unit_resource.display_name, slot_idx + 1], true)
 			
 	_play_sfx("play_ui_click")
 	_refresh_all()
 
 func _on_empty_slot_clicked(slot_idx: int) -> void:
 	if not crew_mgr.benched_units.is_empty():
+		if crew_mgr.fielded_units.size() >= crew_mgr.get_max_field_units() and crew_mgr.tactical_grid[slot_idx] == null:
+			_set_status("Cannot deploy: District crew limit reached (%d/%d max fielded)." % [
+				crew_mgr.fielded_units.size(), crew_mgr.get_max_field_units()
+			], true)
+			_play_sfx("play_ui_error")
+			return
 		var deployed = crew_mgr.deploy_bench_to_grid(0, slot_idx)
 		if deployed:
 			_set_status("Operative deployed to Tactical Slot %d." % (slot_idx + 1), false)
@@ -312,7 +325,7 @@ func _recalculate_formation_tethers(focused_unit: UnitInstance = null) -> void:
 	if field_container:
 		for card in _get_all_operative_cards(field_container):
 			if card.unit_instance != null:
-				card_map[card.unit_instance] = tether_overlay.to_local(card.global_position + card.size * 0.5)
+				card_map[card.unit_instance] = (card.global_position + card.size * 0.5) - tether_overlay.global_position
 				
 	for slot_idx in range(6):
 		var unit = crew_mgr.tactical_grid[slot_idx]
@@ -359,6 +372,13 @@ func _recalculate_formation_tethers(focused_unit: UnitInstance = null) -> void:
 			for t_u in targets:
 				if card_map.has(t_u):
 					tether_overlay.add_tether(u_pos, card_map[t_u], TacticalTetherOverlayScript.COLOR_GENERIC_LINK, u_res.display_name)
+					
+		for aug in unit.equipped_augments:
+			if aug and aug.directional_target != Enums.GridDirection.NONE:
+				var targets = crew_mgr.get_adjacent_units(row, col, aug.directional_target)
+				for t_u in targets:
+					if card_map.has(t_u):
+						tether_overlay.add_tether(u_pos, card_map[t_u], TacticalTetherOverlayScript.COLOR_GENERIC_LINK, aug.display_name)
 
 
 func _get_all_operative_cards(node: Node) -> Array[OperativeCard]:
@@ -438,6 +458,20 @@ func _refresh_shop() -> void:
 		var cost = shop_mgr.get_reroll_cost()
 		reroll_btn.text = "REROLL (%s)" % Constants.format_currency(cost, true)
 		reroll_btn.disabled = (shop_mgr.gold < cost)
+		
+	if tier_odds_label and shop_mgr:
+		var odds = shop_mgr.get_current_unit_tier_odds()
+		var t1 = int(odds.get(1, 0.0) * 100)
+		var t2 = int(odds.get(2, 0.0) * 100)
+		var t3 = int(odds.get(3, 0.0) * 100)
+		tier_odds_label.text = "[font_size=8][color=#9999aa]T1:[/color]%d%% [color=#00f5d4]T2:[/color]%d%% [color=#ffd166]T3:[/color]%d%%[/font_size]" % [t1, t2, t3]
+		
+	if overdrive_section:
+		overdrive_section.visible = (crew_mgr != null and crew_mgr.current_district >= 3)
+	if overdrive_btn and shop_mgr:
+		var cost = shop_mgr.get_overdrive_cost()
+		overdrive_btn.text = "⚡ OVERDRIVE (%s)" % Constants.format_currency(cost, true)
+		overdrive_btn.disabled = (shop_mgr.gold < cost)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
@@ -462,7 +496,13 @@ func _refresh_synergies() -> void:
 func _on_crew_buy_requested(slot_index: int) -> void:
 	var result = shop_mgr.buy_unit_slot(slot_index, crew_mgr)
 	if result.success:
-		_set_status("Recruited %s to crew." % (result.item.display_name if result.item else "unit"), false)
+		var u_name = "unit"
+		if result.item:
+			if result.item is UnitInstance and result.item.unit_resource:
+				u_name = result.item.unit_resource.display_name
+			elif "display_name" in result.item:
+				u_name = result.item.display_name
+		_set_status("Recruited %s to crew." % u_name, false)
 		crew_mgr.recalculate_synergies()
 		
 		# Check for star upgrades
@@ -512,6 +552,101 @@ func _show_star_upgrade_banner(u_name: String, star_lvl: int) -> void:
 	tween.tween_property(banner, "scale", Vector2(1.05, 1.05), 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tween.tween_property(banner, "scale", Vector2(1.0, 1.0), 0.1)
 	tween.tween_interval(1.2)
+	tween.tween_property(banner, "modulate:a", 0.0, 0.4)
+	tween.tween_callback(banner.queue_free)
+
+func _on_overdrive_pressed() -> void:
+	if shop_mgr == null or crew_mgr == null:
+		return
+		
+	var cost = shop_mgr.get_overdrive_cost()
+	if shop_mgr.gold < cost:
+		_set_status("Overdrive synthesis requires %s credits (Have %s)." % [cost, shop_mgr.gold], true)
+		_play_sfx("play_error")
+		return
+		
+	# Find an upgradeable augment across fielded units first, then benched units
+	var target_unit: UnitInstance = null
+	var target_slot: int = -1
+	for u in crew_mgr.fielded_units:
+		for s in range(u.equipped_augments.size()):
+			if shop_mgr.can_overdrive_augment(u, s):
+				target_unit = u
+				target_slot = s
+				break
+		if target_unit != null:
+			break
+			
+	if target_unit == null:
+		for u in crew_mgr.benched_units:
+			for s in range(u.equipped_augments.size()):
+				if shop_mgr.can_overdrive_augment(u, s):
+					target_unit = u
+					target_slot = s
+					break
+			if target_unit != null:
+				break
+				
+	if target_unit == null:
+		_set_status("No upgradeable equipped augments on crew (Common or Rare required).", true)
+		_play_sfx("play_error")
+		return
+		
+	var prev_name = target_unit.equipped_augments[target_slot].display_name
+	var upgraded_aug = shop_mgr.overdrive_augment(target_unit, target_slot, repo)
+	if upgraded_aug != null:
+		_set_status("⚡ OVERDRIVE SYNTHESIS: %s on %s upgraded to %s (%s)!" % [
+			prev_name,
+			target_unit.display_name,
+			upgraded_aug.display_name,
+			Enums.tier_to_string(upgraded_aug.tier).to_upper()
+		], false)
+		_show_overdrive_upgrade_banner(upgraded_aug.display_name, target_unit.display_name, upgraded_aug.tier)
+		_play_sfx("play_star_upgrade")
+		crew_mgr.recalculate_synergies()
+		_refresh_all()
+	else:
+		_set_status("Overdrive synthesis failed.", true)
+		_play_sfx("play_error")
+
+func _show_overdrive_upgrade_banner(aug_name: String, unit_name: String, tier: Enums.AugmentTier) -> void:
+	var banner = PanelContainer.new()
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.12, 0.04, 0.22, 0.95)
+	style.border_width_left = 2
+	style.border_width_top = 2
+	style.border_width_right = 2
+	style.border_width_bottom = 2
+	style.border_color = Color(0.9, 0.2, 1.0) if tier == Enums.AugmentTier.RARE else Color(1.0, 0.85, 0.0)
+	style.corner_radius_top_left = 6
+	style.corner_radius_top_right = 6
+	style.corner_radius_bottom_left = 6
+	style.corner_radius_bottom_right = 6
+	banner.add_theme_stylebox_override("panel", style)
+	
+	var tier_str = "RARE" if tier == Enums.AugmentTier.RARE else "LEGENDARY"
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 16)
+	margin.add_theme_constant_override("margin_right", 16)
+	margin.add_theme_constant_override("margin_top", 8)
+	margin.add_theme_constant_override("margin_bottom", 8)
+	banner.add_child(margin)
+	
+	var lbl = Label.new()
+	lbl.text = "⚡ OVERDRIVE SYNTHESIS! %s UPGRADED TO %s (%s) ⚡" % [unit_name.to_upper(), aug_name.to_upper(), tier_str]
+	lbl.add_theme_font_size_override("font_size", 13)
+	lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
+	margin.add_child(lbl)
+	
+	var vp_size = get_viewport_rect().size
+	banner.position = Vector2((vp_size.x - 420) / 2.0, vp_size.y * 0.30)
+	banner.scale = Vector2(0.8, 0.8)
+	add_child(banner)
+	
+	var tween = create_tween()
+	tween.tween_property(banner, "scale", Vector2(1.05, 1.05), 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(banner, "scale", Vector2(1.0, 1.0), 0.1)
+	tween.tween_interval(1.4)
 	tween.tween_property(banner, "modulate:a", 0.0, 0.4)
 	tween.tween_callback(banner.queue_free)
 
@@ -654,6 +789,10 @@ func _on_lock_in_pressed() -> void:
 	else:
 		var err_msg = ", ".join(result.errors)
 		_set_status("Lock-in failed: %s" % err_msg, true)
+
+func _on_abandon_btn_pressed() -> void:
+	if get_node_or_null("/root/GameManager"):
+		get_node("/root/GameManager").abandon_run()
 
 func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 	if not data is Dictionary:

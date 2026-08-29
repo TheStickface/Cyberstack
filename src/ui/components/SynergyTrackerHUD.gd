@@ -2,10 +2,29 @@ class_name SynergyTrackerHUD
 extends PanelContainer
 
 ## Live HUD widget displaying active Faction synergies, Tag chains, and Cross-system combos
+## Hovering over any faction or tag item displays full trait threshold benefits and current counts
+
+const SynergyTooltipScript = preload("res://src/ui/components/SynergyTooltip.gd")
+const DataRepoScript = preload("res://src/systems/DataRepository.gd")
 
 @onready var faction_list: VBoxContainer = $VBox/FactionList
 @onready var tag_list: VBoxContainer = $VBox/TagList
 @onready var combo_list: VBoxContainer = $VBox/ComboList
+
+var repo: Object = null
+
+func _get_repo() -> Object:
+	if repo != null:
+		return repo
+	if get_node_or_null("/root/GameManager") and get_node("/root/GameManager").active_run_manager:
+		var rm = get_node("/root/GameManager").active_run_manager
+		if rm._repo:
+			repo = rm._repo
+			return repo
+	repo = DataRepoScript.new()
+	if not repo.is_loaded:
+		repo.load_all_data("res://data")
+	return repo
 
 func update_synergies(report: SynergyReport) -> void:
 	_update_factions(report)
@@ -19,24 +38,25 @@ func _update_factions(report: SynergyReport) -> void:
 	for child in faction_list.get_children():
 		child.queue_free()
 		
-	if report == null or report.faction_counts.is_empty():
-		var empty_lbl = Label.new()
-		empty_lbl.text = "No active faction traits"
-		empty_lbl.add_theme_font_size_override("font_size", 9)
-		empty_lbl.add_theme_color_override("font_color", Color(0.4, 0.4, 0.5))
-		faction_list.add_child(empty_lbl)
-		return
-		
-	for f in report.faction_counts.keys():
-		var count = report.faction_counts[f]
-		var f_name = Enums.faction_to_string(f as Enums.Faction)
+	var r = _get_repo()
+	var all_factions: Array[Enums.Faction] = [
+		Enums.Faction.STREET_RUNNERS,
+		Enums.Faction.CORP_ENFORCERS,
+		Enums.Faction.ROGUE_AIS,
+		Enums.Faction.FIXERS
+	]
+	
+	for f in all_factions:
+		var count = report.faction_counts.get(f, 0) if report else 0
+		var f_name = Enums.faction_to_string(f)
 		var is_active = (count >= 2)
+		var fac_res = r.get_faction(f) if r else null
 		
-		var lbl = Label.new()
-		lbl.text = "• %s (%d): %s" % [f_name, count, "ACTIVE" if is_active else "Inactive"]
-		lbl.add_theme_font_size_override("font_size", 10)
-		lbl.add_theme_color_override("font_color", Color(0, 0.95, 0.83) if is_active else Color(0.5, 0.5, 0.6))
-		faction_list.add_child(lbl)
+		var display_text = "• %s (%d): %s" % [f_name, count, "ACTIVE" if is_active else "Inactive"]
+		var color = Color(0, 0.95, 0.83) if is_active else (Color(0.7, 0.7, 0.8) if count > 0 else Color(0.4, 0.4, 0.5))
+		
+		var item = SynergyHUDItem.new(display_text, "faction", fac_res, count, color)
+		faction_list.add_child(item)
 
 func _update_tags(report: SynergyReport) -> void:
 	if not tag_list:
@@ -45,24 +65,25 @@ func _update_tags(report: SynergyReport) -> void:
 	for child in tag_list.get_children():
 		child.queue_free()
 		
-	if report == null or report.tag_counts.is_empty():
-		var empty_lbl = Label.new()
-		empty_lbl.text = "No augment tags equipped"
-		empty_lbl.add_theme_font_size_override("font_size", 9)
-		empty_lbl.add_theme_color_override("font_color", Color(0.4, 0.4, 0.5))
-		tag_list.add_child(empty_lbl)
-		return
-		
-	for t in report.tag_counts.keys():
-		var count = report.tag_counts[t]
-		var t_name = Enums.tag_to_string(t as Enums.AugmentTag)
+	var r = _get_repo()
+	var all_tags: Array[Enums.AugmentTag] = [
+		Enums.AugmentTag.KINETIC,
+		Enums.AugmentTag.THERMAL,
+		Enums.AugmentTag.NEURAL,
+		Enums.AugmentTag.VIRAL
+	]
+	
+	for t in all_tags:
+		var count = report.tag_counts.get(t, 0) if report else 0
+		var t_name = Enums.tag_to_string(t)
 		var is_active = (count >= 2)
+		var tag_res = r.get_tag(t) if r else null
 		
-		var lbl = Label.new()
-		lbl.text = "• %s Tag (%d): %s" % [t_name, count, "ACTIVE" if is_active else "Inactive"]
-		lbl.add_theme_font_size_override("font_size", 10)
-		lbl.add_theme_color_override("font_color", Color(0.7, 0.3, 1.0) if is_active else Color(0.5, 0.5, 0.6))
-		tag_list.add_child(lbl)
+		var display_text = "• %s Tag (%d): %s" % [t_name, count, "ACTIVE" if is_active else "Inactive"]
+		var color = Color(0.7, 0.3, 1.0) if is_active else (Color(0.7, 0.7, 0.8) if count > 0 else Color(0.4, 0.4, 0.5))
+		
+		var item = SynergyHUDItem.new(display_text, "tag", tag_res, count, color)
+		tag_list.add_child(item)
 
 func _update_combos(report: SynergyReport) -> void:
 	if not combo_list:
@@ -82,7 +103,31 @@ func _update_combos(report: SynergyReport) -> void:
 	for combo in report.cross_system_bonuses:
 		var lbl = Label.new()
 		lbl.text = "★ %s" % combo.name
-		lbl.tooltip_text = combo.description
+		lbl.tooltip_text = "[%s]\n%s" % [combo.name, combo.description]
+		lbl.mouse_filter = Control.MOUSE_FILTER_PASS
 		lbl.add_theme_font_size_override("font_size", 10)
 		lbl.add_theme_color_override("font_color", Color(1, 0.2, 0.5))
 		combo_list.add_child(lbl)
+
+class SynergyHUDItem extends Label:
+	var item_type: String = ""
+	var item_resource: Resource = null
+	var current_count: int = 0
+	
+	func _init(p_text: String, p_type: String, p_res: Resource, p_count: int, p_color: Color) -> void:
+		text = p_text
+		item_type = p_type
+		item_resource = p_res
+		current_count = p_count
+		mouse_filter = Control.MOUSE_FILTER_PASS
+		tooltip_text = "synergy_details"
+		add_theme_font_size_override("font_size", 10)
+		add_theme_color_override("font_color", p_color)
+		
+	func _make_custom_tooltip(_for_text: String) -> Object:
+		if item_type == "faction" and item_resource is FactionResource:
+			return SynergyTooltipScript.create_faction_tooltip_node(item_resource as FactionResource, current_count)
+		elif item_type == "tag" and item_resource is TagResource:
+			return SynergyTooltipScript.create_tag_tooltip_node(item_resource as TagResource, current_count)
+		return null
+

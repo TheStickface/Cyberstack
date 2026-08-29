@@ -235,3 +235,47 @@ static func grid_direction_to_string(dir: GridDirection) -> String:
 		GridDirection.BACKLINE: return "Backline"
 		_: return "None"
 
+static func grid_direction_to_symbol(dir: GridDirection) -> String:
+	match dir:
+		GridDirection.LEFT: return "⮜"
+		GridDirection.RIGHT: return "⮞"
+		GridDirection.ABOVE: return "▲"
+		GridDirection.BELOW: return "▼"
+		GridDirection.ADJACENT: return "⯎"
+		GridDirection.SAME_ROW: return "⮂"
+		GridDirection.SAME_COLUMN: return "⯯"
+		GridDirection.ALL_UNITS: return "★"
+		GridDirection.FRONTLINE: return "▼"
+		GridDirection.BACKLINE: return "▲"
+		_: return ""
+
+static func stat_to_short_string(stat: StatType) -> String:
+	match stat:
+		StatType.MAX_HEALTH: return "HP"
+		StatType.ATTACK_DAMAGE: return "AD"
+		StatType.ABILITY_POWER: return "AP"
+		StatType.ATTACK_SPEED: return "AS"
+		StatType.ARMOR: return "ARM"
+		StatType.SHIELD: return "SHD"
+		StatType.STARTING_MANA: return "MP"
+		StatType.MAX_MANA: return "Max MP"
+		StatType.CRIT_CHANCE: return "Crit"
+		StatType.SPEED: return "SPD"
+		StatType.EVASION: return "EVA"
+		_: return "Stat"
+
+## Formats stat modifiers dict compactly e.g. ["+12 AD", "+15% Crit"]
+static func format_stat_dict_compact(mods: Dictionary) -> Array[String]:
+	var keys = mods.keys()
+	keys.sort()
+	var lines: Array[String] = []
+	for k in keys:
+		var stat: StatType = k as int as StatType
+		var val = float(mods[k])
+		var sign_str := "+" if val >= 0.0 else "-"
+		if is_percent_stat(stat):
+			lines.append("%s%d%% %s" % [sign_str, roundi(abs(val) * 100.0), stat_to_short_string(stat)])
+		else:
+			lines.append("%s%d %s" % [sign_str, roundi(abs(val)), stat_to_short_string(stat)])
+	return lines
+

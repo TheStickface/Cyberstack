@@ -79,6 +79,7 @@ func _update_ui(player_gold: int) -> void:
 		cost_label.add_theme_color_override("font_color", Color(1, 0.85, 0) if player_gold >= cost else Color(0.9, 0.2, 0.2))
 		
 	if item_type == "unit":
+		custom_minimum_size = Vector2(150, 118)
 		var unit_res = res as UnitResource
 		if icon_rect:
 			icon_rect.texture = unit_res.portrait
@@ -87,14 +88,18 @@ func _update_ui(player_gold: int) -> void:
 			name_label.text = unit_res.display_name
 			name_label.add_theme_color_override("font_color", Color(0, 0.95, 0.83))
 		if details_label:
-			details_label.text = "[%s | %s]\nHP: %.0f | AD: %.0f\n%s" % [
+			var formation_str = unit_res.get_formation_badge_text()
+			var formation_line = ("\n⚡ Aura: " + formation_str) if not formation_str.is_empty() else ""
+			details_label.text = "[%s | %s] HP:%.0f AD:%.0f\n%s%s" % [
 				unit_res.get_role_name(),
 				unit_res.get_faction_name(),
 				unit_res.base_max_health,
 				unit_res.base_attack_damage,
-				unit_res.ability_name
+				unit_res.ability_name,
+				formation_line
 			]
 	elif item_type == "augment":
+		custom_minimum_size = Vector2(130, 88)
 		var aug_res = res as AugmentResource
 		if icon_rect:
 			icon_rect.texture = aug_res.icon
@@ -106,12 +111,12 @@ func _update_ui(player_gold: int) -> void:
 			var tag_names: Array[String] = []
 			for t in aug_res.tags:
 				tag_names.append(Enums.tag_to_string(t))
-			details_label.text = "[%s Tier | %s]\nTags: %s\n%s%s" % [
+			var formation_str = aug_res.get_formation_badge_text()
+			var aura_line = ("\n⚡ Aura: " + formation_str) if not formation_str.is_empty() else ""
+			details_label.text = "[%s | %s]\n%s" % [
 				aug_res.get_tier_name(),
-				Enums.role_to_string(aug_res.slot_type as int as Enums.UnitRole),
 				", ".join(tag_names),
-				"  ·  ".join(aug_res.get_stat_lines()),
-				" ⚡" if aug_res.has_proc() else ""
+				" · ".join(aug_res.get_stat_lines())
 			]
 			
 	if buy_btn:

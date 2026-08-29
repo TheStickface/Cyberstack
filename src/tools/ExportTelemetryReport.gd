@@ -92,5 +92,20 @@ static func generate_markdown_report(records: Array[TelemetryEvent], repo: Objec
 	lines.append("| District 4 (Black Site) | Final Boss Security | %d | %.1f%% |" % [mort.d4_deaths, mort.d4_rate])
 	lines.append("| **VICTORY** | **Run Successfully Secured** | **%d** | **%.1f%%** |" % [mort.victories, mort.victory_rate])
 	lines.append("")
-	
+
+	# 5. Faction Meta
+	var fac_meta = AnalyticsEngine.compute_faction_meta(records, repo)
+	lines.append("## 5. Faction Meta & Synergy Adoption")
+	lines.append("| Faction | Runs Fielding It | Field Rate | Ran 2+ (Threshold) | Win Rate |")
+	lines.append("|---|---|---|---|---|")
+	for fac in fac_meta:
+		lines.append("| **%s** | %d | %.1f%% | %.1f%% | **%.1f%%** |" % [
+			fac.name,
+			fac.runs_present,
+			fac.present_rate,
+			fac.threshold_rate,
+			fac.win_rate
+		])
+	lines.append("")
+
 	return "\n".join(lines)

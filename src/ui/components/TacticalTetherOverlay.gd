@@ -67,6 +67,7 @@ func _draw() -> void:
 		var dist = p1.distance_to(p2)
 		if dist > 5.0:
 			var dir = (p2 - p1).normalized()
+			var perp = Vector2(-dir.y, dir.x)
 			var pulse_count = 2
 			for i in range(pulse_count):
 				var pulse_t = fmod(anim_phase + float(i) / float(pulse_count), 1.0)
@@ -75,7 +76,14 @@ func _draw() -> void:
 				draw_circle(pulse_pos, 4.5, col)
 				draw_circle(pulse_pos, 2.0, Color.WHITE)
 				
-		# 4. Connection Endpoints Rings
+			# 4. Directional Arrow Chevron pointing from source to target
+			var mid = p1.lerp(p2, 0.5)
+			var arrow_tip = mid + dir * 6.0
+			var arrow_left = mid - dir * 4.0 + perp * 5.0
+			var arrow_right = mid - dir * 4.0 - perp * 5.0
+			draw_polyline(PackedVector2Array([arrow_left, arrow_tip, arrow_right]), Color.WHITE, 2.0, true)
+				
+		# 5. Connection Endpoints Rings
 		draw_arc(p1, 14.0, 0, TAU, 16, col, 2.0, true)
 		draw_arc(p2, 14.0, 0, TAU, 16, col, 2.0, true)
 		draw_circle(p1, 4.0, col)

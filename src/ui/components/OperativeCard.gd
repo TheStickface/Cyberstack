@@ -24,11 +24,14 @@ var default_style: StyleBoxFlat = null
 @onready var role_badge: Label = $Margin/VBox/Header/RoleBadge
 @onready var faction_badge: Label = $Margin/VBox/Header/FactionBadge
 @onready var stats_label: Label = $Margin/VBox/StatsLabel
+@onready var formation_badge: Label = $Margin/VBox/FormationBadge
 @onready var ability_label: Label = $Margin/VBox/AbilityLabel
 @onready var slots_header: Label = $Margin/VBox/SlotsHeader
-@onready var slots_container: VBoxContainer = $Margin/VBox/SlotsContainer
+@onready var slots_container: HBoxContainer = $Margin/VBox/SlotsContainer
 @onready var toggle_btn: Button = $Margin/VBox/Actions/ToggleFieldBtn
 @onready var sell_btn: Button = $Margin/VBox/Actions/SellBtn
+
+var active_formation_tags: Array = []
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_PASS
@@ -266,12 +269,82 @@ func _make_custom_tooltip(_for_text: String) -> Object:
 		return SynergyTooltipScript.create_custom_tooltip_node(unit_instance.unit_resource, {}, unit_instance.star_level)
 	return null
 
-func setup(unit: UnitInstance, fielded: bool = true) -> void:
+func setup(unit: UnitInstance, fielded: bool = true, p_formation_tags: Array = []) -> void:
 	unit_instance = unit
 	is_fielded = fielded
+	active_formation_tags = p_formation_tags
 	_update_ui()
 
+func set_active_formation_tags(tags: Array) -> void:
+	active_formation_tags = tags
+	_update_formation_badge()
+
+func _ensure_nodes() -> void:
+	if portrait_icon == null:
+		portrait_icon = get_node_or_null("Margin/VBox/Header/PortraitIcon")
+	if name_label == null:
+		name_label = get_node_or_null("Margin/VBox/Header/NameLabel")
+	if role_badge == null:
+		role_badge = get_node_or_null("Margin/VBox/Header/RoleBadge")
+	if faction_badge == null:
+		faction_badge = get_node_or_null("Margin/VBox/Header/FactionBadge")
+	if stats_label == null:
+		stats_label = get_node_or_null("Margin/VBox/StatsLabel")
+	if formation_badge == null:
+		formation_badge = get_node_or_null("Margin/VBox/FormationBadge")
+	if ability_label == null:
+		ability_label = get_node_or_null("Margin/VBox/AbilityLabel")
+	if slots_header == null:
+		slots_header = get_node_or_null("Margin/VBox/SlotsHeader")
+	if slots_container == null:
+		slots_container = get_node_or_null("Margin/VBox/SlotsContainer")
+	if toggle_btn == null:
+		toggle_btn = get_node_or_null("Margin/VBox/Actions/ToggleFieldBtn")
+	if sell_btn == null:
+		sell_btn = get_node_or_null("Margin/VBox/Actions/SellBtn")
+
+func _update_formation_badge() -> void:
+	_ensure_nodes()
+	if formation_badge == null or unit_instance == null or unit_instance.unit_resource == null:
+		return
+	var res = unit_instance.unit_resource
+	var badge_parts: Array[String] = []
+	
+	var base_badge = res.get_formation_badge_text()
+	if not base_badge.is_empty():
+		badge_parts.append(base_badge)
+		
+	# Check equipped augment directional bonuses
+	for aug in unit_instance.equipped_augments:
+		if aug and aug.has_directional():
+			var aug_b = aug.get_formation_badge_text()
+			if not aug_b.is_empty():
+				badge_parts.append("⚡" + aug_b)
+				
+	# If fielded and receiving active buffs from neighbors
+	if is_fielded and not active_formation_tags.is_empty():
+		badge_parts.append("✨BUFFED")
+		
+	if badge_parts.is_empty():
+		formation_badge.visible = false
+	else:
+		formation_badge.visible = true
+		formation_badge.text = " ".join(badge_parts)
+		
+		# Set distinct cyberpunk theme color for formation badge
+		if res.has_directional():
+			formation_badge.add_theme_color_override("font_color", Color(0.0, 0.95, 0.85)) # Neon Cyan
+		elif res.role == Enums.UnitRole.TANK:
+			formation_badge.add_theme_color_override("font_color", Color(0.2, 0.8, 1.0)) # Electric Blue
+		elif res.role == Enums.UnitRole.HACKER:
+			formation_badge.add_theme_color_override("font_color", Color(0.4, 1.0, 0.7)) # Mint Green
+		elif res.role == Enums.UnitRole.SNIPER:
+			formation_badge.add_theme_color_override("font_color", Color(1.0, 0.85, 0.1)) # Amber Gold
+		else:
+			formation_badge.add_theme_color_override("font_color", Color(0.7, 0.5, 1.0)) # Lavender
+
 func _update_ui() -> void:
+	_ensure_nodes()
 	if unit_instance == null or unit_instance.unit_resource == null:
 		visible = false
 		return
@@ -307,6 +380,8 @@ func _update_ui() -> void:
 			unit_instance.calculate_effective_stat(Enums.StatType.ABILITY_POWER)
 		]
 		
+	_update_formation_badge()
+		
 	if ability_label:
 		ability_label.text = res.ability_name
 		
@@ -318,14 +393,14 @@ func _update_ui() -> void:
 		sell_btn.text = "SELL (%s)" % Constants.format_currency(sell_val, true)
 		
 	if is_fielded:
-		custom_minimum_size = Vector2(160, 155)
+		custom_minimum_size = Vector2(150, 112)
 		if slots_header:
-			slots_header.visible = true
+			slots_header.visible = false
 		if slots_container:
 			slots_container.visible = true
 		_refresh_slots()
 	else:
-		custom_minimum_size = Vector2(140, 78)
+		custom_minimum_size = Vector2(135, 76)
 		if slots_header:
 			slots_header.visible = false
 		if slots_container:
@@ -347,12 +422,13 @@ func _refresh_slots() -> void:
 		slot_btn.slot_index = i
 		slot_btn.unit_instance = unit_instance
 		slot_btn.augment_res = aug
-		slot_btn.custom_minimum_size = Vector2(0, 24)
-		slot_btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		slot_btn.add_theme_font_size_override("font_size", 9)
+		slot_btn.custom_minimum_size = Vector2(44, 20)
+		slot_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		slot_btn.alignment = HORIZONTAL_ALIGNMENT_CENTER
+		slot_btn.add_theme_font_size_override("font_size", 8)
 		
 		if aug != null:
-			slot_btn.text = " [%s] %s" % [aug.get_tier_name().substr(0, 1), aug.display_name]
+			slot_btn.text = "[%s]%s" % [aug.get_tier_name().substr(0, 1), aug.display_name.substr(0, 4)]
 			var tier_col = Color(aug.get_tier_color_hex())
 			slot_btn.add_theme_color_override("font_color", tier_col)
 			var aug_lines: Array[String] = ["STATS"] + aug.get_stat_lines()
@@ -368,7 +444,7 @@ func _refresh_slots() -> void:
 			aug_lines.append("Drag to swap/move or right-click to unequip")
 			slot_btn.tooltip_text = "\n".join(aug_lines)
 		else:
-			slot_btn.text = " + Slot %d [%s]" % [i + 1, _slot_type_name(slot_type)]
+			slot_btn.text = "+%s" % _slot_type_name(slot_type).substr(0, 3)
 			slot_btn.add_theme_color_override("font_color", Color(0.4, 0.4, 0.5))
 			slot_btn.tooltip_text = "Empty %s slot. Drag augment here to equip." % _slot_type_name(slot_type)
 			

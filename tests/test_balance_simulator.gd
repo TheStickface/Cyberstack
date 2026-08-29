@@ -174,7 +174,90 @@ func test_simulation_tag_chains_and_combos() -> Dictionary:
 	
 	if defender["active_dots"].is_empty():
 		return {"passed": false, "message": "Viral tag should apply active DoT on spellcast", "assertions": 2}
-		
+
 	return {"passed": true, "assertions": 2}
+
+func test_single_battle_reports_victory_margin() -> Dictionary:
+	var player_templates = [
+		{"unit": "runner_blitz", "augments": ["common_kinetic_accelerator"]},
+		{"unit": "street_ghost", "augments": ["rare_kinetic_rail"]}
+	]
+	var enemy_templates = [{"unit": "runner_blitz", "augments": []}]
+	var player_crew = BalanceSimulatorScript._instantiate_crew(player_templates, repo)
+	var enemy_crew = BalanceSimulatorScript._instantiate_crew(enemy_templates, repo)
+
+	var outcome = BalanceSimulatorScript.simulate_single_battle(player_crew, enemy_crew, repo)
+
+	if not outcome.has("player_hp_frac") or not outcome.has("enemy_hp_frac"):
+		return {"passed": false, "message": "Battle outcome missing hp fraction keys", "assertions": 1}
+	if outcome["player_hp_frac"] < 0.0 or outcome["player_hp_frac"] > 1.0:
+		return {"passed": false, "message": "player_hp_frac out of range: %f" % outcome["player_hp_frac"], "assertions": 2}
+	if outcome["enemy_hp_frac"] < 0.0 or outcome["enemy_hp_frac"] > 1.0:
+		return {"passed": false, "message": "enemy_hp_frac out of range: %f" % outcome["enemy_hp_frac"], "assertions": 3}
+	if outcome["victory"] and outcome["enemy_hp_frac"] > 0.01:
+		return {"passed": false, "message": "Victory should wipe enemy hp fraction, got %f" % outcome["enemy_hp_frac"], "assertions": 4}
+	return {"passed": true, "assertions": 4}
+
+func test_shop_purchase_returns_remaining_gold() -> Dictionary:
+	var crew_mgr = CrewManager.new(3, repo)
+	var blitz = UnitInstance.new(repo.get_unit("runner_blitz"))
+	crew_mgr.benched_units.append(blitz)
+	BalanceSimulatorScript._place_unit_tactically(crew_mgr, blitz, 3)
+
+	var remaining = BalanceSimulatorScript._simulate_shop_purchase(crew_mgr, 40, repo)
+	if typeof(remaining) != TYPE_INT:
+		return {"passed": false, "message": "Shop purchase should return remaining gold as int", "assertions": 1}
+	if remaining < 0 or remaining > 40:
+		return {"passed": false, "message": "Remaining gold must be within [0, 40], got %d" % remaining, "assertions": 2}
+	if remaining == 40:
+		return {"passed": false, "message": "Expected sim to spend gold on an empty-slot crew", "assertions": 3}
+	return {"passed": true, "assertions": 3}
+
+func test_full_run_reports_economy_and_margins() -> Dictionary:
+	var result = BalanceSimulatorScript.simulate_full_run("runner_blitz", repo)
+
+	if not result.has("gold_spent_total") or not result.has("gold_leftover"):
+		return {"passed": false, "message": "Full run result missing economy keys", "assertions": 1}
+	if not result.has("gold_on_hand_by_district") or typeof(result["gold_on_hand_by_district"]) != TYPE_DICTIONARY:
+		return {"passed": false, "message": "Full run result missing gold_on_hand_by_district dict", "assertions": 2}
+	if not result.has("battle_margins") or typeof(result["battle_margins"]) != TYPE_ARRAY:
+		return {"passed": false, "message": "Full run result missing battle_margins array", "assertions": 3}
+	if result["battle_margins"].is_empty():
+		return {"passed": false, "message": "Every run plays at least one battle", "assertions": 4}
+	var first = result["battle_margins"][0]
+	if not first.has("district") or not first.has("is_boss") or not first.has("player_hp_frac"):
+		return {"passed": false, "message": "battle_margins entries missing expected keys", "assertions": 5}
+	if result["gold_spent_total"] < 0:
+		return {"passed": false, "message": "gold_spent_total should never be negative", "assertions": 6}
+	return {"passed": true, "assertions": 6}
+
+func test_matrix_reports_conditional_clear_and_economy() -> Dictionary:
+	var report_data = BalanceSimulatorScript.run_10k_full_runs_matrix(repo, 40)
+
+	for key in ["conditional_clear", "economy", "combat_margin", "total_fights_won", "avg_fights_won"]:
+		if not report_data.has(key):
+			return {"passed": false, "message": "Matrix report_data missing key: %s" % key, "assertions": 1}
+
+	var cc: Dictionary = report_data["conditional_clear"]
+	if not cc.has(1) or not cc[1].has("reached") or not cc[1].has("rate"):
+		return {"passed": false, "message": "conditional_clear milestones malformed", "assertions": 2}
+	if cc[1]["reached"] != 40:
+		return {"passed": false, "message": "All 40 runs should reach District 1, got %d" % cc[1]["reached"], "assertions": 3}
+	if cc[4]["rate"] < cc[1]["rate"] - 0.001:
+		return {"passed": false, "message": "Conditional clear rate should not drop as run progresses", "assertions": 4}
+
+	var eco: Dictionary = report_data["economy"]
+	if not eco.has("avg_gold_leftover") or not eco.has("avg_gold_spent"):
+		return {"passed": false, "message": "economy block missing averages", "assertions": 5}
+	return {"passed": true, "assertions": 5}
+
+func test_report_includes_new_metric_sections() -> Dictionary:
+	var report_data = BalanceSimulatorScript.run_10k_full_runs_matrix(repo, 40)
+	var report = BalanceSimulatorScript.generate_full_runs_markdown_report(report_data)
+
+	for heading in ["Conditional Clear Probability", "Combat Closeness", "Economy & Credit Flow"]:
+		if not report.contains(heading):
+			return {"passed": false, "message": "Report missing section: %s" % heading, "assertions": 1}
+	return {"passed": true, "assertions": 1}
 
 

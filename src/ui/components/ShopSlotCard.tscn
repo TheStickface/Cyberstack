@@ -15,9 +15,9 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
 [node name="ShopSlotCard" type="PanelContainer"]
-custom_minimum_size = Vector2(150, 105)
+custom_minimum_size = Vector2(150, 118)
 offset_right = 150.0
-offset_bottom = 105.0
+offset_bottom = 118.0
 mouse_filter = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_shop_slot")
 script = ExtResource("1_slot")

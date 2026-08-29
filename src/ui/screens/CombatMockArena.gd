@@ -472,6 +472,20 @@ func _perform_auto_attack(att: CombatantState, defenders: Array[CombatantState])
 	
 	_apply_damage(target, dmg, att, false, is_crit)
 	
+	# Legendary Kinetic Destroyer Ricochet: On crit, ricochet 50% damage to same-row enemies
+	if is_crit and att.unit:
+		var has_ricochet = false
+		for aug in att.unit.get_equipped_augments():
+			if aug and (aug.id == "legendary_kinetic_destroyer" or aug.trigger_effect_id == "kinetic_destroyer_blast" or aug.trigger_effect_id == "kinetic_destroyer_ricochet"):
+				has_ricochet = true
+				break
+		if has_ricochet:
+			for d in defenders:
+				if d != target and d.alive and d.grid_row == target.grid_row:
+					_apply_damage(d, dmg * 0.50, att, false, false)
+					_spawn_floating_combat_text(d, "⚡ RICOCHET -%.0f!" % (dmg * 0.50), Color(1.0, 0.8, 0.2), true)
+			_log("   ⚡ [b]%s[/b]'s Singularity Rail ricochets damage across the row!" % att.unit.unit_resource.display_name)
+	
 	# Gain Mana on attack
 	att.current_mana = minf(att.current_mana + 20.0, 100.0)
 	if att.current_mana >= 100.0:
@@ -482,6 +496,7 @@ func _cast_ability(caster: CombatantState, defenders: Array[CombatantState]) -> 
 	var u_name = caster.unit.unit_resource.display_name if caster.unit else "Operative"
 	var ab_name = caster.unit.unit_resource.ability_name if caster.unit else "Overclock Strike"
 	var u_id = caster.unit.unit_resource.id if caster.unit else ""
+	var allies = player_states if caster.is_player else enemy_states
 	
 	_log("[b][color=%s]⚡ %s triggers %s![/color][/b]" % [
 		"#00f5d4" if caster.is_player else "#ff3366",
@@ -492,6 +507,27 @@ func _cast_ability(caster: CombatantState, defenders: Array[CombatantState]) -> 
 	_play_sfx("play_ability_cast")
 	_flash_card(caster.box_panel, Color(2.0, 1.8, 0.5), 0.35)
 	_spawn_floating_combat_text(caster, "⚡ " + ab_name + "!", Color(0, 1, 0.9) if caster.is_player else Color(1, 0.2, 0.6), true)
+	
+	# Legendary Neural Singularity Daemon: Grant +20 mana to all living allies on cast
+	if caster.unit:
+		for aug in caster.unit.get_equipped_augments():
+			if aug and (aug.id == "legendary_neural_hive" or aug.trigger_effect_id == "neural_singularity_synchronize"):
+				for ally in allies:
+					if ally != caster and ally.alive:
+						ally.current_mana = minf(ally.current_mana + 20.0, 100.0)
+						_spawn_floating_combat_text(ally, "⚡ +20 MANA", Color(0.2, 0.8, 1.0), false)
+				_log("   ⚡ [b]%s[/b] synchronizes neural hive, restoring +20 mana to all allies!" % u_name)
+				break
+				
+	# Legendary Thermal Supernova Core: Melts 40% target armor on cast
+	if caster.unit:
+		for aug in caster.unit.get_equipped_augments():
+			if aug and (aug.id == "legendary_thermal_supernova" or aug.trigger_effect_id == "thermal_supernova"):
+				var target = _find_tactical_target(caster, defenders)
+				if target:
+					_spawn_floating_combat_text(target, "🔥 ARMOR MELT -40%!", Color(1.0, 0.4, 0.1), true)
+					_log("   🔥 [b]%s[/b]'s Supernova Core vaporizes 40%% of target armor!" % u_name)
+				break
 	
 	# Check if unit is a specialized boss with bespoke mechanics
 	if u_id.begins_with("boss_"):
@@ -509,8 +545,9 @@ func _cast_ability(caster: CombatantState, defenders: Array[CombatantState]) -> 
 					var multi_dmg = 120.0 + (caster.ability_power * 1.8)
 					_apply_damage(d, multi_dmg, caster, true, false)
 					d.current_mana = maxf(d.current_mana - 25.0, 0.0)
+					_spawn_floating_combat_text(d, "⚡ EMP -25 MANA!", Color(0.8, 0.2, 1.0), true)
 					count += 1
-			_log("   ⚡ %s discharges multi-target overload!" % u_name)
+			_log("   ⚡ %s discharges multi-target overload & EMP drain!" % u_name)
 			return
 		elif u_id == "boss_corp_commander" or u_id == "boss_railmaster" or u_id == "boss_director_panopticon":
 			var weakest = _find_weakest_target(defenders)
@@ -522,7 +559,6 @@ func _cast_ability(caster: CombatantState, defenders: Array[CombatantState]) -> 
 			
 	# Standard ability mechanics by role
 	var role = caster.unit.unit_resource.role if caster.unit else Enums.UnitRole.TANK
-	var allies = player_states if caster.is_player else enemy_states
 	
 	match role:
 		Enums.UnitRole.TANK:
@@ -641,6 +677,22 @@ func _apply_damage(target: CombatantState, raw_dmg: float, attacker: CombatantSt
 	else:
 		total_enemy_damage += raw_dmg
 		
+	# Boss Enrage Trigger below 50% HP
+	var t_id = target.unit.unit_resource.id if target.unit else ""
+	if t_id.begins_with("boss_") and target.alive and not target.box_panel.has_meta("enraged"):
+		if target.current_hp <= target.max_hp * 0.5 and target.current_hp > 0:
+			target.box_panel.set_meta("enraged", true)
+			target.shield += 200.0
+			target.attack_speed *= 1.35
+			target.attack_damage *= 1.30
+			_flash_card(target.box_panel, Color(2.5, 0.2, 0.2), 0.5)
+			_spawn_floating_combat_text(target, "💥 BOSS ENRAGE ACTIVATED!", Color(1.0, 0.15, 0.3), true)
+			_log("[b][color=#ff0055]⚠️ %s triggers ENRAGE OVERCLOCK! Shield +200, row-cleave shockwave unleashed![/color][/b]" % target.unit.unit_resource.display_name)
+			var enemies_of_boss = player_states if not target.is_player else enemy_states
+			for opp in enemies_of_boss:
+				if opp.alive and opp.grid_row == 1:
+					_apply_damage(opp, 120.0, target, true, false)
+		
 	if target.current_hp <= 0 and target.alive:
 		target.alive = false
 		target.status_label.text = "✖ DOWN"
@@ -648,6 +700,18 @@ func _apply_damage(target: CombatantState, raw_dmg: float, attacker: CombatantSt
 		target.box_panel.modulate = Color(0.4, 0.4, 0.4, 0.7)
 		var t_name = target.unit.unit_resource.display_name if target.unit else "Target"
 		_log("[color=#ff0055]💀 %s has been neutralized![/color]" % t_name)
+		
+		# Legendary Viral Pandemic Strain On-Kill Proc
+		if attacker.unit:
+			for aug in attacker.unit.get_equipped_augments():
+				if aug and (aug.id == "legendary_viral_pandemic" or aug.trigger_effect_id == "viral_pandemic"):
+					var opps = enemy_states if attacker.is_player else player_states
+					for opp in opps:
+						if opp.alive:
+							opp.attack_speed *= 0.75
+							_spawn_floating_combat_text(opp, "☣ -25% ATK SPEED", Color(0.2, 1.0, 0.4), true)
+					_log("   ☣ [b]%s[/b]'s Pandemic Daemon spreads contagion! -25%% Attack Speed to remaining enemies!" % attacker.unit.unit_resource.display_name)
+					break
 
 func _spawn_floating_combat_text(target: CombatantState, text: String, color: Color, is_big: bool = false) -> void:
 	if target == null or target.box_panel == null or not is_instance_valid(target.box_panel):

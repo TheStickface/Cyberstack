@@ -94,7 +94,8 @@ func finish_combat_encounter(victory: bool, battle_stats: Dictionary = {}) -> Di
 			"district": active_run_manager.current_district_index,
 			"fights_won": active_run_manager.fights_won,
 			"bosses_defeated": active_run_manager.bosses_defeated,
-			"gold_earned": active_run_manager.total_gold_earned
+			"gold_earned": active_run_manager.total_gold_earned,
+			"gold_spent": active_run_manager.shop_mgr.total_spent if active_run_manager.shop_mgr else 0
 		}
 		
 		# Record Telemetry Event
@@ -123,6 +124,43 @@ func finish_combat_encounter(victory: bool, battle_stats: Dictionary = {}) -> Di
 			change_state(GameState.MAP)
 		
 	return result
+
+func abandon_run() -> void:
+	if active_run_manager == null:
+		change_state(GameState.TITLE)
+		return
+		
+	last_run_summary = {
+		"victory": false,
+		"district": active_run_manager.current_district_index,
+		"fights_won": active_run_manager.fights_won,
+		"bosses_defeated": active_run_manager.bosses_defeated,
+		"gold_earned": active_run_manager.total_gold_earned,
+		"gold_spent": active_run_manager.shop_mgr.total_spent if active_run_manager.shop_mgr else 0,
+		"abandoned": true
+	}
+	
+	if active_profile == null:
+		active_profile = SaveManager.load_profile()
+	last_meta_rewards = MetaManager.process_run_end(
+		active_profile,
+		last_run_summary,
+		active_run_manager.crew_mgr.fielded_units
+	)
+	
+	SaveManager.delete_active_run()
+	change_state(GameState.RUN_END)
+
+func quick_retry(starter_unit_id: String = "") -> void:
+	var starter = starter_unit_id
+	if starter.is_empty() and active_run_manager and not active_run_manager.crew_mgr.fielded_units.is_empty():
+		var u0 = active_run_manager.crew_mgr.fielded_units[0]
+		if u0 and u0.unit_resource:
+			starter = u0.unit_resource.id
+	if starter.is_empty():
+		starter = "runner_blitz"
+		
+	start_new_game(starter)
 
 func return_to_title() -> void:
 	active_run_manager = null

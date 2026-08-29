@@ -116,6 +116,8 @@ static func _generate_enemy_squad(district_id: int, is_boss: bool, repo: Object,
 				enemy_instance.equipped_augments[0] = common_aug
 				
 		if district_id >= 3:
+			if i == 0:
+				enemy_instance.star_level = 2
 			var rare_aug = repo.get_augment("rare_kinetic_rail")
 			if district_res and district_res.preferred_tag == Enums.AugmentTag.THERMAL:
 				rare_aug = repo.get_augment("rare_thermal_exhaust")
@@ -125,6 +127,12 @@ static func _generate_enemy_squad(district_id: int, is_boss: bool, repo: Object,
 				rare_aug = repo.get_augment("rare_viral_siphon")
 			if rare_aug:
 				enemy_instance.equipped_augments[1] = rare_aug
+				
+		if district_id >= 4 and i == 1:
+			enemy_instance.star_level = 2
+			var def_aug = repo.get_augment("common_kinetic_plating")
+			if def_aug:
+				enemy_instance.equipped_augments[0] = def_aug
 				
 		squad.append(enemy_instance)
 		

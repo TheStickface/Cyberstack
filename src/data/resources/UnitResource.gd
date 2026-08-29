@@ -69,3 +69,39 @@ func get_directional_stat_lines() -> Array[String]:
 	if not has_directional():
 		return []
 	return Enums.format_stat_dict(directional_modifiers)
+
+func get_formation_symbol() -> String:
+	if has_directional():
+		return Enums.grid_direction_to_symbol(directional_target)
+	match role:
+		Enums.UnitRole.TANK: return "🛡️⮂"
+		Enums.UnitRole.HACKER: return "⚡⮂"
+		Enums.UnitRole.SNIPER: return "🎯▲"
+		_: return ""
+
+## Short badge text for card display, e.g. "⮜ +12 AD", "🛡️ +120 SHD ⮂"
+func get_formation_badge_text() -> String:
+	if has_directional():
+		var sym = get_formation_symbol()
+		var compact_stats = ", ".join(Enums.format_stat_dict_compact(directional_modifiers))
+		return ("%s %s" % [sym, compact_stats]).strip_edges()
+	match role:
+		Enums.UnitRole.TANK: return "🛡️ +120 SHD ⮂"
+		Enums.UnitRole.HACKER: return "⚡ +15 MP ⮂"
+		Enums.UnitRole.SNIPER: return "🎯 +25% CRIT ▲"
+		_: return ""
+
+## Full 1-line summary for shop cards and tooltips
+func get_formation_full_summary() -> String:
+	if has_directional():
+		var sym = get_formation_symbol()
+		var header = get_directional_header()
+		var stats = ", ".join(get_directional_stat_lines())
+		if not directional_passive_description.is_empty():
+			return "%s %s" % [sym, directional_passive_description]
+		return "%s %s: %s" % [sym, header, stats]
+	match role:
+		Enums.UnitRole.TANK: return "🛡️ GUARD ⮂: +120 Shield to Left & Right allies"
+		Enums.UnitRole.HACKER: return "⚡ ROW UPLINK ⮂: +15 Mana & +15% Spd to Row"
+		Enums.UnitRole.SNIPER: return "🎯 BACKLINE ▲: +25% Crit in Row 0"
+		_: return ""

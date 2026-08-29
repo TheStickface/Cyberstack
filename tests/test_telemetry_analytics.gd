@@ -93,5 +93,69 @@ func test_analytics_kpi_calculations() -> Dictionary:
 	var mort = AnalyticsEngine.compute_mortality_curve(records)
 	if mort.d2_deaths != 1 or mort.d2_rate != 50.0 or mort.victories != 1:
 		return {"passed": false, "message": "Mortality curve mismatch", "assertions": 4}
-		
+
+	return {"passed": true, "assertions": 4}
+
+func test_record_run_summary_uses_gold_spent_and_synergy_tags() -> Dictionary:
+	var test_path = "user://test_run_summary_telemetry.json"
+	SaveManager.delete_active_run(test_path)
+
+	var crew: Array[UnitInstance] = []
+	# street_ghost is a SNIPER (offensive slots) so it can carry a kinetic augment.
+	var ghost = UnitInstance.new(repo.get_unit("street_ghost"))
+	var kin_aug = repo.get_augment("common_kinetic_accelerator")
+	var equipped := false
+	for s_idx in range(Constants.MAX_AUGMENT_SLOTS_PER_UNIT):
+		if ghost.equip_augment(s_idx, kin_aug):
+			equipped = true
+			break
+	if not equipped:
+		return {"passed": false, "message": "Test setup: could not equip kinetic augment on street_ghost", "assertions": 1}
+	crew.append(ghost)
+	# runner_phantom is a second Street Runner so the faction count reaches 2.
+	crew.append(UnitInstance.new(repo.get_unit("runner_phantom")))
+
+	var summary = {"victory": true, "district": 4, "gold_spent": 63, "gold_earned": 120}
+	var event = TelemetryManager.record_run_summary(summary, crew, test_path)
+
+	if event.gold_spent != 63:
+		return {"passed": false, "message": "record_run_summary should read the gold_spent key, got %d" % event.gold_spent, "assertions": 1}
+	if event.active_factions.is_empty():
+		return {"passed": false, "message": "record_run_summary should populate active_factions from the crew", "assertions": 2}
+	if int(event.active_factions.get(int(Enums.Faction.STREET_RUNNERS), 0)) < 2:
+		return {"passed": false, "message": "Two Street Runners should register as faction count 2", "assertions": 3}
+	if int(event.active_tags.get(int(Enums.AugmentTag.KINETIC), 0)) < 1:
+		return {"passed": false, "message": "Equipped kinetic augment should register a KINETIC tag", "assertions": 4}
+
+	SaveManager.delete_active_run(test_path)
+	return {"passed": true, "assertions": 4}
+
+func test_faction_meta_aggregation() -> Dictionary:
+	var records: Array[TelemetryEvent] = []
+
+	var ev1 = TelemetryEvent.new()
+	ev1.victory = true
+	ev1.active_factions[int(Enums.Faction.STREET_RUNNERS)] = 3
+	records.append(ev1)
+
+	var ev2 = TelemetryEvent.new()
+	ev2.victory = false
+	ev2.active_factions[int(Enums.Faction.STREET_RUNNERS)] = 1
+	records.append(ev2)
+
+	var fac_meta = AnalyticsEngine.compute_faction_meta(records, repo)
+	if fac_meta.is_empty():
+		return {"passed": false, "message": "compute_faction_meta returned nothing", "assertions": 1}
+
+	var runner_row = null
+	for row in fac_meta:
+		if row.id == int(Enums.Faction.STREET_RUNNERS):
+			runner_row = row
+			break
+	if runner_row == null:
+		return {"passed": false, "message": "Street Runners missing from faction meta", "assertions": 2}
+	if runner_row.runs_present != 2:
+		return {"passed": false, "message": "Street Runners should be present in 2 runs, got %d" % runner_row.runs_present, "assertions": 3}
+	if runner_row.win_rate != 50.0:
+		return {"passed": false, "message": "Street Runners win rate should be 50%%, got %.1f" % runner_row.win_rate, "assertions": 4}
 	return {"passed": true, "assertions": 4}

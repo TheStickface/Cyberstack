@@ -62,11 +62,23 @@ Bosses Defeated: 4
 Total Credits Earned: 84"
 horizontal_alignment = 1
 
-[node name="ReturnBtn" type="Button" parent="VBox/Center/VBox"]
-custom_minimum_size = Vector2(240, 40)
+[node name="ButtonsRow" type="VBoxContainer" parent="VBox/Center/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="QuickRetryBtn" type="Button" parent="VBox/Center/VBox/ButtonsRow"]
+custom_minimum_size = Vector2(240, 42)
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0.95, 0.83, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 13
+text = "↺ QUICK RETRY MISSION"
+
+[node name="ReturnBtn" type="Button" parent="VBox/Center/VBox/ButtonsRow"]
+custom_minimum_size = Vector2(240, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.4, 1, 1)
+theme_override_font_sizes/font_size = 11
 text = "RETURN TO MAIN TERMINAL"
 
-[connection signal="pressed" from="VBox/Center/VBox/ReturnBtn" to="." method="_on_return_btn_pressed"]
+[connection signal="pressed" from="VBox/Center/VBox/ButtonsRow/QuickRetryBtn" to="." method="_on_quick_retry_btn_pressed"]
+[connection signal="pressed" from="VBox/Center/VBox/ButtonsRow/ReturnBtn" to="." method="_on_return_btn_pressed"]

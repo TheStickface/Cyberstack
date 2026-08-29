@@ -63,6 +63,26 @@ func get_directional_stat_lines() -> Array[String]:
 		return []
 	return Enums.format_stat_dict(directional_modifiers)
 
+func get_formation_symbol() -> String:
+	return Enums.grid_direction_to_symbol(directional_target)
+
+## Short badge text for card display, e.g. "⯎ +15% CRIT"
+func get_formation_badge_text() -> String:
+	if not has_directional():
+		return ""
+	var sym = get_formation_symbol()
+	var compact_stats = ", ".join(Enums.format_stat_dict_compact(directional_modifiers))
+	return ("%s %s" % [sym, compact_stats]).strip_edges()
+
+## Full 1-line summary for shop cards and tooltips
+func get_formation_full_summary() -> String:
+	if not has_directional():
+		return ""
+	var sym = get_formation_symbol()
+	var header = get_directional_header()
+	var stats = ", ".join(get_directional_stat_lines())
+	return "%s %s AURA: %s" % [sym, header, stats]
+
 func has_proc() -> bool:
 	return trigger_type != Enums.TriggerType.PASSIVE_STAT
 

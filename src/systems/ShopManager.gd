@@ -6,6 +6,7 @@ extends RefCounted
 const DataRepoScript = preload("res://src/systems/DataRepository.gd")
 
 var gold: int = Constants.DEFAULT_STARTING_GOLD
+var total_spent: int = 0  ## Cumulative credits spent this run (buys + rerolls)
 var current_district: int = 1
 var is_locked: bool = false
 var active_district_res: DistrictResource = null
@@ -32,6 +33,7 @@ func spend_gold(amount: int) -> bool:
 	if amount < 0 or gold < amount:
 		return false
 	gold -= amount
+	total_spent += amount
 	return true
 
 func calculate_interest(_gold_amount: int = -1) -> int:
@@ -55,6 +57,12 @@ func get_reroll_cost() -> int:
 	if active_district_res and active_district_res.reroll_cost_override >= 0:
 		return active_district_res.reroll_cost_override
 	return Constants.BASE_REROLL_COST
+
+func get_current_unit_tier_odds() -> Dictionary:
+	return Constants.DISTRICT_UNIT_SHOP_ODDS.get(current_district, Constants.DISTRICT_UNIT_SHOP_ODDS[1])
+
+func get_current_augment_tier_odds() -> Dictionary:
+	return Constants.DISTRICT_SHOP_ODDS.get(current_district, Constants.DISTRICT_SHOP_ODDS[1])
 
 func generate_shop_offerings(district_id: int = 1, repo_instance: Object = null, num_crew: int = Constants.DEFAULT_CREW_SHOP_SLOTS, num_augments: int = Constants.DEFAULT_AUGMENT_SHOP_SLOTS, force_refresh: bool = false, district_res: DistrictResource = null) -> Array[Dictionary]:
 	if district_res != null:
@@ -251,6 +259,55 @@ func sell_augment(inventory_index: int, crew_mgr: Object) -> int:
 	var refund_gold = base_refund + bonus
 	add_gold(refund_gold)
 	return refund_gold
+
+# --- Black Market Overdrive (Augment Synthesis) ---
+const OVERDRIVE_COST: int = 6
+
+func get_overdrive_cost() -> int:
+	return OVERDRIVE_COST
+
+func can_overdrive_augment(unit: UnitInstance, slot_idx: int) -> bool:
+	if current_district < 3:
+		return false
+	if gold < OVERDRIVE_COST:
+		return false
+	if unit == null or slot_idx < 0 or slot_idx >= unit.equipped_augments.size():
+		return false
+	var current_aug = unit.equipped_augments[slot_idx]
+	if current_aug == null:
+		return false
+	return current_aug.tier < Enums.AugmentTier.LEGENDARY
+
+func overdrive_augment(unit: UnitInstance, slot_idx: int, repo_instance: Object = null) -> AugmentResource:
+	if not can_overdrive_augment(unit, slot_idx):
+		return null
+	var current_aug = unit.equipped_augments[slot_idx]
+	var target_tier = Enums.AugmentTier.RARE if current_aug.tier == Enums.AugmentTier.COMMON else Enums.AugmentTier.LEGENDARY
+	var primary_tag = current_aug.primary_tag
+	
+	var repo = repo_instance if repo_instance != null else _get_default_repo()
+	var all_augs = repo.get_all_augments()
+	
+	# Prefer an augment of the same primary tag at target_tier
+	var candidate_pool: Array[AugmentResource] = []
+	for aug in all_augs:
+		if aug.tier == target_tier and aug.primary_tag == primary_tag:
+			candidate_pool.append(aug)
+			
+	# Fallback to any augment of target_tier if no same-tag found
+	if candidate_pool.is_empty():
+		for aug in all_augs:
+			if aug.tier == target_tier:
+				candidate_pool.append(aug)
+				
+	if candidate_pool.is_empty():
+		return null
+		
+	var upgraded_aug = candidate_pool[randi() % candidate_pool.size()]
+	if spend_gold(OVERDRIVE_COST):
+		unit.equipped_augments[slot_idx] = upgraded_aug
+		return upgraded_aug
+	return null
 
 func _roll_tier(odds: Dictionary) -> Enums.AugmentTier:
 	var roll = randf()

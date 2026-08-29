@@ -64,11 +64,11 @@ static func format_cost(amount: int) -> String:
 
 const DEFAULT_STARTING_GOLD: int = 12
 const BASE_REROLL_COST: int = 2
-const DEFAULT_CREW_SHOP_SLOTS: int = 4
-const MAX_CREW_SHOP_SLOTS: int = 6
+const DEFAULT_CREW_SHOP_SLOTS: int = 5
+const MAX_CREW_SHOP_SLOTS: int = 7
 const DEFAULT_AUGMENT_SHOP_SLOTS: int = 2
 const MAX_AUGMENT_SHOP_SLOTS: int = 5
-const SHOP_SLOTS_COUNT: int = 6
+const SHOP_SLOTS_COUNT: int = 7
 
 # Base Encounter Credit Payouts per District (Active Spend Economy - No Interest)
 const DISTRICT_ENCOUNTER_PAYOUTS: Dictionary = {
@@ -92,38 +92,38 @@ const DISTRICT_SHOP_ODDS: Dictionary = {
 		Enums.AugmentTier.LEGENDARY: 0.00
 	},
 	3: {
-		Enums.AugmentTier.COMMON: 0.50,
-		Enums.AugmentTier.RARE: 0.40,
-		Enums.AugmentTier.LEGENDARY: 0.10
+		Enums.AugmentTier.COMMON: 0.35,
+		Enums.AugmentTier.RARE: 0.45,
+		Enums.AugmentTier.LEGENDARY: 0.20
 	},
 	4: {
-		Enums.AugmentTier.COMMON: 0.00,
-		Enums.AugmentTier.RARE: 0.65,
-		Enums.AugmentTier.LEGENDARY: 0.35
+		Enums.AugmentTier.COMMON: 0.10,
+		Enums.AugmentTier.RARE: 0.50,
+		Enums.AugmentTier.LEGENDARY: 0.40
 	},
 	5: {
-		Enums.AugmentTier.COMMON: 0.00,
-		Enums.AugmentTier.RARE: 0.50,
-		Enums.AugmentTier.LEGENDARY: 0.50
+		Enums.AugmentTier.COMMON: 0.05,
+		Enums.AugmentTier.RARE: 0.40,
+		Enums.AugmentTier.LEGENDARY: 0.55
 	}
 }
 
 # District Unit Shop Odds (Cost 1-2 CR: Tier 1, Cost 3-4 CR: Tier 2, Cost 5 CR: Tier 3)
 const DISTRICT_UNIT_SHOP_ODDS: Dictionary = {
-	1: { 1: 0.75, 2: 0.25, 3: 0.00 },
-	2: { 1: 0.45, 2: 0.45, 3: 0.10 },
-	3: { 1: 0.25, 2: 0.50, 3: 0.25 },
-	4: { 1: 0.15, 2: 0.50, 3: 0.35 },
-	5: { 1: 0.05, 2: 0.45, 3: 0.50 }
+	1: { 1: 1.00, 2: 0.00, 3: 0.00 },
+	2: { 1: 0.60, 2: 0.35, 3: 0.05 },
+	3: { 1: 0.30, 2: 0.45, 3: 0.25 },
+	4: { 1: 0.15, 2: 0.45, 3: 0.40 },
+	5: { 1: 0.05, 2: 0.35, 3: 0.60 }
 }
 
 # Enemy Stat Scaling Multipliers per District (HP, Damage)
 const DISTRICT_ENEMY_SCALING: Dictionary = {
 	1: { "hp_mult": 1.00, "dmg_mult": 1.00 },
 	2: { "hp_mult": 1.20, "dmg_mult": 1.15 },
-	3: { "hp_mult": 1.45, "dmg_mult": 1.30 },
-	4: { "hp_mult": 1.70, "dmg_mult": 1.45 },
-	5: { "hp_mult": 2.00, "dmg_mult": 1.60 }
+	3: { "hp_mult": 1.55, "dmg_mult": 1.30 },
+	4: { "hp_mult": 1.95, "dmg_mult": 1.50 },
+	5: { "hp_mult": 2.30, "dmg_mult": 1.70 }
 }
 
 # Sell Refund Values

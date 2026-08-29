@@ -160,3 +160,31 @@ func test_shop_freeze_and_lock() -> Dictionary:
 		return {"passed": false, "message": "Reroll should clear lock state and generate fresh offerings", "assertions": 5}
 		
 	return {"passed": true, "assertions": 5}
+
+func test_tiered_district_shop_odds() -> Dictionary:
+	var shop = ShopManager.new(50)
+	
+	# 1. Verify District 1 produces 100% Tier 1 units and Common augments
+	shop.generate_shop_offerings(1, repo, 10, 10, true)
+	for slot in shop.unit_slots:
+		var u: UnitResource = slot.get("resource", null)
+		if u and u.base_cost > 2:
+			return {"passed": false, "message": "District 1 should only produce Tier 1 (<=2 cost) units, got %s (cost %d)" % [u.display_name, u.base_cost], "assertions": 1}
+	for slot in shop.augment_slots:
+		var a: AugmentResource = slot.get("resource", null)
+		if a and a.tier != Enums.AugmentTier.COMMON:
+			return {"passed": false, "message": "District 1 should only produce Common augments", "assertions": 2}
+			
+	# 2. Verify District 4 unit odds and augment odds accessors
+	var d4_unit_odds = shop.get_current_unit_tier_odds()
+	shop.generate_shop_offerings(4, repo, 10, 10, true)
+	var d4_odds = shop.get_current_unit_tier_odds()
+	if d4_odds.get(3, 0.0) != 0.40:
+		return {"passed": false, "message": "District 4 expected Tier 3 odds 0.40, got %f" % d4_odds.get(3, 0.0), "assertions": 3}
+		
+	var d4_aug_odds = shop.get_current_augment_tier_odds()
+	if d4_aug_odds.get(Enums.AugmentTier.LEGENDARY, 0.0) != 0.40:
+		return {"passed": false, "message": "District 4 expected Legendary odds 0.40, got %f" % d4_aug_odds.get(Enums.AugmentTier.LEGENDARY, 0.0), "assertions": 4}
+		
+	return {"passed": true, "assertions": 4}
+

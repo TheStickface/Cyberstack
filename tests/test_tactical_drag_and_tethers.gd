@@ -26,6 +26,7 @@ func run_all_tests() -> Dictionary:
 	test_operative_card_drop_validation()
 	test_grid_and_bench_swapping_mechanics()
 	test_tactical_tether_overlay()
+	test_operative_card_formation_badges()
 	
 	print("TestTacticalDragAndTethers Complete. Passed: %d, Failed: %d (Assertions: %d passed, %d failed)" % [
 		tests_passed, tests_failed, assertions_passed, assertions_failed
@@ -144,4 +145,34 @@ func test_tactical_tether_overlay() -> void:
 	_assert(overlay.active_tethers.is_empty(), "Overlay should be clear after clear_tethers()")
 	
 	overlay.free()
+	tests_passed += 1
+
+func test_operative_card_formation_badges() -> void:
+	var repo = DataRepoScript.new()
+	repo.load_all_data("res://data")
+	
+	var tank_res = repo.get_unit("runner_blitz")
+	var slasher_res = repo.get_unit("runner_slasher")
+	var aug_res = repo.get_augment("rare_kinetic_kinetic_overdrive")
+	
+	_assert(not tank_res.get_formation_badge_text().is_empty(), "Tank role should provide formation badge text")
+	_assert(tank_res.get_formation_badge_text().contains("🛡️"), "Tank badge should have shield icon")
+	
+	_assert(slasher_res.has_directional(), "Slasher should have directional passive")
+	_assert(slasher_res.get_formation_symbol() == "⮜", "Slasher symbol should be Left arrow")
+	_assert(slasher_res.get_formation_badge_text().contains("⮜"), "Slasher badge text should contain left arrow")
+	
+	var card_scene = preload("res://src/ui/components/OperativeCard.tscn")
+	var card = card_scene.instantiate()
+	var slasher_inst = UnitInstance.new(slasher_res)
+	card.setup(slasher_inst, true, ["🛡️ Guarded from Left (+120 S)"])
+	
+	var badge = card.get_node_or_null("Margin/VBox/FormationBadge")
+	_assert(badge != null, "OperativeCard should have FormationBadge node")
+	if badge:
+		_assert(badge.visible == true, "FormationBadge should be visible")
+		_assert(badge.text.contains("⮜"), "FormationBadge text should contain directional symbol")
+		_assert(badge.text.contains("BUFFED"), "FormationBadge should show BUFFED when receiving buffs")
+		
+	card.free()
 	tests_passed += 1
