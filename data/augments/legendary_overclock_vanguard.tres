@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="AugmentResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/AugmentResource.gd" id="1_aug"]
+[ext_resource type="Texture2D" path="res://assets/icons/augments/legendary_overclock_vanguard.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_aug")
+icon = ExtResource("2_icon")
+id = "legendary_overclock_vanguard"
+display_name = "Overclocked Riot Vanguard"
+description = "Convert absorbed damage to speed"
+tier = 2
+slot_type = 0
+tags = Array[int]([4, 2])
+base_cost = 5
+stat_modifiers = {
+3: 0.15,
+4: 25.0,
+5: 180.0
+}
+directional_target = 9
+directional_modifiers = {
+4: 15.0,
+5: 100.0
+}
+trigger_type = 1
+trigger_effect_id = "vanguard_overclock_speed"
+trigger_params = {
+"speed_boost": 0.25
+}

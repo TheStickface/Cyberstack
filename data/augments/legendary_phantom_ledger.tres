@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="AugmentResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/AugmentResource.gd" id="1_aug"]
+[ext_resource type="Texture2D" path="res://assets/icons/augments/legendary_phantom_ledger.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_aug")
+icon = ExtResource("2_icon")
+id = "legendary_phantom_ledger"
+display_name = "Phantom Syndicate Ledger"
+description = "Crits grant credits and stealth"
+tier = 2
+slot_type = 2
+tags = Array[int]([1, 4])
+base_cost = 5
+stat_modifiers = {
+1: 35.0,
+8: 0.2,
+10: 0.15
+}
+directional_target = 0
+directional_modifiers = {}
+trigger_type = 2
+trigger_effect_id = "phantom_ledger_bounty"
+trigger_params = {
+"gold_bounty": 1,
+"stealth_sec": 1.5
+}

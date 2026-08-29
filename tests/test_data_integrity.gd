@@ -51,17 +51,17 @@ func test_unit_queries() -> Dictionary:
 
 func test_augment_queries() -> Dictionary:
 	var all_augments = repo.get_all_augments()
-	if all_augments.size() != 20:
-		return {"passed": false, "message": "Expected 20 total augments, got %d" % all_augments.size(), "assertions": 1}
+	if all_augments.size() != 23:
+		return {"passed": false, "message": "Expected 23 total augments, got %d" % all_augments.size(), "assertions": 1}
 		
 	for t in [Enums.AugmentTag.VIRAL, Enums.AugmentTag.THERMAL, Enums.AugmentTag.NEURAL, Enums.AugmentTag.KINETIC]:
 		var tag_augs = repo.get_augments_by_tag(t)
-		if tag_augs.size() != 5:
-			return {"passed": false, "message": "Expected 5 augments for tag %d, got %d" % [t, tag_augs.size()], "assertions": 2}
+		if tag_augs.size() < 5:
+			return {"passed": false, "message": "Expected at least 5 augments for tag %d, got %d" % [t, tag_augs.size()], "assertions": 2}
 		
 	var legendaries = repo.get_augments_by_tier(Enums.AugmentTier.LEGENDARY)
-	if legendaries.size() != 4:
-		return {"passed": false, "message": "Expected 4 Legendary augments (1 per tag), got %d" % legendaries.size(), "assertions": 3}
+	if legendaries.size() != 7:
+		return {"passed": false, "message": "Expected 7 Legendary augments (4 mono + 3 dual fusion), got %d" % legendaries.size(), "assertions": 3}
 
 	return {"passed": true, "assertions": 3}
 

@@ -184,6 +184,9 @@ func _augment_golden() -> Dictionary:
 		"rare_viral_siphon": ["Leech HP from target", "ON ATTACK", "+120 Max Health, +18 Attack Damage, +10% Evasion", "ADJACENT", ["+80 Max Health"]],
 		"legendary_kinetic_destroyer": ["Piercing burst to nearby enemies", "ON ATTACK", "+45 Attack Damage, +15 Armor", "FRONTLINE", ["+50 Attack Damage", "+15% Crit Chance"]],
 		"legendary_neural_hive": ["", "ON ABILITY CAST", "+50 Ability Power, +30 Starting Mana", "", []],
+		"legendary_neural_plague": ["Rot explosion on ability cast", "ON ABILITY CAST", "+150 Max Health, +45 Ability Power, +20 Starting Mana", "", []],
+		"legendary_overclock_vanguard": ["Convert absorbed damage to speed", "ON COMBAT START", "+15% Attack Speed, +25 Armor, +180 Shield", "FRONTLINE", ["+15 Armor", "+100 Shield"]],
+		"legendary_phantom_ledger": ["Crits grant credits and stealth", "ON ATTACK", "+35 Attack Damage, +20% Crit Chance, +15% Evasion", "", []],
 		"legendary_thermal_supernova": ["", "ON ABILITY CAST", "+75 Ability Power", "", []],
 		"legendary_viral_pandemic": ["", "ON KILL", "+40 Ability Power, +30% Attack Speed", "", []],
 	}
