@@ -232,7 +232,7 @@ func test_full_run_reports_economy_and_margins() -> Dictionary:
 	return {"passed": true, "assertions": 6}
 
 func test_matrix_reports_conditional_clear_and_economy() -> Dictionary:
-	var report_data = BalanceSimulatorScript.run_10k_full_runs_matrix(repo, 40)
+	var report_data = BalanceSimulatorScript.run_10k_full_runs_matrix(repo, 60)
 
 	for key in ["conditional_clear", "economy", "combat_margin", "total_fights_won", "avg_fights_won"]:
 		if not report_data.has(key):
@@ -241,8 +241,8 @@ func test_matrix_reports_conditional_clear_and_economy() -> Dictionary:
 	var cc: Dictionary = report_data["conditional_clear"]
 	if not cc.has(1) or not cc[1].has("reached") or not cc[1].has("rate"):
 		return {"passed": false, "message": "conditional_clear milestones malformed", "assertions": 2}
-	if cc[1]["reached"] != 40:
-		return {"passed": false, "message": "All 40 runs should reach District 1, got %d" % cc[1]["reached"], "assertions": 3}
+	if cc[1]["reached"] != 60:
+		return {"passed": false, "message": "All 60 runs should reach District 1, got %d" % cc[1]["reached"], "assertions": 3}
 	if cc[4]["rate"] < cc[1]["rate"] - 0.001:
 		return {"passed": false, "message": "Conditional clear rate should not drop as run progresses", "assertions": 4}
 
@@ -252,7 +252,7 @@ func test_matrix_reports_conditional_clear_and_economy() -> Dictionary:
 	return {"passed": true, "assertions": 5}
 
 func test_report_includes_new_metric_sections() -> Dictionary:
-	var report_data = BalanceSimulatorScript.run_10k_full_runs_matrix(repo, 40)
+	var report_data = BalanceSimulatorScript.run_10k_full_runs_matrix(repo, 60)
 	var report = BalanceSimulatorScript.generate_full_runs_markdown_report(report_data)
 
 	for heading in ["Conditional Clear Probability", "Combat Closeness", "Economy & Credit Flow"]:

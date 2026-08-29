@@ -822,15 +822,18 @@ func _log(msg: String) -> void:
 		combat_log.append_text(msg + "\n")
 
 func _on_speed_btn_pressed() -> void:
-	if speed_multiplier == 1.0:
+	if is_equal_approx(speed_multiplier, 1.0):
 		speed_multiplier = 2.0
-		speed_btn.text = "SPEED: 2x"
-	elif speed_multiplier == 2.0:
-		speed_multiplier = 4.0
-		speed_btn.text = "SPEED: 4x"
+		speed_btn.text = "SPEED: 2x ⏩"
+	elif is_equal_approx(speed_multiplier, 2.0):
+		speed_multiplier = 3.0
+		speed_btn.text = "SPEED: 3x ⏩⏩"
+	elif is_equal_approx(speed_multiplier, 3.0):
+		speed_multiplier = 5.0
+		speed_btn.text = "TURBO: 5x ⚡"
 	else:
 		speed_multiplier = 1.0
-		speed_btn.text = "SPEED: 1x"
+		speed_btn.text = "SPEED: 1x ▶"
 
 func _on_skip_btn_pressed() -> void:
 	# Run simulation to immediate conclusion
