@@ -592,6 +592,13 @@ func unequip_augment_to_inventory(unit: UnitInstance, slot_index: int) -> bool:
 		return true
 	return false
 
+## Alias methods for compatibility
+func equip_augment_to_unit(unit: UnitInstance, slot_index: int, inventory_index: int) -> bool:
+	return equip_augment_from_inventory(unit, slot_index, inventory_index)
+
+func unequip_augment_from_unit(unit: UnitInstance, slot_index: int) -> bool:
+	return unequip_augment_to_inventory(unit, slot_index)
+
 # Synergy Recalculation
 func recalculate_synergies() -> SynergyReport:
 	var repo = _get_repo()

@@ -203,7 +203,7 @@ func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 		var dragged_u = data.get("unit") as UnitInstance
 		return dragged_u != null and dragged_u != unit_instance
 	elif dtype == "augment" or dtype == "slotted_augment":
-		if not is_fielded or unit_instance == null:
+		if unit_instance == null:
 			return false
 		var aug_res = data.get("resource", null) as AugmentResource
 		if aug_res == null:
@@ -235,7 +235,7 @@ func _drop_data(at_position: Vector2, data: Variant) -> void:
 	if slots_container:
 		for i in range(slots_container.get_child_count()):
 			var btn = slots_container.get_child(i) as Button
-			if btn and btn.get_rect().has_point(btn.get_local_mouse_position()):
+			if btn and btn.get_global_rect().has_point(btn.get_global_mouse_position()):
 				var slot_type = slot_types[i] if i < slot_types.size() else Enums.SlotType.PASSIVE
 				if aug_res.slot_type == slot_type or aug_res.slot_type == Enums.SlotType.FLEX or slot_type == Enums.SlotType.FLEX:
 					target_slot = i

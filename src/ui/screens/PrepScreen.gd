@@ -717,11 +717,11 @@ func _on_augment_chip_clicked(aug: AugmentResource, inv_idx: int) -> void:
 
 func _on_unit_slot_clicked(unit: UnitInstance, slot_idx: int) -> void:
 	if selected_inventory_aug == null or selected_inventory_idx < 0:
-		var slotted = unit.slotted_augments[slot_idx]
+		var slotted = unit.equipped_augments[slot_idx] if slot_idx >= 0 and slot_idx < unit.equipped_augments.size() else null
 		if slotted:
 			_set_status("Slot %d contains [%s]. Right-click to unequip." % [slot_idx + 1, slotted.display_name], false)
 		else:
-			var slot_t = unit.unit_resource.slot_layout[slot_idx]
+			var slot_t = unit.get_slot_type(slot_idx)
 			_set_status("Slot %d is empty (%s). Select an augment first." % [
 				slot_idx + 1, 
 				Enums.slot_type_to_string(slot_t)
@@ -729,7 +729,7 @@ func _on_unit_slot_clicked(unit: UnitInstance, slot_idx: int) -> void:
 		return
 		
 	# Attempt to equip
-	var success = crew_mgr.equip_augment_to_unit(unit, slot_idx, selected_inventory_idx)
+	var success = crew_mgr.equip_augment_from_inventory(unit, slot_idx, selected_inventory_idx)
 	if success:
 		_set_status("Equipped [%s] to %s." % [selected_inventory_aug.display_name, unit.unit_resource.display_name], false)
 		selected_inventory_aug = null
@@ -744,7 +744,7 @@ func _on_augment_dropped_on_unit(unit: UnitInstance, target_slot: int, drag_data
 		var inv_idx = drag_data.get("inventory_index", -1)
 		if inv_idx >= 0 and inv_idx < crew_mgr.augment_inventory.size():
 			var aug_res = crew_mgr.augment_inventory[inv_idx]
-			var success = crew_mgr.equip_augment_to_unit(unit, target_slot, inv_idx)
+			var success = crew_mgr.equip_augment_from_inventory(unit, target_slot, inv_idx)
 			if success:
 				_set_status("Equipped [%s] to %s." % [aug_res.display_name, unit.unit_resource.display_name], false)
 				_play_sfx("play_ui_click")
@@ -753,21 +753,21 @@ func _on_augment_dropped_on_unit(unit: UnitInstance, target_slot: int, drag_data
 	elif dtype == "slotted_augment":
 		var src_unit = drag_data.get("source_unit", null) as UnitInstance
 		var src_slot = drag_data.get("source_slot", -1) as int
-		if src_unit != null and src_slot >= 0 and src_slot < src_unit.slotted_augments.size():
-			var src_aug = src_unit.slotted_augments[src_slot]
+		if src_unit != null and src_slot >= 0 and src_slot < src_unit.equipped_augments.size():
+			var src_aug = src_unit.equipped_augments[src_slot]
 			if src_unit == unit:
 				# Move within same unit
-				var target_aug = unit.slotted_augments[target_slot]
-				unit.slotted_augments[target_slot] = src_aug
-				unit.slotted_augments[src_slot] = target_aug
+				var target_aug = unit.equipped_augments[target_slot]
+				unit.equipped_augments[target_slot] = src_aug
+				unit.equipped_augments[src_slot] = target_aug
 				crew_mgr.recalculate_synergies()
 				_set_status("Moved [%s] to slot %d." % [src_aug.display_name, target_slot + 1], false)
 				_play_sfx("play_ui_click")
 			else:
 				# Transfer between operatives
-				if crew_mgr.unequip_augment_from_unit(src_unit, src_slot):
+				if crew_mgr.unequip_augment_to_inventory(src_unit, src_slot):
 					var new_inv_idx = crew_mgr.augment_inventory.size() - 1
-					if crew_mgr.equip_augment_to_unit(unit, target_slot, new_inv_idx):
+					if crew_mgr.equip_augment_from_inventory(unit, target_slot, new_inv_idx):
 						_set_status("Transferred [%s] to %s." % [src_aug.display_name, unit.unit_resource.display_name], false)
 						_play_sfx("play_ui_click")
 					else:
@@ -775,11 +775,11 @@ func _on_augment_dropped_on_unit(unit: UnitInstance, target_slot: int, drag_data
 	call_deferred("_refresh_all")
 
 func _on_unit_slot_unequip_requested(unit: UnitInstance, slot_idx: int) -> void:
-	if slot_idx < 0 or slot_idx >= unit.slotted_augments.size() or unit.slotted_augments[slot_idx] == null:
+	if slot_idx < 0 or slot_idx >= unit.equipped_augments.size() or unit.equipped_augments[slot_idx] == null:
 		return
 		
-	var unequipped_aug = unit.slotted_augments[slot_idx]
-	if crew_mgr.unequip_augment_from_unit(unit, slot_idx):
+	var unequipped_aug = unit.equipped_augments[slot_idx]
+	if crew_mgr.unequip_augment_to_inventory(unit, slot_idx):
 		_set_status("Unequipped [%s] back to inventory." % unequipped_aug.display_name, false)
 		_refresh_all()
 	else:
