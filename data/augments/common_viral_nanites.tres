@@ -1,9 +1,11 @@
-[gd_resource type="Resource" script_class="AugmentResource" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="AugmentResource" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://src/data/resources/AugmentResource.gd" id="1_aug"]
+[ext_resource type="Texture2D" path="res://assets/icons/augments/common_viral_nanites.png" id="2_icon"]
 
 [resource]
 script = ExtResource("1_aug")
+icon = ExtResource("2_icon")
 id = "common_viral_nanites"
 display_name = "Viral Nanite Injector"
 description = "Injects microscopic self-replicating nanites that accelerate weapon cycle rate."

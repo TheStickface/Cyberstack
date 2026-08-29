@@ -18,6 +18,7 @@ var unit_instance: UnitInstance = null
 var is_fielded: bool = true
 var default_style: StyleBoxFlat = null
 
+@onready var portrait_icon: TextureRect = $Margin/VBox/Header/PortraitIcon
 @onready var name_label: Label = $Margin/VBox/Header/NameLabel
 @onready var role_badge: Label = $Margin/VBox/Header/RoleBadge
 @onready var faction_badge: Label = $Margin/VBox/Header/FactionBadge
@@ -175,7 +176,11 @@ func _update_ui() -> void:
 	visible = true
 	tooltip_text = "Operative Profile"
 	var res = unit_instance.unit_resource
-	
+
+	if portrait_icon:
+		portrait_icon.texture = res.portrait
+		portrait_icon.visible = res.portrait != null
+
 	if name_label:
 		if unit_instance.star_level == 1:
 			name_label.text = res.display_name

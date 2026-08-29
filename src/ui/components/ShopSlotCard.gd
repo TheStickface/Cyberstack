@@ -14,7 +14,8 @@ var slot_data: Dictionary = {}
 
 @onready var type_label: Label = $Margin/VBox/Header/TypeLabel
 @onready var cost_label: Label = $Margin/VBox/Header/CostLabel
-@onready var name_label: Label = $Margin/VBox/NameLabel
+@onready var icon_rect: TextureRect = $Margin/VBox/NameRow/IconRect
+@onready var name_label: Label = $Margin/VBox/NameRow/NameLabel
 @onready var details_label: Label = $Margin/VBox/DetailsLabel
 @onready var buy_btn: Button = $Margin/VBox/BuyBtn
 
@@ -61,6 +62,8 @@ func _update_ui(player_gold: int) -> void:
 			name_label.text = "--- SOLD ---"
 		if details_label:
 			details_label.text = ""
+		if icon_rect:
+			icon_rect.visible = false
 		return
 		
 	tooltip_text = "Offering Details"
@@ -73,6 +76,9 @@ func _update_ui(player_gold: int) -> void:
 		
 	if item_type == "unit":
 		var unit_res = res as UnitResource
+		if icon_rect:
+			icon_rect.texture = unit_res.portrait
+			icon_rect.visible = unit_res.portrait != null
 		if name_label:
 			name_label.text = unit_res.display_name
 			name_label.add_theme_color_override("font_color", Color(0, 0.95, 0.83))
@@ -86,6 +92,9 @@ func _update_ui(player_gold: int) -> void:
 			]
 	elif item_type == "augment":
 		var aug_res = res as AugmentResource
+		if icon_rect:
+			icon_rect.texture = aug_res.icon
+			icon_rect.visible = aug_res.icon != null
 		if name_label:
 			name_label.text = aug_res.display_name
 			name_label.add_theme_color_override("font_color", Color(aug_res.get_tier_color_hex()))

@@ -1,9 +1,11 @@
-[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="UnitResource" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+[ext_resource type="Texture2D" path="res://assets/portraits/fixer_doc.png" id="2_portrait"]
 
 [resource]
 script = ExtResource("1_unit")
+portrait = ExtResource("2_portrait")
 id = "fixer_doc"
 display_name = "Doc Sawbones"
 title = "Back-Alley Surgeon"

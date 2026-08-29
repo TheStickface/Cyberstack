@@ -14,7 +14,8 @@ const SynergyTooltipScript = preload("res://src/ui/components/SynergyTooltip.gd"
 var inventory_index: int = -1
 var is_selected: bool = false
 
-@onready var name_label: Label = $VBox/NameLabel
+@onready var icon_rect: TextureRect = $VBox/TopRow/IconRect
+@onready var name_label: Label = $VBox/TopRow/NameLabel
 @onready var slot_type_label: Label = $VBox/HBox/SlotTypeLabel
 @onready var tag_label: Label = $VBox/HBox/TagLabel
 
@@ -95,6 +96,10 @@ func _update_ui() -> void:
 		return
 		
 	visible = true
+	if icon_rect:
+		icon_rect.texture = augment_resource.icon
+		icon_rect.visible = augment_resource.icon != null
+
 	if name_label:
 		name_label.text = augment_resource.display_name
 		
