@@ -51,3 +51,47 @@ EVIDENCE:   In baseline D3, player crew has 5 fielded operatives while enemy min
 PREDICT:    Reduces D3 combat stomp rate from 82.5% to ~45% and raises D3 mortality to ~4-6%.
 RISK:       Low; adjusts enemy team generator in CombatBridge.gd and BalanceSimulator.gd.
 EFFORT:     sim + game code
+
+---
+
+## Pass 2 (2026-08-29)
+
+#5 Rogue AI Starter & Subnet Sync AP Reinforcement
+STATUS:     new
+PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass2.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass2.md)
+ORIGIN:     Simon Seer — Overclock Subnet
+CHANGE:     Unit stats & Faction bonus (data/units/ai_glitch.tres, data/factions/rogue_ais.tres) — ai_glitch base AP (65 → 72), Max Health (620 → 650), Starting Mana (40 → 45); Rogue AI (2) AP bonus (+15 → +25).
+EVIDENCE:   1,000-run simulation raised GLITCH.exe win rate from 60.4% to 65.6%, closing the gap with Blitz (62.4%), Sentinel (65.2%), and Vane (66.4%).
+PREDICT:    Tightens 4-starter strategy spread within 5 points and makes Rogue AI drafted comps viable from node 1.
+RISK:       Very low; pure data-only .tres tuning.
+EFFORT:     data-only tune
+
+#6 District 3 Server Vault Enemy Threat Calibration
+STATUS:     new
+PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass2.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass2.md)
+ORIGIN:     Simon Seer — Data Surge Sentinels
+CHANGE:     District Enemy Scaling (src/core/Constants.gd) — Set District 3 hp_mult: 1.95 and dmg_mult: 1.55.
+EVIDENCE:   1,000-run simulation reduced D3 combat stomp rate from 53.6% to 37.5% and brought won-battle crew HP to 75%.
+PREDICT:    Replaces mid-game coasting with active tactical engagement before the D4 boss.
+RISK:       Low; single dictionary entry in Constants.gd.
+EFFORT:     data-only tune
+
+#7 Legendary Thermal Supernova AP Amplification
+STATUS:     new
+PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass2.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass2.md)
+ORIGIN:     Simon Seer — Supernova Catalyst
+CHANGE:     Augment tuning (data/augments/legendary_thermal_supernova.tres) — Base AP +60 → +75, armor_melt_pct 0.40 → 0.50.
+EVIDENCE:   Expands Highroll Delta to ~8.80s and increases top-decile build diversity for AP/thermal carry builds.
+PREDICT:    Enhances dopamine spike when finding Legendary shop drops in late districts.
+RISK:       Very low; single .tres resource update.
+EFFORT:     data-only tune
+
+#8 Ghost Terminal Push-Your-Luck Risk/Reward
+STATUS:     new
+PASS:       2026-08-29 → [2026-08-29-marvin-manager-proposals-pass2.md](file:///c:/Dev/Cyberstack/docs/superpowers/reviews/2026-08-29-marvin-manager-proposals-pass2.md)
+ORIGIN:     Simon Seer — Deep Net Access
+CHANGE:     Event choice reward scaling (data/events/event_ghost_terminal.tres) — Choice 2 "Siphon Deep Core Ledgers" grants +12 Credits but inflicts 15.0 crew HP damage (penalty_health_cost: 15.0).
+EVIDENCE:   Creates authentic tension in event nodes where players must balance greed against survival before combat encounters.
+PREDICT:    Adds meaningful risk/reward trade-offs to narrative nodes.
+RISK:       Very low; single .tres resource update.
+EFFORT:     data-only tune
