@@ -219,7 +219,7 @@ static func run_10k_full_runs_matrix(repo: Object, total_runs: int = 10000) -> D
 		"combat_margin": combat_margin
 	}
 
-static func simulate_full_run(starter_id: String, repo: Object) -> Dictionary:
+static func simulate_full_run(starter_id: String, repo: Object, strategy: Dictionary = {}) -> Dictionary:
 	var drawn_districts = repo.draw_run_districts(3) # 3 normal + 1 final boss = 4 districts
 	var starter_unit_res = repo.get_unit(starter_id)
 	if starter_unit_res == null:
@@ -248,7 +248,7 @@ static func simulate_full_run(starter_id: String, repo: Object) -> Dictionary:
 	# Initial Shop / Prep Phase before First Fight
 	R["gold_on_hand_by_district"][1] = gold
 	var _g0 = gold
-	gold = _simulate_shop_purchase(crew_mgr, gold, repo)
+	gold = _simulate_shop_purchase(crew_mgr, gold, repo, strategy)
 	R["gold_spent_total"] += _g0 - gold
 
 	for d_idx in range(1, drawn_districts.size() + 1):
@@ -263,7 +263,7 @@ static func simulate_full_run(starter_id: String, repo: Object) -> Dictionary:
 
 			R["gold_on_hand_by_district"][d_idx] = gold
 			var _g1 = gold
-			gold = _simulate_shop_purchase(crew_mgr, gold, repo)
+			gold = _simulate_shop_purchase(crew_mgr, gold, repo, strategy)
 			R["gold_spent_total"] += _g1 - gold
 
 		for sub_idx in range(1, Constants.SUBDISTRICTS_PER_DISTRICT + 1):
@@ -318,7 +318,7 @@ static func simulate_full_run(starter_id: String, repo: Object) -> Dictionary:
 
 					Enums.EncounterType.SHOP:
 						var _g2 = gold
-						gold = _simulate_shop_purchase(crew_mgr, gold, repo)
+						gold = _simulate_shop_purchase(crew_mgr, gold, repo, strategy)
 						R["gold_spent_total"] += _g2 - gold
 
 	# Completed all 4 districts
@@ -345,7 +345,17 @@ static func _margin_entry(battle_res: Dictionary, district_index: int, is_boss: 
 ## Runs the greedy shop AI (star-ups, recruits, augment fills) against the given
 ## gold budget and returns the credits left afterwards. Callers MUST assign the
 ## result back so purchases actually debit the run's gold.
-static func _simulate_shop_purchase(crew_mgr: CrewManager, gold: int, repo: Object) -> int:
+##
+## `strategy` is an optional StrategyArchetypes archetype Dictionary (see that
+## file). When empty, every choice below is exactly the original random
+## heuristic (unchanged behavior — existing tests rely on this). When
+## non-empty, step 2 (recruit) and step 3 (augment fill) pick the
+## best-scoring candidate via StrategyArchetypes.score_unit/score_augment
+## instead of a uniform-random pick, biasing this run toward that strategy
+## while keeping the same tier odds / economy pacing. This is what lets
+## StrategyMetricsSimulator measure a real winrate per named strategy, and
+## what AutoplayDirector's live shop decisions are scored the same way as.
+static func _simulate_shop_purchase(crew_mgr: CrewManager, gold: int, repo: Object, strategy: Dictionary = {}) -> int:
 	var d_idx = crew_mgr.current_district
 	var unit_odds = Constants.DISTRICT_UNIT_SHOP_ODDS.get(d_idx, Constants.DISTRICT_UNIT_SHOP_ODDS[1])
 	var aug_odds = Constants.DISTRICT_SHOP_ODDS.get(d_idx, Constants.DISTRICT_SHOP_ODDS[1])
@@ -380,8 +390,26 @@ static func _simulate_shop_purchase(crew_mgr: CrewManager, gold: int, repo: Obje
 					tiered_pool.append(u)
 			if tiered_pool.is_empty():
 				tiered_pool = unfielded
-				
-			var recruit_unit: UnitResource = tiered_pool[randi() % tiered_pool.size()]
+
+			var recruit_unit: UnitResource
+			if strategy.is_empty():
+				recruit_unit = tiered_pool[randi() % tiered_pool.size()]
+			else:
+				var existing_ids: Dictionary = {}
+				for u2 in crew_mgr.fielded_units:
+					if u2 and u2.unit_resource:
+						existing_ids[u2.unit_resource.id] = true
+				for u2 in crew_mgr.benched_units:
+					if u2 and u2.unit_resource:
+						existing_ids[u2.unit_resource.id] = true
+				var best_u: UnitResource = tiered_pool[0]
+				var best_u_score := -1.0
+				for cand in tiered_pool:
+					var sc = StrategyArchetypes.score_unit(cand, strategy, {"existing_ids": existing_ids})
+					if sc > best_u_score:
+						best_u_score = sc
+						best_u = cand
+				recruit_unit = best_u
 			if gold >= recruit_unit.base_cost:
 				gold -= recruit_unit.base_cost
 				var new_inst = UnitInstance.new(recruit_unit)
@@ -406,12 +434,25 @@ static func _simulate_shop_purchase(crew_mgr: CrewManager, gold: int, repo: Obje
 				var aug_pool = repo.get_augments_by_tier(chosen_a_tier)
 				if aug_pool.is_empty():
 					aug_pool = repo.get_all_augments()
-					
-				for aug in aug_pool:
-					if aug.base_cost <= gold and u.can_equip_augment(s_idx, aug):
-						gold -= aug.base_cost
-						u.equip_augment(s_idx, aug)
-						break
+
+				if strategy.is_empty():
+					for aug in aug_pool:
+						if aug.base_cost <= gold and u.can_equip_augment(s_idx, aug):
+							gold -= aug.base_cost
+							u.equip_augment(s_idx, aug)
+							break
+				else:
+					var best_aug: AugmentResource = null
+					var best_aug_score := -1.0
+					for aug in aug_pool:
+						if aug.base_cost <= gold and u.can_equip_augment(s_idx, aug):
+							var sc = StrategyArchetypes.score_augment(aug, strategy)
+							if sc > best_aug_score:
+								best_aug_score = sc
+								best_aug = aug
+					if best_aug != null:
+						gold -= best_aug.base_cost
+						u.equip_augment(s_idx, best_aug)
 
 	# 4. Black Market Overdrive (Augment Synthesis) in District 3+ (Cost: 6 credits)
 	if d_idx >= 3 and gold >= 6:

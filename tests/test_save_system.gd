@@ -61,6 +61,12 @@ func test_active_run_save_and_load() -> Dictionary:
 	if aug2:
 		run_mgr.crew_mgr.augment_inventory.append(aug2)
 		
+	# Add a unit to bench
+	var sentinel_res = repo.get_unit("corp_sentinel")
+	if sentinel_res:
+		var benched_unit = UnitInstance.new(sentinel_res)
+		run_mgr.crew_mgr.benched_units.append(benched_unit)
+		
 	var saved = SaveManager.save_active_run(run_mgr, test_path)
 	if not saved:
 		return {"passed": false, "message": "Failed to save active run", "assertions": 1}
@@ -81,23 +87,30 @@ func test_active_run_save_and_load() -> Dictionary:
 	if loaded_run.crew_mgr.fielded_units.size() != 1:
 		return {"passed": false, "message": "Fielded units count mismatch", "assertions": 6}
 		
+	if loaded_run.crew_mgr.benched_units.size() != 1:
+		return {"passed": false, "message": "Benched units count mismatch (Expected 1, got %d)" % loaded_run.crew_mgr.benched_units.size(), "assertions": 7}
+		
+	var bu0 = loaded_run.crew_mgr.benched_units[0]
+	if bu0.unit_resource == null or bu0.unit_resource.id != "corp_sentinel":
+		return {"passed": false, "message": "Benched unit identity mismatch", "assertions": 8}
+		
 	var u0 = loaded_run.crew_mgr.fielded_units[0]
 	if u0.star_level != 2:
-		return {"passed": false, "message": "Unit star level was not preserved across save/load (Got %d, Expected 2)" % u0.star_level, "assertions": 7}
+		return {"passed": false, "message": "Unit star level was not preserved across save/load (Got %d, Expected 2)" % u0.star_level, "assertions": 9}
 		
 	if u0.grid_slot != 1 or loaded_run.crew_mgr.tactical_grid[1] != u0:
-		return {"passed": false, "message": "Tactical grid slot assignment was not reconstructed properly", "assertions": 8}
+		return {"passed": false, "message": "Tactical grid slot assignment was not reconstructed properly", "assertions": 10}
 		
 	var equipped_aug = u0.equipped_augments[0]
 	if equipped_aug == null or equipped_aug.id != "common_kinetic_accelerator":
-		return {"passed": false, "message": "Equipped augment mismatch on loaded unit", "assertions": 9}
+		return {"passed": false, "message": "Equipped augment mismatch on loaded unit", "assertions": 11}
 		
 	if loaded_run.crew_mgr.augment_inventory.size() != 1:
-		return {"passed": false, "message": "Augment inventory size mismatch in loaded run", "assertions": 10}
+		return {"passed": false, "message": "Augment inventory size mismatch in loaded run", "assertions": 12}
 		
 	if loaded_run.run_districts.is_empty():
-		return {"passed": false, "message": "Run districts were not preserved in loaded run", "assertions": 11}
+		return {"passed": false, "message": "Run districts were not preserved in loaded run", "assertions": 13}
 		
 	# Cleanup
 	SaveManager.delete_active_run(test_path)
-	return {"passed": true, "assertions": 11}
+	return {"passed": true, "assertions": 13}

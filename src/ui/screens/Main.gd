@@ -16,12 +16,43 @@ const MetricsScene = preload("res://src/ui/screens/MetricsDashboard.tscn")
 var current_screen_node: Node = null
 
 func _ready() -> void:
+	if _has_cmdline_flag("--autoplay"):
+		_engage_autoplay()
+		return
+
 	if get_node_or_null("/root/GameManager"):
 		var gm = get_node("/root/GameManager")
 		gm.state_changed.connect(_on_game_state_changed)
 		_show_screen_for_state(gm.current_state)
 	else:
 		_show_title_screen()
+
+## Spectator/dev mode: boots straight into a live game run driven by
+## AutoplayDirector instead of the title screen. See Launch_Cyberstack_Autoplay.bat.
+func _engage_autoplay() -> void:
+	if get_node_or_null("/root/GameManager"):
+		var gm = get_node("/root/GameManager")
+		gm.state_changed.connect(_on_game_state_changed)
+	var director := AutoplayDirector.new()
+	add_child(director)
+	director.engage(_parse_float_cmdline_arg("--autoplay-speed=", 2.0))
+
+func _has_cmdline_flag(flag: String) -> bool:
+	var all_args: Array[String] = []
+	all_args.append_array(OS.get_cmdline_user_args())
+	all_args.append_array(OS.get_cmdline_args())
+	return all_args.has(flag)
+
+func _parse_float_cmdline_arg(prefix: String, default_val: float) -> float:
+	var all_args: Array[String] = []
+	all_args.append_array(OS.get_cmdline_user_args())
+	all_args.append_array(OS.get_cmdline_args())
+	for arg in all_args:
+		if arg.begins_with(prefix):
+			var val = arg.substr(prefix.length()).to_float()
+			if val > 0.0:
+				return val
+	return default_val
 
 func _on_game_state_changed(new_state: int) -> void:
 	_show_screen_for_state(new_state)

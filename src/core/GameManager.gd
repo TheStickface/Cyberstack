@@ -122,7 +122,7 @@ func finish_combat_encounter(victory: bool, battle_stats: Dictionary = {}) -> Di
 		# Next node or district advanced -> save run and route appropriately
 		SaveManager.save_active_run(active_run_manager)
 		var next_type = active_run_manager.get_current_encounter_type()
-		if next_type == Enums.EncounterType.SHOP or status == "district_advanced":
+		if next_type == Enums.EncounterType.SHOP or status == "district_advanced" or status == "subdistrict_advanced":
 			change_state(GameState.PREP)
 		else:
 			change_state(GameState.MAP)

@@ -42,10 +42,24 @@ func _refresh_map() -> void:
 func _refresh_header() -> void:
 	if district_title and run_mgr.current_district:
 		var sub_suffix = " (APPROACH)" if run_mgr.current_subdistrict_index == 1 else " (STRONGHOLD)"
-		district_title.text = "%s: %s%s" % [run_mgr.get_stage_string(), run_mgr.current_district.display_name.to_upper(), sub_suffix]
+		var total_enc = run_mgr.district_nodes.size()
+		var cur_enc = mini(run_mgr.current_node_index + 1, total_enc)
+		district_title.text = "%s: %s%s — WAYPOINT %d/%d" % [
+			run_mgr.get_stage_string(),
+			run_mgr.current_district.display_name.to_upper(),
+			sub_suffix,
+			cur_enc,
+			total_enc
+		]
 		district_title.add_theme_color_override("font_color", run_mgr.current_district.theme_color)
 	if crew_count_label:
-		crew_count_label.text = "CREW: %d / %d" % [run_mgr.crew_mgr.fielded_units.size(), run_mgr.crew_mgr.get_max_field_units()]
+		var bench_cnt = run_mgr.crew_mgr.benched_units.size() if run_mgr.crew_mgr else 0
+		var bench_suffix = " (+%d Bench)" % bench_cnt if bench_cnt > 0 else ""
+		crew_count_label.text = "CREW: %d / %d%s" % [
+			run_mgr.crew_mgr.fielded_units.size(),
+			run_mgr.crew_mgr.get_max_field_units(),
+			bench_suffix
+		]
 	if gold_label:
 		gold_label.text = "%s: %d" % [Constants.CURRENCY_NAME.to_upper(), run_mgr.shop_mgr.gold]
 	if status_label and run_mgr.current_district:
@@ -58,14 +72,18 @@ func _refresh_nodes() -> void:
 	for c in nodes_container.get_children():
 		c.queue_free()
 		
+	var dist_idx = run_mgr.current_district_index
+	var sub_idx = run_mgr.current_subdistrict_index
 	for node in run_mgr.district_nodes:
 		var widget: DistrictNodeWidget = DistrictNodeWidgetScene.instantiate()
 		nodes_container.add_child(widget)
+		var stage_text = "%d-%d · %d" % [dist_idx, sub_idx, node["index"] + 1]
 		widget.setup(
 			node["index"],
 			node["type"],
 			node["visited"],
-			node["current"]
+			node["current"],
+			stage_text
 		)
 		widget.node_clicked.connect(_on_node_clicked)
 
@@ -145,7 +163,7 @@ func _complete_current_encounter(victory: bool = true) -> void:
 	elif status == "game_over":
 		status_label.text = "MISSION FAILED. Run terminated."
 		
-	if get_node_or_null("/root/SaveManager") and run_mgr:
+	if run_mgr:
 		SaveManager.save_active_run(run_mgr)
 		
 	_refresh_map()
@@ -155,4 +173,13 @@ func _on_abandon_btn_pressed() -> void:
 		get_node("/root/GameManager").abandon_run()
 
 func _on_node_clicked(node_idx: int) -> void:
-	pass
+	if node_idx < 0 or node_idx >= run_mgr.district_nodes.size():
+		return
+	var node = run_mgr.district_nodes[node_idx]
+	var type_str = Enums.EncounterType.keys()[node["type"]]
+	var state_str = "CURRENT" if node["current"] else ("CLEARED" if node["visited"] else "LOCKED")
+	if status_label:
+		status_label.text = "Stage %d-%d (Waypoint %d/%d): %s [%s]" % [
+			run_mgr.current_district_index, run_mgr.current_subdistrict_index,
+			node_idx + 1, run_mgr.district_nodes.size(), type_str, state_str
+		]

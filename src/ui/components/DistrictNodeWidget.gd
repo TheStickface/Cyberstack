@@ -10,20 +10,37 @@ var encounter_type: Enums.EncounterType = Enums.EncounterType.FIGHT
 var is_visited: bool = false
 var is_current: bool = false
 
+var stage_label_text: String = ""
+
+@onready var stage_label: Label = get_node_or_null("Margin/VBox/StageLabel")
 @onready var icon_label: Label = $Margin/VBox/IconLabel
 @onready var type_label: Label = $Margin/VBox/TypeLabel
 @onready var status_label: Label = $Margin/VBox/StatusLabel
 
-func setup(p_index: int, p_type: Enums.EncounterType, p_visited: bool, p_current: bool) -> void:
+func setup(p_index: int, p_type: Enums.EncounterType, p_visited: bool, p_current: bool, p_stage_str: String = "") -> void:
 	node_index = p_index
 	encounter_type = p_type
 	is_visited = p_visited
 	is_current = p_current
+	stage_label_text = p_stage_str
 	_update_ui()
 
 func _update_ui() -> void:
 	if not icon_label:
 		return
+		
+	if stage_label:
+		if not stage_label_text.is_empty():
+			stage_label.text = stage_label_text
+		else:
+			stage_label.text = "NODE %d" % (node_index + 1)
+			
+		if is_current:
+			stage_label.add_theme_color_override("font_color", Color(0, 0.95, 0.83))
+		elif is_visited:
+			stage_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.6))
+		else:
+			stage_label.add_theme_color_override("font_color", Color(0.6, 0.55, 0.75))
 		
 	match encounter_type:
 		Enums.EncounterType.FIGHT:

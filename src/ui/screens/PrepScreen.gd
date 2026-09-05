@@ -88,19 +88,22 @@ func _refresh_top_bar() -> void:
 		grid_unlock_modal.setup(crew_mgr)
 
 	if district_label:
+		var stage_prefix = run_mgr.get_stage_string() if run_mgr else ("DISTRICT %d" % crew_mgr.current_district)
 		if shop_mgr.active_district_res:
-			district_label.text = "DISTRICT %d: %s" % [crew_mgr.current_district, shop_mgr.active_district_res.display_name.to_upper()]
+			district_label.text = "%s: %s" % [stage_prefix, shop_mgr.active_district_res.display_name.to_upper()]
 			district_label.add_theme_color_override("font_color", shop_mgr.active_district_res.theme_color)
 		else:
-			district_label.text = "DISTRICT %d" % crew_mgr.current_district
+			district_label.text = stage_prefix
 	if crew_count_label:
 		var max_units = crew_mgr.get_max_field_units()
 		var cur_units = crew_mgr.fielded_units.size()
+		var bench_cnt = crew_mgr.benched_units.size()
+		var bench_str = " (+%d Bench)" % bench_cnt if bench_cnt > 0 else ""
 		if cur_units >= max_units:
-			crew_count_label.text = "CREW: %d / %d (DISTRICT MAX)" % [cur_units, max_units]
+			crew_count_label.text = "CREW: %d / %d (DISTRICT MAX)%s" % [cur_units, max_units, bench_str]
 			crew_count_label.add_theme_color_override("font_color", Color(1, 0.85, 0))
 		else:
-			crew_count_label.text = "CREW: %d / %d" % [cur_units, max_units]
+			crew_count_label.text = "CREW: %d / %d%s" % [cur_units, max_units, bench_str]
 			crew_count_label.add_theme_color_override("font_color", Color(0, 0.95, 0.83))
 	if gold_label:
 		gold_label.text = "%s: %d" % [Constants.CURRENCY_NAME.to_upper(), shop_mgr.gold]
@@ -594,7 +597,13 @@ func _on_crew_buy_requested(slot_index: int) -> void:
 				u_name = result.item.unit_resource.display_name
 			elif "display_name" in result.item:
 				u_name = result.item.display_name
-		_set_status("Recruited %s to crew." % u_name, false)
+		var dest = "Tactical Grid"
+		if result.item is UnitInstance:
+			if result.item.grid_slot >= 0:
+				dest = "Tactical Slot %d" % (result.item.grid_slot + 1)
+			else:
+				dest = "Bench Reserves"
+		_set_status("Recruited %s to %s." % [u_name, dest], false)
 		crew_mgr.recalculate_synergies()
 		
 		# Check for star upgrades
@@ -910,16 +919,18 @@ func _on_lock_in_pressed() -> void:
 		_play_sfx("play_ui_click")
 		
 		# If this prep phase was entered for a dedicated SHOP node on the map, complete and advance the encounter
-		if run_mgr and run_mgr.get_current_encounter_type() == Enums.EncounterType.SHOP:
-			run_mgr.complete_encounter(true)
+		var active_rm = run_mgr
+		if get_node_or_null("/root/GameManager") and get_node("/root/GameManager").active_run_manager:
+			active_rm = get_node("/root/GameManager").active_run_manager
+
+		if active_rm and active_rm.get_current_encounter_type() == Enums.EncounterType.SHOP:
+			active_rm.complete_encounter(true)
 			
+		if active_rm:
+			SaveManager.save_active_run(active_rm)
+
 		if get_node_or_null("/root/GameManager"):
-			var gm = get_node("/root/GameManager")
-			if gm.active_run_manager:
-				if gm.active_run_manager.get_current_encounter_type() == Enums.EncounterType.SHOP:
-					gm.active_run_manager.complete_encounter(true)
-				SaveManager.save_active_run(gm.active_run_manager)
-			gm.open_map()
+			get_node("/root/GameManager").open_map()
 	else:
 		var err_msg = ", ".join(result.errors)
 		_set_status("Lock-in failed: %s" % err_msg, true)

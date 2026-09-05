@@ -33,7 +33,8 @@ func _init() -> void:
 		"res://tests/test_tactical_grid.gd",
 		"res://tests/test_tactical_drag_and_tethers.gd",
 		"res://tests/test_description_formatting.gd",
-		"res://tests/test_grid_conduits_and_unlocks.gd"
+		"res://tests/test_grid_conduits_and_unlocks.gd",
+		"res://tests/test_strategy_archetypes.gd"
 	]
 
 
