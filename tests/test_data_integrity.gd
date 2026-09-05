@@ -31,12 +31,12 @@ func test_all_tags_loaded() -> Dictionary:
 
 func test_unit_queries() -> Dictionary:
 	var all_units = repo.get_all_units()
-	if all_units.size() != 83:
-		return {"passed": false, "message": "Expected 83 total units (60 recruitable + 23 bosses), got %d" % all_units.size(), "assertions": 1}
+	if all_units.size() != 84:
+		return {"passed": false, "message": "Expected 84 total units (61 recruitable + 23 bosses), got %d" % all_units.size(), "assertions": 1}
 		
 	var recruitable = repo.get_recruitable_units()
-	if recruitable.size() != 60:
-		return {"passed": false, "message": "Expected 60 recruitable units, got %d" % recruitable.size(), "assertions": 2}
+	if recruitable.size() != 61:
+		return {"passed": false, "message": "Expected 61 recruitable units, got %d" % recruitable.size(), "assertions": 2}
 		
 	var bosses = repo.get_boss_units()
 	if bosses.size() != 23:
@@ -44,15 +44,16 @@ func test_unit_queries() -> Dictionary:
 		
 	for f in [Enums.Faction.STREET_RUNNERS, Enums.Faction.CORP_ENFORCERS, Enums.Faction.ROGUE_AIS, Enums.Faction.FIXERS, Enums.Faction.BIO_HACKERS, Enums.Faction.NET_PHANTOMS]:
 		var fac_recruitable = repo.get_recruitable_units().filter(func(u): return u.faction == f)
-		if fac_recruitable.size() != 10:
-			return {"passed": false, "message": "Expected 10 recruitable units for faction %d, got %d" % [f, fac_recruitable.size()], "assertions": 4}
+		var expected_fac_count = 11 if f == Enums.Faction.ROGUE_AIS else 10
+		if fac_recruitable.size() != expected_fac_count:
+			return {"passed": false, "message": "Expected %d recruitable units for faction %d, got %d" % [expected_fac_count, f, fac_recruitable.size()], "assertions": 4}
 		
 	return {"passed": true, "assertions": 4}
 
 func test_augment_queries() -> Dictionary:
 	var all_augments = repo.get_all_augments()
-	if all_augments.size() != 23:
-		return {"passed": false, "message": "Expected 23 total augments, got %d" % all_augments.size(), "assertions": 1}
+	if all_augments.size() != 24:
+		return {"passed": false, "message": "Expected 24 total augments, got %d" % all_augments.size(), "assertions": 1}
 		
 	for t in [Enums.AugmentTag.VIRAL, Enums.AugmentTag.THERMAL, Enums.AugmentTag.NEURAL, Enums.AugmentTag.KINETIC]:
 		var tag_augs = repo.get_augments_by_tag(t)

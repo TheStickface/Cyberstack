@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="UnitResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/UnitResource.gd" id="1_unit"]
+
+[resource]
+script = ExtResource("1_unit")
+id = "ai_vector"
+display_name = "Vector"
+title = "Conduit Sapper"
+bio = "A heavily shielded combat chassis refitted with electromagnetic tap-lines to siphon power from urban sub-grids."
+role = 0
+faction = 3
+base_cost = 3
+base_max_health = 750.0
+base_attack_damage = 42.0
+base_ability_power = 35.0
+base_attack_speed = 0.85
+base_armor = 25.0
+base_shield = 120.0
+base_starting_mana = 20.0
+base_max_mana = 70.0
+base_speed = 30.0
+base_crit_chance = 0.05
+base_evasion = 0.05
+ability_name = "Overload Pulse"
+ability_description = "120 AP dmg (adjacent), 130 Shield row allies (if calibrated)"
+ability_effect_id = "ability_overload_pulse"
+directional_target = 6
+directional_passive_description = "Sub-Grid Siphon"
+directional_modifiers = {
+2: 15.0,
+6: 10.0
+}

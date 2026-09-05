@@ -257,6 +257,10 @@ static func simulate_full_run(starter_id: String, repo: Object) -> Dictionary:
 
 		# Prep Phase at start of each district
 		if d_idx > 1:
+			var slot_to_unlock = 4 if d_idx == 2 else (3 if d_idx == 3 else 5)
+			var doctrine = _pick_best_doctrine_for_crew(crew_mgr, slot_to_unlock)
+			crew_mgr.unlock_slot(slot_to_unlock, doctrine)
+
 			R["gold_on_hand_by_district"][d_idx] = gold
 			var _g1 = gold
 			gold = _simulate_shop_purchase(crew_mgr, gold, repo)
@@ -270,11 +274,13 @@ static func simulate_full_run(starter_id: String, repo: Object) -> Dictionary:
 						var enemy_comp_templates = _build_minion_enemy_comp(repo, d_idx)
 						var enemy_crew = _instantiate_crew(enemy_comp_templates, repo)
 
-						var battle_res = simulate_single_battle(crew_mgr.fielded_units, enemy_crew, repo, d_idx, false, district, crew_mgr.tactical_grid, crew_mgr.active_synergy_report)
+						var form_bonuses = crew_mgr.calculate_formation_bonuses()
+						var battle_res = simulate_single_battle(crew_mgr.fielded_units, enemy_crew, repo, d_idx, false, district, crew_mgr.tactical_grid, crew_mgr.active_synergy_report, form_bonuses)
 						R["battle_margins"].append(_margin_entry(battle_res, d_idx, false))
 						if not battle_res["victory"]:
 							return _finish_run(R, false, d_idx, gold)
 
+						crew_mgr.tick_conduit_durations()
 						R["fights_won"] += 1
 						var payout = Constants.DISTRICT_ENCOUNTER_PAYOUTS.get(d_idx, 4)
 						gold += payout
@@ -283,11 +289,13 @@ static func simulate_full_run(starter_id: String, repo: Object) -> Dictionary:
 						var enemy_comp_templates = _build_boss_enemy_comp(repo, d_idx)
 						var enemy_crew = _instantiate_crew(enemy_comp_templates, repo)
 
-						var battle_res = simulate_single_battle(crew_mgr.fielded_units, enemy_crew, repo, d_idx, true, district, crew_mgr.tactical_grid, crew_mgr.active_synergy_report)
+						var form_bonuses = crew_mgr.calculate_formation_bonuses()
+						var battle_res = simulate_single_battle(crew_mgr.fielded_units, enemy_crew, repo, d_idx, true, district, crew_mgr.tactical_grid, crew_mgr.active_synergy_report, form_bonuses)
 						R["battle_margins"].append(_margin_entry(battle_res, d_idx, true))
 						if not battle_res["victory"]:
 							return _finish_run(R, false, d_idx, gold)
 
+						crew_mgr.tick_conduit_durations()
 						R["fights_won"] += 1
 						var payout = Constants.DISTRICT_ENCOUNTER_PAYOUTS.get(d_idx, 4) + 4
 						gold += payout
@@ -427,6 +435,20 @@ static func _simulate_shop_purchase(crew_mgr: CrewManager, gold: int, repo: Obje
 						gold -= 6
 						u.equipped_augments[s_idx] = candidates[randi() % candidates.size()]
 
+	# 5. Tactical Conduit Installation (Dedicated Conduit Shop Slot)
+	if repo and repo.has_method("get_all_conduits") and gold >= 3:
+		var all_conduits: Array[ConduitResource] = repo.get_all_conduits()
+		if not all_conduits.is_empty():
+			var offered_cond: ConduitResource = all_conduits[randi() % all_conduits.size()]
+			if gold >= offered_cond.cost:
+				for s in range(6):
+					if crew_mgr.is_slot_unlocked(s) and not crew_mgr.slot_conduits.has(s):
+						var s_coords = UnitInstance.slot_to_coords(s)
+						if offered_cond.can_install_on_row(s_coords.x):
+							gold -= offered_cond.cost
+							crew_mgr.install_conduit(s, offered_cond)
+							break
+
 	return maxi(0, gold)
 
 static func _place_unit_tactically(crew_mgr: CrewManager, unit: UnitInstance, district: int) -> void:
@@ -455,6 +477,25 @@ static func _place_unit_tactically(crew_mgr: CrewManager, unit: UnitInstance, di
 			crew_mgr.deploy_bench_to_grid(b_idx, s)
 			return
 
+static func _pick_best_doctrine_for_crew(crew_mgr: CrewManager, slot_to_unlock: int) -> String:
+	var coords = UnitInstance.slot_to_coords(slot_to_unlock)
+	var row = coords.x # Row 1 = Frontline, Row 0 = Backline
+	if row == 0:
+		var has_sniper = false
+		var has_hacker = false
+		for u in crew_mgr.fielded_units:
+			if u and u.unit_resource:
+				if u.unit_resource.role == Enums.UnitRole.SNIPER: has_sniper = true
+				if u.unit_resource.role == Enums.UnitRole.HACKER: has_hacker = true
+		if has_sniper:
+			return "overwatch_perch"
+		elif has_hacker:
+			return "neural_relay"
+		else:
+			return "amplifier_matrix"
+	else:
+		return "fortified_aegis"
+
 static func simulate_single_battle(
 	player_crew: Array[UnitInstance],
 	enemy_crew: Array[UnitInstance],
@@ -463,7 +504,8 @@ static func simulate_single_battle(
 	is_boss: bool = false,
 	district: DistrictResource = null,
 	player_grid: Array = [],
-	synergy_report: SynergyReport = null
+	synergy_report: SynergyReport = null,
+	formation_bonuses: Dictionary = {}
 ) -> Dictionary:
 	# Calculate active synergy bonuses for player squad
 	var factions_dict = repo.factions if repo != null else {}
@@ -479,6 +521,24 @@ static func simulate_single_battle(
 		var coords = UnitInstance.slot_to_coords(slot)
 		c["row"] = coords.x
 		c["col"] = coords.y
+
+		# Integrate formation bonuses (conduits, doctrines, etc.) if provided
+		if formation_bonuses.has(u):
+			var b = formation_bonuses[u]
+			c["max_hp"] += b.get("max_health_bonus", 0.0)
+			c["hp"] += b.get("max_health_bonus", 0.0)
+			c["shield"] += b.get("shield_bonus", 0.0)
+			c["armor"] += b.get("armor_bonus", 0.0)
+			c["attack_damage"] += b.get("attack_damage_bonus", 0.0)
+			c["ability_power"] += b.get("ability_power_bonus", 0.0)
+			c["attack_speed"] *= (1.0 + b.get("attack_speed_bonus", 0.0))
+			c["crit_chance"] += b.get("crit_bonus", 0.0)
+			c["evasion"] += b.get("evasion_bonus", 0.0)
+			c["mana"] = minf(c["max_mana"], c["mana"] + b.get("starting_mana_bonus", 0.0))
+			c["active_conduit_id"] = b.get("active_conduit_id", "")
+			c["slot_doctrine_id"] = b.get("slot_doctrine_id", "")
+			c["retaliation_icd"] = 0.0
+
 		player_combatants.append(c)
 		
 	var enemy_combatants: Array[Dictionary] = []
@@ -493,7 +553,8 @@ static func simulate_single_battle(
 		enemy_combatants.append(c)
 		
 	# Apply start-of-battle formation buffs
-	_apply_sim_formations(player_combatants)
+	if formation_bonuses.is_empty():
+		_apply_sim_formations(player_combatants)
 	_apply_sim_formations(enemy_combatants)
 	
 	# Apply District-Thematic Environmental Hazards & Modifiers
@@ -670,7 +731,10 @@ static func _create_combatant(unit: UnitInstance, repo: Object, is_player: bool,
 		"healing_mult": 1.0,
 		"tags": tag_counts,
 		"triggers": triggers,
-		"active_dots": []
+		"active_dots": [],
+		"active_conduit_id": "",
+		"slot_doctrine_id": "",
+		"retaliation_icd": 0.0
 	}
 
 
@@ -814,6 +878,7 @@ static func _apply_sim_mods(target: Dictionary, mods: Dictionary) -> void:
 			Enums.StatType.EVASION: target["evasion"] += v
 
 static func _step_combatant(c: Dictionary, opponents: Array[Dictionary], allies: Array[Dictionary], dt: float, district_index: int = 1) -> void:
+	c["retaliation_icd"] = maxf(0.0, c.get("retaliation_icd", 0.0) - dt)
 	# 1. Process active DoTs on this combatant
 	if not c["active_dots"].is_empty():
 		var remaining_dots: Array = []
@@ -885,6 +950,14 @@ static func _step_combatant(c: Dictionary, opponents: Array[Dictionary], allies:
 		var final_damage = damage * damage_mult
 		
 		_apply_damage(target, final_damage)
+
+		# Arc Discharge Coil: Frontline Retaliation when struck
+		if target.get("active_conduit_id", "") == "conduit_arc_discharge" and target.get("retaliation_icd", 0.0) <= 0.0 and target["hp"] > 0:
+			target["retaliation_icd"] = 1.5
+			var retal_dmg = 35.0
+			for opp in opponents:
+				if opp["hp"] > 0 and opp.get("row", 1) == 1:
+					_apply_damage(opp, retal_dmg)
 		
 		# Check if target died from attack for on-kill procs
 		if target["hp"] <= 0:
@@ -912,6 +985,22 @@ static func _step_combatant(c: Dictionary, opponents: Array[Dictionary], allies:
 		# Spellcast execution
 		if c["mana"] >= c["max_mana"] and c["max_mana"] > 0:
 			c["mana"] = 0.0
+
+			# Hyper-Frequency Siphon: Refund 20 mana & grant +20% attack speed on cast
+			if c.get("active_conduit_id", "") == "conduit_overclock_siphon":
+				c["mana"] = minf(c["max_mana"], c["mana"] + 20.0)
+				c["attack_speed"] *= 1.20
+
+			# Vector (Conduit Sapper): Overload Pulse
+			if c.get("id", "") == "ai_vector":
+				var vector_dmg = 120.0 + (c["ability_power"] * 0.75)
+				for opp in opponents:
+					if opp["hp"] > 0:
+						_apply_damage(opp, vector_dmg)
+				if not c.get("slot_doctrine_id", "").is_empty() or not c.get("active_conduit_id", "").is_empty():
+					for ally in allies:
+						if ally["hp"] > 0 and ally.get("row", 1) == c.get("row", 1):
+							ally["shield"] += 130.0
 			
 			# Legendary Supernova Core: Melts 40% target armor on cast and applies 30 dps burn
 			if c["triggers"].has("thermal_supernova"):

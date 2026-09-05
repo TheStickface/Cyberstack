@@ -8,6 +8,7 @@ var factions: Dictionary = {}       # Faction (int) -> FactionResource
 var tags: Dictionary = {}           # AugmentTag (int) -> TagResource
 var districts: Dictionary = {}      # id (String) -> DistrictResource
 var events: Dictionary = {}         # id (String) -> NarrativeEventResource
+var conduits: Dictionary = {}       # id (String) -> ConduitResource
 
 var is_loaded: bool = false
 
@@ -22,6 +23,7 @@ func load_all_data(base_path: String = "res://data") -> void:
 	_load_augments(base_path + "/augments")
 	_load_districts(base_path + "/districts")
 	_load_events(base_path + "/events")
+	_load_conduits(base_path + "/conduits")
 	is_loaded = true
 
 func clear_all() -> void:
@@ -31,6 +33,7 @@ func clear_all() -> void:
 	tags.clear()
 	districts.clear()
 	events.clear()
+	conduits.clear()
 	is_loaded = false
 
 # Registration APIs
@@ -57,6 +60,10 @@ func register_district(dist_res: DistrictResource) -> void:
 func register_event(ev_res: NarrativeEventResource) -> void:
 	if ev_res and not ev_res.id.is_empty():
 		events[ev_res.id] = ev_res
+
+func register_conduit(conduit_res: ConduitResource) -> void:
+	if conduit_res and not conduit_res.id.is_empty():
+		conduits[conduit_res.id] = conduit_res
 
 # Lookup APIs
 func get_unit(id: String) -> UnitResource:
@@ -180,6 +187,23 @@ func get_random_event() -> NarrativeEventResource:
 		return list[randi() % list.size()] as NarrativeEventResource
 	return null
 
+func get_conduit(id: String) -> ConduitResource:
+	return conduits.get(id, null)
+
+func get_all_conduits() -> Array[ConduitResource]:
+	var list: Array[ConduitResource] = []
+	for c in conduits.values():
+		list.append(c as ConduitResource)
+	return list
+
+func get_conduits_by_row(row_idx: int) -> Array[ConduitResource]:
+	var list: Array[ConduitResource] = []
+	for c in conduits.values():
+		var cond = c as ConduitResource
+		if cond.can_install_on_row(row_idx):
+			list.append(cond)
+	return list
+
 # Internal loaders
 func _load_factions(dir_path: String) -> void:
 	var files = _scan_tres_files(dir_path)
@@ -222,6 +246,13 @@ func _load_events(dir_path: String) -> void:
 		var res = load(path)
 		if res is NarrativeEventResource:
 			register_event(res)
+
+func _load_conduits(dir_path: String) -> void:
+	var files = _scan_tres_files(dir_path)
+	for path in files:
+		var res = load(path)
+		if res is ConduitResource:
+			register_conduit(res)
 
 func _scan_tres_files(dir_path: String) -> Array[String]:
 	var paths: Array[String] = []

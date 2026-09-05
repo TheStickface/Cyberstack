@@ -44,6 +44,23 @@ func _make_custom_tooltip(_for_text: String) -> Object:
 		return SynergyTooltipScript.create_custom_tooltip_node(res as UnitResource, {}, 1)
 	elif res is AugmentResource:
 		return SynergyTooltipScript.create_augment_tooltip_node(res as AugmentResource)
+	elif res is ConduitResource:
+		var cond = res as ConduitResource
+		var tip = PanelContainer.new()
+		var margin = MarginContainer.new()
+		margin.add_theme_constant_override("margin_left", 8)
+		margin.add_theme_constant_override("margin_top", 6)
+		margin.add_theme_constant_override("margin_right", 8)
+		margin.add_theme_constant_override("margin_bottom", 6)
+		tip.add_child(margin)
+		var lbl = Label.new()
+		lbl.text = "%s %s\nCharges: %d Combats\nStats: %s\n%s" % [
+			cond.icon_code, cond.display_name, cond.max_charges, cond.get_summary_text(), cond.description
+		]
+		lbl.add_theme_font_size_override("font_size", 9)
+		lbl.add_theme_color_override("font_color", cond.theme_color)
+		margin.add_child(lbl)
+		return tip
 	return null
 
 func setup(p_index: int, p_data: Dictionary, player_gold: int) -> void:
@@ -118,10 +135,38 @@ func _update_ui(player_gold: int) -> void:
 				", ".join(tag_names),
 				" · ".join(aug_res.get_stat_lines())
 			]
+	elif item_type == "conduit":
+		custom_minimum_size = Vector2(130, 88)
+		var cond_res = res as ConduitResource
+		if icon_rect:
+			icon_rect.texture = cond_res.icon
+			icon_rect.visible = cond_res.icon != null
+		if name_label:
+			name_label.text = cond_res.display_name
+			name_label.add_theme_color_override("font_color", cond_res.theme_color)
+		if details_label:
+			details_label.text = "⚡ %d Combats\n%s" % [cond_res.max_charges, cond_res.get_summary_text()]
+		_apply_border_color(cond_res.theme_color)
 			
 	if buy_btn:
 		buy_btn.text = "BUY (%s)" % Constants.format_currency(cost, true)
 		buy_btn.disabled = (player_gold < cost)
+
+## Recolors the card's border/panel to match an item's theme color (used by
+## conduits, which don't have a tier system to key off of like augments do).
+func _apply_border_color(color: Color) -> void:
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.06, 0.05, 0.12, 0.95)
+	style.border_width_left = 1
+	style.border_width_top = 1
+	style.border_width_right = 1
+	style.border_width_bottom = 1
+	style.border_color = color
+	style.corner_radius_top_left = 4
+	style.corner_radius_top_right = 4
+	style.corner_radius_bottom_right = 4
+	style.corner_radius_bottom_left = 4
+	add_theme_stylebox_override("panel", style)
 
 func _on_buy_btn_pressed() -> void:
 	buy_requested.emit(slot_index)

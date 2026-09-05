@@ -13,6 +13,7 @@ var active_district_res: DistrictResource = null
 var active_crew_mgr: Object = null
 var unit_slots: Array[Dictionary] = [] # Array of 4 (expandable to 6) pure operative slots
 var augment_slots: Array[Dictionary] = [] # Array of 2 (expandable to 5) pure augment slots
+var conduit_slots: Array[Dictionary] = [] # Array of tactical conduit slots (typically 1)
 var shop_slots: Array[Dictionary] = [] # Unified array [unit_slots + augment_slots]
 
 func _init(p_starting_gold: int = Constants.DEFAULT_STARTING_GOLD) -> void:
@@ -166,6 +167,19 @@ func generate_shop_offerings(district_id: int = 1, repo_instance: Object = null,
 			var empty_slot = _create_empty_slot()
 			augment_slots.append(empty_slot)
 			shop_slots.append(empty_slot)
+
+	# 3. Generate Tactical Conduit Slot (1 dedicated slot per generation)
+	conduit_slots.clear()
+	var all_conduits = repo.get_all_conduits() if repo and repo.has_method("get_all_conduits") else []
+	if not all_conduits.is_empty():
+		var cond_res: ConduitResource = all_conduits[randi() % all_conduits.size()]
+		var cond_slot = {
+			"type": "conduit",
+			"resource": cond_res,
+			"cost": cond_res.cost,
+			"is_bought": false
+		}
+		conduit_slots.append(cond_slot)
 			
 	return shop_slots
 
@@ -198,6 +212,23 @@ func buy_augment_slot(slot_index: int, crew_mgr: Object) -> Dictionary:
 	if slot_index < 0 or slot_index >= augment_slots.size():
 		return {"success": false, "error": "Invalid augment slot index"}
 	return _execute_purchase(augment_slots[slot_index], crew_mgr)
+
+func buy_conduit_slot(slot_index: int = 0, crew_mgr: Object = null) -> Dictionary:
+	if slot_index < 0 or slot_index >= conduit_slots.size():
+		return {"success": false, "error": "Invalid conduit slot index"}
+	return _execute_purchase(conduit_slots[slot_index], crew_mgr)
+
+func buy_conduit(conduit_index: int = 0) -> ConduitResource:
+	if conduit_index < 0 or conduit_index >= conduit_slots.size():
+		return null
+	var slot = conduit_slots[conduit_index]
+	if slot.get("is_bought", false):
+		return null
+	var cost = slot.get("cost", 0)
+	if not spend_gold(cost):
+		return null
+	slot["is_bought"] = true
+	return slot.get("resource", null) as ConduitResource
 
 func buy_slot(slot_index: int, crew_mgr: Object) -> Dictionary:
 	if slot_index < 0 or slot_index >= shop_slots.size():
@@ -242,6 +273,12 @@ func _execute_purchase(slot: Dictionary, crew_mgr: Object) -> Dictionary:
 		spend_gold(cost)
 		slot["is_bought"] = true
 		return {"success": true, "item": aug_res, "type": "augment"}
+
+	elif item_type == "conduit":
+		var cond_res = res as ConduitResource
+		spend_gold(cost)
+		slot["is_bought"] = true
+		return {"success": true, "item": cond_res, "type": "conduit"}
 		
 	return {"success": false, "error": "Unknown item type"}
 

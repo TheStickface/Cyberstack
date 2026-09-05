@@ -12,7 +12,8 @@ static func package_combat_payload(
 	is_boss: bool = false,
 	repo_instance: Object = null,
 	district_res: DistrictResource = null,
-	player_grid: Array = []
+	player_grid: Array = [],
+	formation_bonuses: Dictionary = {}
 ) -> Dictionary:
 	var repo = repo_instance if repo_instance != null else _get_default_repo()
 	var enemy_squad: Array[UnitInstance] = _generate_enemy_squad(district_id, is_boss, repo, district_res)
@@ -31,6 +32,7 @@ static func package_combat_payload(
 		"district_name": district_res.display_name if district_res else ("District %d" % district_id),
 		"player_crew": player_crew,
 		"player_grid": final_player_grid,
+		"formation_bonuses": formation_bonuses,
 		"player_synergies": synergies,
 		"enemy_squad": enemy_squad,
 		"enemy_grid": enemy_grid,

@@ -7,17 +7,19 @@ const OperativeCardScene = preload("res://src/ui/components/OperativeCard.tscn")
 const AugmentChipScene = preload("res://src/ui/components/AugmentChip.tscn")
 const ShopSlotCardScene = preload("res://src/ui/components/ShopSlotCard.tscn")
 const TacticalTetherOverlayScript = preload("res://src/ui/components/TacticalTetherOverlay.gd")
+const GridUnlockModalScene = preload("res://src/ui/components/GridUnlockModal.tscn")
 const DataRepoScript = preload("res://src/systems/DataRepository.gd")
 
 var repo: Object = null
 var run_mgr: RunManager = null
 var shop_mgr: ShopManager = null
 var crew_mgr: CrewManager = null
-
+var grid_unlock_modal: GridUnlockModal = null
 
 # Selection state for slotting
 var selected_inventory_aug: AugmentResource = null
 var selected_inventory_idx: int = -1
+var _held_conduit: ConduitResource = null
 
 @onready var district_label: Label = $Margin/VBox/TopBar/DistrictLabel
 @onready var crew_count_label: Label = $Margin/VBox/TopBar/CrewCountLabel
@@ -64,6 +66,11 @@ func _ready() -> void:
 	if shop_mgr and shop_mgr.unit_slots.is_empty() and shop_mgr.augment_slots.is_empty():
 		shop_mgr.generate_shop_offerings(crew_mgr.current_district, repo, Constants.DEFAULT_CREW_SHOP_SLOTS, Constants.DEFAULT_AUGMENT_SHOP_SLOTS, false, shop_mgr.active_district_res)
 
+	grid_unlock_modal = GridUnlockModalScene.instantiate()
+	grid_unlock_modal.visible = false
+	add_child(grid_unlock_modal)
+	grid_unlock_modal.grid_unlocked.connect(_on_grid_slot_unlocked)
+
 	if crew_mgr:
 		crew_mgr.recalculate_synergies()
 	_refresh_all()
@@ -77,6 +84,9 @@ func _refresh_all() -> void:
 	_refresh_synergies()
 
 func _refresh_top_bar() -> void:
+	if run_mgr and run_mgr.pending_grid_unlock and grid_unlock_modal and not grid_unlock_modal.visible:
+		grid_unlock_modal.setup(crew_mgr)
+
 	if district_label:
 		if shop_mgr.active_district_res:
 			district_label.text = "DISTRICT %d: %s" % [crew_mgr.current_district, shop_mgr.active_district_res.display_name.to_upper()]
@@ -193,7 +203,25 @@ func _build_grid_slot_cell(parent: HBoxContainer, slot_idx: int, formation_repor
 			btn.custom_minimum_size = Vector2(150, 112)
 			btn.slot_idx = slot_idx
 			btn.crew_mgr = crew_mgr
-			btn.text = "+ DEPLOY\n[SLOT %d]\n(CLICK/DROP)" % (slot_idx + 1)
+			
+			var doc = crew_mgr.get_slot_specialization(slot_idx)
+			var conduit_entry = crew_mgr.get_active_conduit(slot_idx)
+			var extra_lines = ""
+			var border_color = Color(0, 0.85, 0.75, 0.4)
+			if not doc.is_empty():
+				extra_lines += "\n🌟 %s" % doc.get("name", "")
+			if not conduit_entry.is_empty():
+				var cond: ConduitResource = conduit_entry.get("conduit", null)
+				var ch: int = conduit_entry.get("remaining_charges", 0)
+				if cond:
+					extra_lines += "\n%s [%d/%d]" % [cond.display_name, ch, cond.max_charges]
+					border_color = cond.theme_color
+					btn.icon = cond.icon
+					btn.expand_icon = false
+					btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+					btn.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
+
+			btn.text = "+ DEPLOY\n[SLOT %d]%s\n(CLICK/DROP)" % [slot_idx + 1, extra_lines]
 			btn.add_theme_font_size_override("font_size", 8)
 			btn.add_theme_color_override("font_color", Color(0, 0.85, 0.75, 0.7))
 			var style = StyleBoxFlat.new()
@@ -202,7 +230,7 @@ func _build_grid_slot_cell(parent: HBoxContainer, slot_idx: int, formation_repor
 			style.border_width_top = 1
 			style.border_width_right = 1
 			style.border_width_bottom = 1
-			style.border_color = Color(0, 0.85, 0.75, 0.4)
+			style.border_color = border_color
 			style.corner_radius_top_left = 6
 			style.corner_radius_top_right = 6
 			style.corner_radius_bottom_right = 6
@@ -292,6 +320,23 @@ func _on_unit_dropped_on_empty_slot(slot_idx: int, drag_data: Dictionary) -> voi
 	call_deferred("_refresh_all")
 
 func _on_empty_slot_clicked(slot_idx: int) -> void:
+	if _held_conduit != null:
+		if crew_mgr.install_conduit(slot_idx, _held_conduit):
+			_set_status("Installed %s onto Tactical Slot %d (%d combats active)!" % [
+				_held_conduit.display_name, slot_idx + 1, _held_conduit.max_charges
+			], false)
+			_play_sfx("play_star_upgrade")
+			_held_conduit = null
+			_refresh_all()
+			return
+		else:
+			_set_status("Cannot install %s here (check row restriction: %s)." % [
+				_held_conduit.display_name,
+				"Frontline only" if _held_conduit.allowed_rows == Enums.GridDirection.FRONTLINE else "Backline only"
+			], true)
+			_play_sfx("play_ui_error")
+			return
+
 	if not crew_mgr.benched_units.is_empty():
 		if crew_mgr.fielded_units.size() >= crew_mgr.get_max_field_units() and crew_mgr.tactical_grid[slot_idx] == null:
 			_set_status("Cannot deploy: District crew limit reached (%d/%d max fielded)." % [
@@ -474,6 +519,14 @@ func _refresh_shop() -> void:
 			augment_shop_container.add_child(card)
 			card.setup(i, slot_data, shop_mgr.gold)
 			card.buy_requested.connect(_on_augment_buy_requested)
+
+		# 3. Tactical Conduit Offerings
+		for i in range(shop_mgr.conduit_slots.size()):
+			var slot_data = shop_mgr.conduit_slots[i]
+			var card: ShopSlotCard = ShopSlotCardScene.instantiate()
+			augment_shop_container.add_child(card)
+			card.setup(i, slot_data, shop_mgr.gold)
+			card.buy_requested.connect(_on_conduit_buy_requested)
 		
 	if freeze_btn:
 		if shop_mgr.is_locked:
@@ -688,6 +741,28 @@ func _on_augment_buy_requested(slot_index: int) -> void:
 		_set_status("Armory purchase failed: %s" % result.error, true)
 	_refresh_all()
 
+func _on_conduit_buy_requested(slot_index: int) -> void:
+	var result = shop_mgr.buy_conduit_slot(slot_index, crew_mgr)
+	if result.success:
+		_held_conduit = result.item as ConduitResource
+		_set_status("Purchased %s! Click an unlocked tactical slot or operative to install (%d combats active)." % [
+			_held_conduit.display_name, _held_conduit.max_charges
+		], false)
+		_play_sfx("play_ui_click")
+	else:
+		_set_status("Conduit purchase failed: %s" % result.error, true)
+		_play_sfx("play_error")
+	_refresh_all()
+
+func _on_grid_slot_unlocked(slot_idx: int, doctrine_id: String) -> void:
+	if run_mgr:
+		run_mgr.pending_grid_unlock = false
+	var doc = CrewManager.DOCTRINES.get(doctrine_id, {})
+	var doc_name = doc.get("name", doctrine_id.capitalize())
+	_set_status("Calibrated Tactical Slot %d with %s doctrine!" % [slot_idx + 1, doc_name], false)
+	_play_sfx("play_star_upgrade")
+	_refresh_all()
+
 func _on_shop_buy_requested(slot_index: int) -> void:
 	var result = shop_mgr.buy_slot(slot_index, crew_mgr)
 	if result.success:
@@ -716,6 +791,24 @@ func _on_augment_chip_clicked(aug: AugmentResource, inv_idx: int) -> void:
 	_refresh_augment_tray()
 
 func _on_unit_slot_clicked(unit: UnitInstance, slot_idx: int) -> void:
+	if _held_conduit != null:
+		var target_grid_slot = unit.grid_slot
+		if target_grid_slot >= 0 and crew_mgr.install_conduit(target_grid_slot, _held_conduit):
+			_set_status("Installed %s onto Tactical Slot %d (%d combats active)!" % [
+				_held_conduit.display_name, target_grid_slot + 1, _held_conduit.max_charges
+			], false)
+			_play_sfx("play_star_upgrade")
+			_held_conduit = null
+			_refresh_all()
+			return
+		else:
+			_set_status("Cannot install %s here (check row restriction: %s)." % [
+				_held_conduit.display_name,
+				"Frontline only" if _held_conduit.allowed_rows == Enums.GridDirection.FRONTLINE else "Backline only"
+			], true)
+			_play_sfx("play_error")
+			return
+
 	if selected_inventory_aug == null or selected_inventory_idx < 0:
 		var slotted = unit.equipped_augments[slot_idx] if slot_idx >= 0 and slot_idx < unit.equipped_augments.size() else null
 		if slotted:

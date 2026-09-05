@@ -1,0 +1,54 @@
+[gd_resource type="Resource" script_class="NarrativeEventResource" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/NarrativeEventResource.gd" id="1_ev"]
+[ext_resource type="Script" path="res://src/data/resources/EventChoiceResource.gd" id="2_choice"]
+[ext_resource type="Resource" path="res://data/augments/rare_neural_synapse.tres" id="3_aug"]
+
+[sub_resource type="Resource" id="Resource_splicer_1"]
+script = ExtResource("2_choice")
+text = "Calibrate Bio-Siphon Overclock [Requires BIO-SYNTHETIC]"
+outcome_description = "Your Bio-Synthetic operative naturally integrates the illegal bio-conductors, unlocking a Rare Neural Synapse and +8 Credits with zero cellular decay."
+required_gold = 0
+required_role = 6
+required_faction = 5
+reward_type = 1
+reward_gold = 8
+reward_augment = ExtResource("3_aug")
+penalty_gold = 0
+penalty_health_cost = 0.0
+triggers_combat = false
+
+[sub_resource type="Resource" id="Resource_splicer_2"]
+script = ExtResource("2_choice")
+text = "Force High-Voltage Splicing [Risk Bio-Burnout: -25.0 HP]"
+outcome_description = "The splicer clamps neural needles directly into your squad's spine. You reap +16 Credits and the Rare Neural Synapse, but bio-burnout leaves your crew weakened (-25 HP)."
+required_gold = 0
+required_role = 6
+required_faction = 0
+reward_type = 1
+reward_gold = 16
+reward_augment = ExtResource("3_aug")
+penalty_gold = 0
+penalty_health_cost = 25.0
+triggers_combat = false
+
+[sub_resource type="Resource" id="Resource_splicer_3"]
+script = ExtResource("2_choice")
+text = "Decline procedure and keep moving"
+outcome_description = "You keep your hand on your holster and back away into the steam conduits."
+required_gold = 0
+required_role = 6
+required_faction = 0
+reward_type = 0
+reward_gold = 0
+penalty_gold = 0
+penalty_health_cost = 0.0
+triggers_combat = false
+
+[resource]
+script = ExtResource("1_ev")
+id = "event_underground_splicer"
+title = "The Underground Splicer"
+story_text = "In a subterranean junction beneath the power grid, an unregistered cyber-surgeon works amid humming capacitors. 'Looking for an edge the corps forbid? I can hook you straight into the primary bus... if your flesh can take the surge.'"
+theme_color = Color(0.85, 0.2, 0.95, 1)
+choices = [SubResource("Resource_splicer_1"), SubResource("Resource_splicer_2"), SubResource("Resource_splicer_3")]

@@ -189,6 +189,7 @@ func _augment_golden() -> Dictionary:
 		"legendary_phantom_ledger": ["Crits grant credits and stealth", "ON ATTACK", "+35 Attack Damage, +20% Crit Chance, +15% Evasion", "", []],
 		"legendary_thermal_supernova": ["", "ON ABILITY CAST", "+75 Ability Power", "", []],
 		"legendary_viral_pandemic": ["", "ON KILL", "+40 Ability Power, +30% Attack Speed", "", []],
+		"rare_flux_resonator": ["", "", "+15 Attack Damage, +20 Ability Power", "", []],
 	}
 
 ## Proc fragment expected once trigger_params is populated, keyed the same as
@@ -278,6 +279,7 @@ func _ability_golden() -> Dictionary:
 		"ai_singularity": "350 AD/AP dmg, pull enemies inward, root (3s)",
 		"ai_siphon": "220 HP heal (lowest-HP ally), cleanse debuffs",
 		"ai_spindle": "170% AD dmg, burn 40 thermal dmg",
+		"ai_vector": "120 AP dmg (adjacent), 130 Shield row allies (if calibrated)",
 		"ai_worm": "180 AP dmg (3 random enemies) over 4s, spread on death",
 		"bio_abomination": "320 toxic dmg (column)",
 		"bio_chimera": "150 Shield self (4s)",
@@ -532,6 +534,7 @@ func _unit_directional_golden() -> Dictionary:
 		"ai_bastion": ["Hard-Light Canopy", "ABOVE", ["+160 Shield"]],
 		"ai_cipher": ["Subroutine Overclock", "SAME ROW", ["+20 Ability Power"]],
 		"ai_siphon": ["Energy Leech Relay", "ADJACENT", ["+80 Max Health"]],
+		"ai_vector": ["Sub-Grid Siphon", "SAME ROW", ["+15 Ability Power", "+10 Starting Mana"]],
 		"bio_abomination": ["Apex Pheromones", "ALL UNITS", ["+15 Attack Damage", "+10% Attack Speed"]],
 		"bio_chimera": ["Subdermal Mesh", "ABOVE", ["+80 Max Health"]],
 		"bio_fleshweaver": ["Tissue Regeneration", "ADJACENT", ["+15% Attack Speed"]],

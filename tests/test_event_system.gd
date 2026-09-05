@@ -23,11 +23,12 @@ func test_all_new_events_loaded() -> Dictionary:
 		"event_viral_containment_breach",
 		"event_panopticon_bribe",
 		"event_megachurch_tithe",
-		"event_arcology_executive_offer"
+		"event_arcology_executive_offer",
+		"event_underground_splicer"
 	]
 	
-	if repo.events.size() < 13:
-		return {"passed": false, "message": "Expected at least 13 events, got %d" % repo.events.size(), "assertions": 1}
+	if repo.events.size() < 14:
+		return {"passed": false, "message": "Expected at least 14 events, got %d" % repo.events.size(), "assertions": 1}
 		
 	for e_id in event_ids:
 		var ev: NarrativeEventResource = repo.get_event(e_id)

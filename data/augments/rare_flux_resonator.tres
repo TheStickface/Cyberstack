@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="AugmentResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/AugmentResource.gd" id="1_aug"]
+
+[resource]
+script = ExtResource("1_aug")
+id = "rare_flux_resonator"
+display_name = "Flux Resonator"
+description = ""
+tier = 1
+slot_type = 1
+tags = Array[int]([3])
+base_cost = 4
+stat_modifiers = {
+1: 15.0,
+2: 20.0
+}
+directional_target = 0
+directional_modifiers = {}
+trigger_type = 0
+trigger_effect_id = "proc_flux_resonator"
+trigger_params = {}

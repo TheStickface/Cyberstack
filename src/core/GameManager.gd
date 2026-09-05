@@ -68,6 +68,8 @@ func start_combat_encounter(is_boss: bool = false, repo_instance: Object = null)
 	var district_id = active_run_manager.current_district_index
 	var district_res = active_run_manager.current_district
 	
+	var formation_bonuses = active_run_manager.crew_mgr.calculate_formation_bonuses() if active_run_manager.crew_mgr.has_method("calculate_formation_bonuses") else {}
+	
 	active_combat_payload = CombatBridge.package_combat_payload(
 		crew,
 		synergies,
@@ -75,7 +77,8 @@ func start_combat_encounter(is_boss: bool = false, repo_instance: Object = null)
 		is_boss,
 		repo_instance,
 		district_res,
-		active_run_manager.crew_mgr.tactical_grid
+		active_run_manager.crew_mgr.tactical_grid,
+		formation_bonuses
 	)
 	
 	change_state(GameState.COMBAT)

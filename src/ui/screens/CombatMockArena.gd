@@ -20,6 +20,9 @@ class CombatantState:
 	var crit_chance: float = 0.05
 	var attack_timer: float = 0.0
 	var alive: bool = true
+	var active_conduit_id: String = ""
+	var slot_doctrine_id: String = ""
+	var retaliation_icd: float = 0.0
 	
 	var box_panel: PanelContainer = null
 	var hp_bar: ProgressBar = null
@@ -208,8 +211,9 @@ func _create_combatant(unit: UnitInstance, is_player: bool, slot_idx: int = 0) -
 	state.unit = unit
 	state.is_player = is_player
 	state.grid_slot = slot_idx
-	state.grid_row = slot_idx / 3
-	state.grid_col = slot_idx % 3
+	var coords = UnitInstance.slot_to_coords(slot_idx)
+	state.grid_row = coords.x
+	state.grid_col = coords.y
 	
 	if unit:
 		state.max_hp = unit.calculate_effective_stat(Enums.StatType.MAX_HEALTH)
@@ -219,6 +223,21 @@ func _create_combatant(unit: UnitInstance, is_player: bool, slot_idx: int = 0) -
 		var spd = unit.calculate_effective_stat(Enums.StatType.SPEED)
 		state.attack_speed = clampf(spd / 50.0, 0.6, 2.5)
 		state.crit_chance = unit.calculate_effective_stat(Enums.StatType.CRIT_CHANCE)
+		
+		# Integrate formation auras, intrinsic socket doctrines, and tactical conduits
+		var form_bonuses: Dictionary = combat_payload.get("formation_bonuses", {})
+		if form_bonuses.has(unit):
+			var b = form_bonuses[unit]
+			state.max_hp += b.get("max_health_bonus", 0.0)
+			state.current_hp = state.max_hp
+			state.shield += b.get("shield_bonus", 0.0)
+			state.attack_damage += b.get("attack_damage_bonus", 0.0)
+			state.ability_power += b.get("ability_power_bonus", 0.0)
+			state.attack_speed *= (1.0 + b.get("attack_speed_bonus", 0.0))
+			state.crit_chance += b.get("crit_bonus", 0.0)
+			state.current_mana = clampf(state.current_mana + b.get("starting_mana_bonus", 0.0), 0.0, state.max_mana)
+			state.active_conduit_id = b.get("active_conduit_id", "")
+			state.slot_doctrine_id = b.get("slot_doctrine_id", "")
 	else:
 		state.max_hp = 450.0
 		state.current_hp = 450.0
@@ -361,6 +380,7 @@ func _tick_squad(attackers: Array[CombatantState], defenders: Array[CombatantSta
 		if not att.alive:
 			continue
 			
+		att.retaliation_icd = maxf(0.0, att.retaliation_icd - delta)
 		att.attack_timer += delta
 		var req_time = 1.0 / maxf(att.attack_speed, 0.1)
 		
@@ -528,7 +548,28 @@ func _cast_ability(caster: CombatantState, defenders: Array[CombatantState]) -> 
 					_spawn_floating_combat_text(target, "🔥 ARMOR MELT -40%!", Color(1.0, 0.4, 0.1), true)
 					_log("   🔥 [b]%s[/b]'s Supernova Core vaporizes 40%% of target armor!" % u_name)
 				break
+				
+	# Hyper-Frequency Siphon: Refund 20 mana & grant +20% attack speed on cast
+	if caster.active_conduit_id == "conduit_overclock_siphon":
+		caster.current_mana = minf(caster.current_mana + 20.0, 100.0)
+		caster.attack_speed *= 1.20
+		_spawn_floating_combat_text(caster, "🔮 +20 MANA & HASTE!", Color(1.0, 0.2, 0.7), false)
+		_log("   🔮 [b]%s[/b]'s Hyper-Frequency Siphon refunds 20 Mana & surges speed!" % u_name)
 	
+	# Vector (Conduit Sapper): Overload Pulse
+	if u_id == "ai_vector" or (caster.unit and caster.unit.unit_resource and caster.unit.unit_resource.ability_effect_id == "ability_overload_pulse"):
+		var aoe_dmg = 120.0 + (caster.ability_power * 0.75)
+		for d in defenders:
+			if d.alive:
+				_apply_damage(d, aoe_dmg, caster, true, false)
+		if not caster.slot_doctrine_id.is_empty() or not caster.active_conduit_id.is_empty():
+			for ally in allies:
+				if ally.alive and ally.grid_row == caster.grid_row:
+					ally.shield += 130.0
+					_spawn_floating_combat_text(ally, "🛡️ +130 BARRIER", Color(0, 0.95, 0.83), false)
+			_log("   ⚡ [b]%s[/b] channels socket power, shielding row allies for 130!" % u_name)
+		return
+
 	# Check if unit is a specialized boss with bespoke mechanics
 	if u_id.begins_with("boss_"):
 		if u_id == "boss_nemesis_synthetic" or u_id == "boss_machine_prophet":
@@ -676,6 +717,20 @@ func _apply_damage(target: CombatantState, raw_dmg: float, attacker: CombatantSt
 		total_player_damage += raw_dmg
 	else:
 		total_enemy_damage += raw_dmg
+
+	# Arc Discharge Coil: Frontline Retaliation when struck
+	if target.active_conduit_id == "conduit_arc_discharge" and target.retaliation_icd <= 0.0 and target.alive:
+		target.retaliation_icd = 1.5
+		var retal_dmg = 35.0
+		var opps = enemy_states if target.is_player else player_states
+		var shocked = false
+		for opp in opps:
+			if opp.alive and opp.grid_row == 1:
+				_apply_damage(opp, retal_dmg, target, true, false)
+				_spawn_floating_combat_text(opp, "⚡ ZAP -35", Color(0, 0.95, 0.83), true)
+				shocked = true
+		if shocked:
+			_log("   ⚡ [b]%s[/b]'s Arc Discharge Coil shocks attackers for 35!" % (target.unit.unit_resource.display_name if target.unit else "Operative"))
 		
 	# Boss Enrage Trigger below 50% HP
 	var t_id = target.unit.unit_resource.id if target.unit else ""

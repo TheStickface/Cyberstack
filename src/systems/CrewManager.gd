@@ -18,6 +18,64 @@ var last_combinations: Array[Dictionary] = []
 ##   - slot 5 (Top Right): Unlocks in District 4
 var tactical_grid: Array[UnitInstance] = [null, null, null, null, null, null]
 
+var unlocked_slots: Dictionary = {0: true, 1: true, 2: true}
+var slot_specializations: Dictionary = {}
+var slot_conduits: Dictionary = {}
+
+const DOCTRINES: Dictionary = {
+	"overwatch_perch": {
+		"id": "overwatch_perch",
+		"name": "Overwatch Perch",
+		"description": "+20% Crit Chance & +25 AD",
+		"stat_modifiers": {
+			Enums.StatType.CRIT_CHANCE: 0.20,
+			Enums.StatType.ATTACK_DAMAGE: 25.0
+		},
+		"tag": "🌟 Overwatch Perch (+20% Crit, +25 AD)"
+	},
+	"neural_relay": {
+		"id": "neural_relay",
+		"name": "Neural Relay Hub",
+		"description": "+25 Starting Mana & +20 Speed",
+		"stat_modifiers": {
+			Enums.StatType.STARTING_MANA: 25.0,
+			Enums.StatType.SPEED: 20.0
+		},
+		"tag": "🌟 Neural Relay (+25 Mana, +20 Speed)"
+	},
+	"fortified_aegis": {
+		"id": "fortified_aegis",
+		"name": "Fortified Aegis Pylon",
+		"description": "+200 Max HP, +20 Armor, +100 Shield",
+		"stat_modifiers": {
+			Enums.StatType.MAX_HEALTH: 200.0,
+			Enums.StatType.ARMOR: 20.0,
+			Enums.StatType.SHIELD: 100.0
+		},
+		"tag": "🌟 Aegis Pylon (+200 HP, +20 Armor, +100 Shield)"
+	},
+	"phase_vent": {
+		"id": "phase_vent",
+		"name": "Phase Vent Socket",
+		"description": "+25% Evasion & +25% Attack Speed",
+		"stat_modifiers": {
+			Enums.StatType.EVASION: 0.25,
+			Enums.StatType.ATTACK_SPEED: 0.25
+		},
+		"tag": "🌟 Phase Vent (+25% Evasion, +25% Haste)"
+	},
+	"amplifier_matrix": {
+		"id": "amplifier_matrix",
+		"name": "Amplifier Matrix",
+		"description": "+35 AP & +15 Starting Mana",
+		"stat_modifiers": {
+			Enums.StatType.ABILITY_POWER: 35.0,
+			Enums.StatType.STARTING_MANA: 15.0
+		},
+		"tag": "🌟 Amplifier Matrix (+35 AP, +15 Mana)"
+	}
+}
+
 var current_district: int = 1
 var active_synergy_report: SynergyReport = null
 
@@ -28,11 +86,17 @@ func _init(p_district: int = 1, p_repo: Object = null) -> void:
 	_repo_cache = p_repo
 	active_synergy_report = SynergyReport.new()
 	tactical_grid = [null, null, null, null, null, null]
+	unlocked_slots = {0: true, 1: true, 2: true}
+	slot_specializations = {}
+	slot_conduits = {}
 
 func get_max_field_units() -> int:
 	return Constants.DISTRICT_CREW_LIMITS.get(current_district, 2)
 
 func is_slot_unlocked(slot_idx: int) -> bool:
+	if unlocked_slots.has(slot_idx) and unlocked_slots[slot_idx]:
+		return true
+	# Default progression curve fallback for automated tests / legacy runs:
 	match slot_idx:
 		0, 1, 2: # Bottom Left, Bottom Center, Bottom Right - Full Frontline unlocked in District 1
 			return true
@@ -44,6 +108,69 @@ func is_slot_unlocked(slot_idx: int) -> bool:
 			return current_district >= 4
 		_:
 			return false
+
+func unlock_slot(slot_idx: int, doctrine_id: String = "") -> bool:
+	if slot_idx < 0 or slot_idx >= 6:
+		return false
+	unlocked_slots[slot_idx] = true
+	if not doctrine_id.is_empty() and DOCTRINES.has(doctrine_id):
+		slot_specializations[slot_idx] = DOCTRINES[doctrine_id]
+	recalculate_synergies()
+	return true
+
+func get_slot_specialization(slot_idx: int) -> Dictionary:
+	return slot_specializations.get(slot_idx, {})
+
+func install_conduit(slot_idx: int, conduit: ConduitResource) -> bool:
+	if slot_idx < 0 or slot_idx >= 6 or not is_slot_unlocked(slot_idx) or conduit == null:
+		return false
+	var row = UnitInstance.slot_to_coords(slot_idx).x
+	if not conduit.can_install_on_row(row):
+		return false
+	var charges = conduit.max_charges
+	var unit = tactical_grid[slot_idx]
+	if unit:
+		for aug in unit.equipped_augments:
+			if aug and (aug.id == "rare_flux_resonator" or aug.trigger_effect_id == "proc_flux_resonator"):
+				charges += 1
+				break
+	slot_conduits[slot_idx] = {
+		"conduit": conduit,
+		"remaining_charges": charges
+	}
+	recalculate_synergies()
+	return true
+
+func remove_conduit(slot_idx: int) -> ConduitResource:
+	if slot_conduits.has(slot_idx):
+		var res: ConduitResource = slot_conduits[slot_idx].get("conduit", null)
+		slot_conduits.erase(slot_idx)
+		recalculate_synergies()
+		return res
+	return null
+
+func get_active_conduit(slot_idx: int) -> Dictionary:
+	return slot_conduits.get(slot_idx, {})
+
+func tick_conduit_durations() -> Array[Dictionary]:
+	var burned_out: Array[Dictionary] = []
+	var to_remove: Array[int] = []
+	for slot_idx in slot_conduits.keys():
+		var entry = slot_conduits[slot_idx]
+		entry["remaining_charges"] -= 1
+		if entry["remaining_charges"] <= 0:
+			var conduit: ConduitResource = entry.get("conduit", null)
+			burned_out.append({
+				"slot": slot_idx,
+				"conduit_id": conduit.id if conduit else "",
+				"conduit_name": conduit.display_name if conduit else "Conduit"
+			})
+			to_remove.append(slot_idx)
+	for slot_idx in to_remove:
+		slot_conduits.erase(slot_idx)
+	if not to_remove.is_empty():
+		recalculate_synergies()
+	return burned_out
 
 func get_slot_unlock_district(slot_idx: int) -> int:
 	match slot_idx:
@@ -443,6 +570,8 @@ func calculate_formation_bonuses() -> Dictionary:
 				"max_health_bonus": 0.0,
 				"speed_bonus": 0.0,
 				"evasion_bonus": 0.0,
+				"active_conduit_id": "",
+				"slot_doctrine_id": "",
 				"formation_tags": []
 			}
 			
@@ -504,6 +633,30 @@ func calculate_formation_bonuses() -> Dictionary:
 		for aug in unit.equipped_augments:
 			if aug and aug.directional_target != Enums.GridDirection.NONE:
 				_apply_directional_mods(unit, slot_idx, aug.directional_target, aug.directional_modifiers, "%s Synergy" % aug.display_name, report)
+
+		# 7. Intrinsic Slot Specialization (Doctrine)
+		if slot_specializations.has(slot_idx):
+			var doctrine = slot_specializations[slot_idx]
+			u_bonuses["slot_doctrine_id"] = doctrine.get("id", "")
+			_apply_mod_dict_to_unit(unit, doctrine.get("stat_modifiers", {}), doctrine.get("tag", "🌟 Slot Doctrine"), report)
+			
+		# 8. Active Tactical Conduit (Hex Overclock)
+		if slot_conduits.has(slot_idx):
+			var cond_entry = slot_conduits[slot_idx]
+			var conduit: ConduitResource = cond_entry.get("conduit", null)
+			var charges: int = cond_entry.get("remaining_charges", 1)
+			if conduit:
+				u_bonuses["active_conduit_id"] = conduit.id
+				var tag = "%s %s [%d/%d]" % [conduit.icon_code, conduit.display_name, charges, conduit.max_charges]
+				_apply_mod_dict_to_unit(unit, conduit.stat_modifiers, tag, report)
+
+		# 9. Flux Resonator standing on active conduit or doctrine: +25% Attack Speed
+		if slot_specializations.has(slot_idx) or slot_conduits.has(slot_idx):
+			for aug in unit.equipped_augments:
+				if aug and (aug.id == "rare_flux_resonator" or aug.trigger_effect_id == "proc_flux_resonator"):
+					u_bonuses["attack_speed_bonus"] += 0.25
+					u_bonuses["formation_tags"].append("⚡ Flux Resonator Haste (+25% AS)")
+					break
 				
 	return report
 

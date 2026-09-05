@@ -25,6 +25,7 @@ var fights_won: int = 0
 var bosses_defeated: int = 0
 var total_gold_earned: int = 0
 var run_start_time_msec: int = 0
+var pending_grid_unlock: bool = false
 
 func _init(p_repo: Object = null) -> void:
 	_repo = p_repo if p_repo != null else _get_default_repo()
@@ -49,6 +50,7 @@ func start_new_run(starter_unit_id: String = "runner_blitz") -> void:
 	total_gold_earned = Constants.DEFAULT_STARTING_GOLD
 	run_start_time_msec = Time.get_ticks_msec()
 	run_active = true
+	pending_grid_unlock = false
 	
 	shop_mgr = ShopManager.new(Constants.DEFAULT_STARTING_GOLD)
 	crew_mgr = CrewManager.new(1, _repo)
@@ -133,6 +135,10 @@ func complete_encounter(victory: bool = true, battle_stats: Dictionary = {}) -> 
 		}
 		
 	# Process Encounter Victory
+	var conduits_burned: Array = []
+	if crew_mgr and crew_mgr.has_method("tick_conduit_durations"):
+		conduits_burned = crew_mgr.tick_conduit_durations()
+
 	if enc_type == Enums.EncounterType.FIGHT:
 		fights_won += 1
 		# Active spend economy: district base payout + performance bonus (no interest)
@@ -160,7 +166,8 @@ func complete_encounter(victory: bool = true, battle_stats: Dictionary = {}) -> 
 				"district": current_district_index,
 				"new_subdistrict": current_subdistrict_index,
 				"stage": get_stage_string(),
-				"crew_cap": crew_mgr.get_max_field_units()
+				"crew_cap": crew_mgr.get_max_field_units(),
+				"conduits_burned": conduits_burned
 			}
 		else:
 			# Completed all subdistricts of current district
@@ -173,18 +180,22 @@ func complete_encounter(victory: bool = true, battle_stats: Dictionary = {}) -> 
 					"subdistrict": current_subdistrict_index,
 					"stage": get_stage_string(),
 					"fights_won": fights_won,
-					"bosses_defeated": bosses_defeated
+					"bosses_defeated": bosses_defeated,
+					"conduits_burned": conduits_burned
 				}
 			else:
 				# Advance to Next District at Subdistrict 1 (e.g. 1-2 -> 2-1)
 				_load_district(current_district_index + 1, 1)
+				pending_grid_unlock = true
 				shop_mgr.generate_shop_offerings(current_district_index, _repo, Constants.DEFAULT_CREW_SHOP_SLOTS, Constants.DEFAULT_AUGMENT_SHOP_SLOTS, false, current_district)
 				return {
 					"status": "district_advanced",
 					"new_district": current_district_index,
 					"new_subdistrict": current_subdistrict_index,
 					"stage": get_stage_string(),
-					"new_crew_cap": crew_mgr.get_max_field_units()
+					"new_crew_cap": crew_mgr.get_max_field_units(),
+					"pending_grid_unlock": true,
+					"conduits_burned": conduits_burned
 				}
 			
 	# Next node in same subdistrict -> Auto-refresh shop offerings
@@ -193,7 +204,8 @@ func complete_encounter(victory: bool = true, battle_stats: Dictionary = {}) -> 
 	return {
 		"status": "node_advanced",
 		"next_node_index": current_node_index,
-		"next_encounter_type": get_current_encounter_type()
+		"next_encounter_type": get_current_encounter_type(),
+		"conduits_burned": conduits_burned
 	}
 
 func _get_default_repo() -> Object:
