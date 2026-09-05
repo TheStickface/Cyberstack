@@ -18,6 +18,8 @@ class CombatantState:
 	var ability_power: float = 20.0
 	var attack_speed: float = 1.0 # Attacks per second
 	var crit_chance: float = 0.05
+	var armor: float = 20.0
+	var evasion: float = 0.0
 	var attack_timer: float = 0.0
 	var alive: bool = true
 	var active_conduit_id: String = ""
@@ -223,7 +225,9 @@ func _create_combatant(unit: UnitInstance, is_player: bool, slot_idx: int = 0) -
 		var spd = unit.calculate_effective_stat(Enums.StatType.SPEED)
 		state.attack_speed = clampf(spd / 50.0, 0.6, 2.5)
 		state.crit_chance = unit.calculate_effective_stat(Enums.StatType.CRIT_CHANCE)
-		
+		state.armor = unit.calculate_effective_stat(Enums.StatType.ARMOR)
+		state.evasion = unit.calculate_effective_stat(Enums.StatType.EVASION)
+
 		# Integrate formation auras, intrinsic socket doctrines, and tactical conduits
 		var form_bonuses: Dictionary = combat_payload.get("formation_bonuses", {})
 		if form_bonuses.has(unit):
@@ -235,6 +239,8 @@ func _create_combatant(unit: UnitInstance, is_player: bool, slot_idx: int = 0) -
 			state.ability_power += b.get("ability_power_bonus", 0.0)
 			state.attack_speed *= (1.0 + b.get("attack_speed_bonus", 0.0))
 			state.crit_chance += b.get("crit_bonus", 0.0)
+			state.armor += b.get("armor_bonus", 0.0)
+			state.evasion += b.get("evasion_bonus", 0.0)
 			state.current_mana = clampf(state.current_mana + b.get("starting_mana_bonus", 0.0), 0.0, state.max_mana)
 			state.active_conduit_id = b.get("active_conduit_id", "")
 			state.slot_doctrine_id = b.get("slot_doctrine_id", "")
@@ -245,6 +251,8 @@ func _create_combatant(unit: UnitInstance, is_player: bool, slot_idx: int = 0) -
 		state.ability_power = 20.0
 		state.attack_speed = 1.0
 		state.crit_chance = 0.05
+		state.armor = 20.0
+		state.evasion = 0.0
 
 		
 	# Scale enemy combatants by district progression and boss tier
@@ -511,12 +519,35 @@ func _perform_auto_attack(att: CombatantState, defenders: Array[CombatantState])
 	var target = _find_tactical_target(att, defenders)
 	if target == null:
 		return
-		
+
+	# Evasion: a full dodge — matches BalanceSimulator's basic-attack model
+	# exactly (target["evasion"] roll before crit/damage), so a Net-Phantom's
+	# Cloak/Phase Infiltration evasion actually does something in real combat.
+	if randf() < target.evasion:
+		_spawn_floating_combat_text(target, "MISS", Color(0.7, 0.7, 0.8), false)
+		return
+
 	var crit_chance = att.crit_chance
 	var is_crit = randf() < crit_chance
 	var mult = 1.5 if is_crit else 1.0
 	var dmg = att.attack_damage * randf_range(0.9, 1.1) * mult
-	
+
+	# Thermal Tag: attacker's own Thermal-tagged augments burn target armor on
+	# every basic attack (same formula/floor as BalanceSimulator).
+	if att.unit:
+		var thermal_tags := 0
+		for t in att.unit.get_all_tags():
+			if t == Enums.AugmentTag.THERMAL:
+				thermal_tags += 1
+		if thermal_tags >= 2:
+			target.armor = maxf(-25.0, target.armor - 2.5 * thermal_tags)
+
+	# Armor mitigation — same diminishing-returns formula as BalanceSimulator
+	# (100 / (100 + armor)), so Corp Enforcer/Bio-Synthetic armor stacking
+	# actually reduces incoming damage instead of doing nothing.
+	var damage_mult = 100.0 / (100.0 + maxf(0.0, target.armor))
+	dmg *= damage_mult
+
 	_apply_damage(target, dmg, att, false, is_crit)
 	
 	# Legendary Kinetic Destroyer Ricochet: On crit, ricochet 50% damage to same-row enemies
