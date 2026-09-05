@@ -15,6 +15,7 @@ var slot_data: Dictionary = {}
 @onready var type_label: Label = $Margin/VBox/Header/TypeLabel
 @onready var cost_label: Label = $Margin/VBox/Header/CostLabel
 @onready var icon_rect: TextureRect = $Margin/VBox/NameRow/IconRect
+@onready var icon_frame: Panel = get_node_or_null("Margin/VBox/NameRow/IconRect/Frame")
 @onready var name_label: Label = $Margin/VBox/NameRow/NameLabel
 @onready var details_label: Label = $Margin/VBox/DetailsLabel
 @onready var buy_btn: Button = $Margin/VBox/BuyBtn
@@ -96,11 +97,19 @@ func _update_ui(player_gold: int) -> void:
 		cost_label.add_theme_color_override("font_color", Color(1, 0.85, 0) if player_gold >= cost else Color(0.9, 0.2, 0.2))
 		
 	if item_type == "unit":
-		custom_minimum_size = Vector2(130, 118)
+		custom_minimum_size = Vector2(130, 140)
 		var unit_res = res as UnitResource
 		if icon_rect:
+			icon_rect.custom_minimum_size = Vector2(48, 48)
 			icon_rect.texture = unit_res.portrait
 			icon_rect.visible = unit_res.portrait != null
+		if icon_frame:
+			var border_col = Color(0, 0.95, 0.83, 0.6)
+			if unit_res.tier == 2:
+				border_col = Color(0.2, 0.7, 1.0, 0.8)
+			elif unit_res.tier >= 3:
+				border_col = Color(1.0, 0.85, 0.0, 0.9)
+			_set_frame_border(icon_frame, border_col)
 		if name_label:
 			name_label.text = unit_res.display_name
 			name_label.add_theme_color_override("font_color", Color(0, 0.95, 0.83))
@@ -116,11 +125,14 @@ func _update_ui(player_gold: int) -> void:
 				formation_line
 			]
 	elif item_type == "augment":
-		custom_minimum_size = Vector2(102, 88)
+		custom_minimum_size = Vector2(102, 92)
 		var aug_res = res as AugmentResource
 		if icon_rect:
+			icon_rect.custom_minimum_size = Vector2(32, 32)
 			icon_rect.texture = aug_res.icon
 			icon_rect.visible = aug_res.icon != null
+		if icon_frame:
+			_set_frame_border(icon_frame, Color(aug_res.get_tier_color_hex()))
 		if name_label:
 			name_label.text = aug_res.display_name
 			name_label.add_theme_color_override("font_color", Color(aug_res.get_tier_color_hex()))
@@ -136,11 +148,14 @@ func _update_ui(player_gold: int) -> void:
 				" · ".join(aug_res.get_stat_lines())
 			]
 	elif item_type == "conduit":
-		custom_minimum_size = Vector2(102, 88)
+		custom_minimum_size = Vector2(102, 92)
 		var cond_res = res as ConduitResource
 		if icon_rect:
+			icon_rect.custom_minimum_size = Vector2(32, 32)
 			icon_rect.texture = cond_res.icon
 			icon_rect.visible = cond_res.icon != null
+		if icon_frame:
+			_set_frame_border(icon_frame, cond_res.theme_color)
 		if name_label:
 			name_label.text = cond_res.display_name
 			name_label.add_theme_color_override("font_color", cond_res.theme_color)
@@ -178,3 +193,17 @@ func _on_mouse_entered() -> void:
 
 func _on_mouse_exited() -> void:
 	card_mouse_exited.emit()
+
+func _set_frame_border(p_frame: Panel, p_color: Color) -> void:
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.04, 0.03, 0.08, 0.9)
+	style.border_width_left = 1
+	style.border_width_top = 1
+	style.border_width_right = 1
+	style.border_width_bottom = 1
+	style.border_color = p_color
+	style.corner_radius_top_left = 3
+	style.corner_radius_top_right = 3
+	style.corner_radius_bottom_right = 3
+	style.corner_radius_bottom_left = 3
+	p_frame.add_theme_stylebox_override("panel", style)

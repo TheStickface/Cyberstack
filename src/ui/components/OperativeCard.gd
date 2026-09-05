@@ -20,6 +20,7 @@ var is_fielded: bool = true
 var default_style: StyleBoxFlat = null
 
 @onready var portrait_icon: TextureRect = $Margin/VBox/Header/PortraitIcon
+@onready var portrait_frame: Panel = get_node_or_null("Margin/VBox/Header/PortraitIcon/Frame")
 @onready var name_label: Label = $Margin/VBox/Header/NameLabel
 @onready var role_badge: Label = $Margin/VBox/Header/RoleBadge
 @onready var faction_badge: Label = $Margin/VBox/Header/FactionBadge
@@ -388,6 +389,24 @@ func _update_ui() -> void:
 	if portrait_icon:
 		portrait_icon.texture = res.portrait
 		portrait_icon.visible = res.portrait != null
+	if portrait_frame:
+		var border_col = Color(0, 0.95, 0.83, 0.6)
+		if res.tier == 2:
+			border_col = Color(0.2, 0.7, 1.0, 0.8)
+		elif res.tier >= 3:
+			border_col = Color(1.0, 0.85, 0.0, 0.9)
+		var frame_style = StyleBoxFlat.new()
+		frame_style.bg_color = Color(0.04, 0.03, 0.08, 0.85)
+		frame_style.border_width_left = 1
+		frame_style.border_width_top = 1
+		frame_style.border_width_right = 1
+		frame_style.border_width_bottom = 1
+		frame_style.border_color = border_col
+		frame_style.corner_radius_top_left = 3
+		frame_style.corner_radius_top_right = 3
+		frame_style.corner_radius_bottom_right = 3
+		frame_style.corner_radius_bottom_left = 3
+		portrait_frame.add_theme_stylebox_override("panel", frame_style)
 
 	if name_label:
 		if unit_instance.star_level == 1:
