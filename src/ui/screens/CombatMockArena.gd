@@ -283,31 +283,58 @@ func _create_combatant(unit: UnitInstance, is_player: bool, slot_idx: int = 0) -
 	margin.add_theme_constant_override("margin_left", 6)
 	margin.add_theme_constant_override("margin_top", 6)
 	margin.add_theme_constant_override("margin_right", 6)
-	margin.add_theme_constant_override("margin_bottom", 6)
 	panel.add_child(margin)
 	
 	var vbox = VBoxContainer.new()
 	vbox.add_theme_constant_override("separation", 3)
 	margin.add_child(vbox)
 	
+	var header_hbox = HBoxContainer.new()
+	header_hbox.add_theme_constant_override("separation", 6)
+	vbox.add_child(header_hbox)
+	
+	if unit and unit.unit_resource and unit.unit_resource.portrait:
+		var portrait_rect = TextureRect.new()
+		portrait_rect.texture = unit.unit_resource.portrait
+		portrait_rect.custom_minimum_size = Vector2(28, 28)
+		portrait_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		portrait_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		header_hbox.add_child(portrait_rect)
+		
+	var title_vbox = VBoxContainer.new()
+	title_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	title_vbox.add_theme_constant_override("separation", 0)
+	header_hbox.add_child(title_vbox)
+	
 	var name_lbl = Label.new()
 	var stars = unit.get_star_string() if (unit and unit.star_level > 1) else ""
 	var disp_name = unit.unit_resource.display_name if (unit and unit.unit_resource) else "Enforcer"
 	name_lbl.text = "%s %s" % [stars, disp_name] if not stars.is_empty() else disp_name
-	name_lbl.add_theme_font_size_override("font_size", 11)
+	name_lbl.add_theme_font_size_override("font_size", 10)
 	if is_player:
 		name_lbl.add_theme_color_override("font_color", Color(1, 0.85, 0.1) if (unit and unit.star_level == 2) else (Color(1, 0.2, 0.8) if (unit and unit.star_level >= 3) else Color(0, 0.95, 0.83)))
 	else:
 		name_lbl.add_theme_color_override("font_color", Color(1, 0.3, 0.5))
 	name_lbl.clip_text = true
-	vbox.add_child(name_lbl)
+	title_vbox.add_child(name_lbl)
 	
 	var role_lbl = Label.new()
 	role_lbl.text = unit.unit_resource.get_role_name().to_upper() if (unit and unit.unit_resource) else "TANK"
 	role_lbl.add_theme_font_size_override("font_size", 8)
 	role_lbl.add_theme_color_override("font_color", Color(0.6, 0.6, 0.7))
-	vbox.add_child(role_lbl)
+	title_vbox.add_child(role_lbl)
 	
+	if not state.active_conduit_id.is_empty():
+		var cond_path = "res://assets/icons/conduits/%s.png" % state.active_conduit_id
+		if ResourceLoader.exists(cond_path):
+			var cond_rect = TextureRect.new()
+			cond_rect.texture = load(cond_path)
+			cond_rect.custom_minimum_size = Vector2(24, 24)
+			cond_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			cond_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			cond_rect.tooltip_text = "Tactical Conduit: %s" % state.active_conduit_id
+			header_hbox.add_child(cond_rect)
+
 	var hp_lbl = Label.new()
 	hp_lbl.text = "HP: %.0f / %.0f" % [state.current_hp, state.max_hp]
 	hp_lbl.add_theme_font_size_override("font_size", 8)

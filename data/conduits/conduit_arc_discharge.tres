@@ -1,9 +1,11 @@
-[gd_resource type="Resource" script_class="ConduitResource" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="ConduitResource" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://src/data/resources/ConduitResource.gd" id="1_cond"]
+[ext_resource type="Texture2D" path="res://assets/icons/conduits/conduit_arc_discharge.png" id="2_icon"]
 
 [resource]
 script = ExtResource("1_cond")
+icon = ExtResource("2_icon")
 id = "conduit_arc_discharge"
 display_name = "Arc Discharge Coil"
 description = "Overclocks the frontline slot with high-voltage capacitors. Frontline only. Occupant gains +150 Shield and +15 Armor. When struck, retaliates dealing 35 electric damage to adjacent enemies (1.5s cooldown)."

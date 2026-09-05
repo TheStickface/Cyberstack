@@ -189,6 +189,14 @@ func _build_grid_slot_cell(parent: HBoxContainer, slot_idx: int, formation_repor
 			parent.add_child(card)
 			var tags = formation_report[unit].get("formation_tags", []) if formation_report.has(unit) else []
 			card.setup(unit, true, tags)
+			
+			var conduit_entry = crew_mgr.get_active_conduit(slot_idx)
+			if not conduit_entry.is_empty():
+				var cond: ConduitResource = conduit_entry.get("conduit", null)
+				var ch: int = conduit_entry.get("remaining_charges", 0)
+				if cond:
+					card.set_installed_conduit(cond, ch)
+					
 			card.slot_clicked.connect(_on_unit_slot_clicked)
 			card.slot_unequip_requested.connect(_on_unit_slot_unequip_requested)
 			card.unit_toggle_field_requested.connect(_on_unit_toggle_field)
@@ -216,10 +224,12 @@ func _build_grid_slot_cell(parent: HBoxContainer, slot_idx: int, formation_repor
 				if cond:
 					extra_lines += "\n%s [%d/%d]" % [cond.display_name, ch, cond.max_charges]
 					border_color = cond.theme_color
-					btn.icon = cond.icon
-					btn.expand_icon = false
-					btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-					btn.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
+					if cond.icon:
+						btn.icon = cond.icon
+						btn.expand_icon = true
+						btn.add_theme_constant_override("icon_max_width", 26)
+						btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+						btn.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
 
 			btn.text = "+ DEPLOY\n[SLOT %d]%s\n(CLICK/DROP)" % [slot_idx + 1, extra_lines]
 			btn.add_theme_font_size_override("font_size", 8)

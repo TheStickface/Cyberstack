@@ -32,6 +32,28 @@ var default_style: StyleBoxFlat = null
 @onready var sell_btn: Button = $Margin/VBox/Actions/SellBtn
 
 var active_formation_tags: Array = []
+var installed_conduit: ConduitResource = null
+var installed_conduit_charges: int = 0
+
+func set_installed_conduit(cond: ConduitResource, charges: int) -> void:
+	installed_conduit = cond
+	installed_conduit_charges = charges
+	_update_formation_badge()
+	if cond:
+		var style = StyleBoxFlat.new()
+		style.bg_color = Color(0.06, 0.05, 0.12, 0.95)
+		style.border_width_left = 1
+		style.border_width_top = 1
+		style.border_width_right = 1
+		style.border_width_bottom = 1
+		style.border_color = cond.theme_color
+		style.corner_radius_top_left = 4
+		style.corner_radius_top_right = 4
+		style.corner_radius_bottom_right = 4
+		style.corner_radius_bottom_left = 4
+		add_theme_stylebox_override("panel", style)
+	elif default_style:
+		add_theme_stylebox_override("panel", default_style)
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_PASS
@@ -325,6 +347,10 @@ func _update_formation_badge() -> void:
 			if not aug_b.is_empty():
 				badge_parts.append("⚡" + aug_b)
 				
+	# Check installed tactical conduit
+	if installed_conduit:
+		badge_parts.append("%s [%d/%d]" % [installed_conduit.display_name.substr(0, 6), installed_conduit_charges, installed_conduit.max_charges])
+				
 	# If fielded and receiving active buffs from neighbors
 	if is_fielded and not active_formation_tags.is_empty():
 		badge_parts.append("✨BUFFED")
@@ -336,7 +362,9 @@ func _update_formation_badge() -> void:
 		formation_badge.text = " ".join(badge_parts)
 		
 		# Set distinct cyberpunk theme color for formation badge
-		if res.has_directional():
+		if installed_conduit:
+			formation_badge.add_theme_color_override("font_color", installed_conduit.theme_color)
+		elif res.has_directional():
 			formation_badge.add_theme_color_override("font_color", Color(0.0, 0.95, 0.85)) # Neon Cyan
 		elif res.role == Enums.UnitRole.TANK:
 			formation_badge.add_theme_color_override("font_color", Color(0.2, 0.8, 1.0)) # Electric Blue
@@ -435,6 +463,10 @@ func _refresh_slots() -> void:
 			slot_btn.text = "[%s]%s" % [aug.get_tier_name().substr(0, 1), aug.display_name.substr(0, 4)]
 			var tier_col = Color(aug.get_tier_color_hex())
 			slot_btn.add_theme_color_override("font_color", tier_col)
+			if aug.icon:
+				slot_btn.icon = aug.icon
+				slot_btn.expand_icon = true
+				slot_btn.add_theme_constant_override("icon_max_width", 14)
 			var aug_lines: Array[String] = ["STATS"] + aug.get_stat_lines()
 			if aug.has_directional():
 				aug_lines.append("")
