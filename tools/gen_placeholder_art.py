@@ -189,37 +189,9 @@ def draw_centered_text(draw, cx, cy, text, font, fill):
 
 
 def make_portrait(unit, size=128):
-    img = Image.new("RGBA", (size, size), BG)
-    draw = ImageDraw.Draw(img)
-    color = FACTION_COLORS[unit["faction"]]
-    role = unit["role"]
+    from gen_unit_portraits import make_portrait as gen_portrait
+    return gen_portrait(unit, size=size)
 
-    # subtle vertical gradient wash in faction color
-    for y in range(size):
-        t = y / size
-        a = max(0, int(26 * (1 - abs(t - 0.5) * 1.4)))
-        draw.line([(0, y), (size, y)], fill=(*color, a))
-
-    cx, cy = size / 2, size / 2 - 4
-    r = size * 0.36
-    sides = ROLE_SHAPE_SIDES.get(role, 6)
-    rotation = -45 if sides == 4 else -90
-    draw.polygon(regular_polygon(cx, cy, r, sides, rotation), fill=(*color, 40), outline=(*color, 230))
-    draw.polygon(regular_polygon(cx, cy, r - 5, sides, rotation), outline=(*color, 110))
-
-    draw_corner_brackets(draw, size, (*color, 255))
-
-    font_mono = ImageFont.truetype(FONT_BOLD, int(size * 0.34))
-    draw_centered_text(draw, cx, cy, unit["monogram"], font_mono, (245, 245, 255, 255))
-
-    font_small = ImageFont.truetype(FONT_BOLD, 11)
-    label = f'{ROLE_ABBR.get(role, "?")} \u00b7 {FACTION_ABBR.get(unit["faction"], "?")}'
-    draw_centered_text(draw, size / 2, size - 12, label, font_small, (*color, 255))
-
-    font_id = ImageFont.truetype(FONT_REG, 9)
-    draw_centered_text(draw, size / 2, 11, unit["id"], font_id, (150, 150, 165, 200))
-
-    return img
 
 
 def draw_bolt(draw, cx, cy, s, color):

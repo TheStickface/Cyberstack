@@ -467,7 +467,8 @@ func _refresh_slots() -> void:
 				slot_btn.icon = aug.icon
 				slot_btn.expand_icon = true
 				slot_btn.add_theme_constant_override("icon_max_width", 14)
-			var aug_lines: Array[String] = ["STATS"] + aug.get_stat_lines()
+			var aug_lines: Array[String] = ["STATS"]
+			aug_lines.append_array(aug.get_stat_lines())
 			if aug.has_directional():
 				aug_lines.append("")
 				aug_lines.append(aug.get_directional_header())

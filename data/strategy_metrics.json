@@ -1,0 +1,147 @@
+{
+	"archetypes": [
+		{
+			"description": "Mono Bio-Synthetic health-stack sustain — Cellular Grafting/Apex Mutation HP and armor stacking with Viral-tag spread.",
+			"faction": 5,
+			"id": "bio_hacker_sustain",
+			"name": "Bio-Synthetic Sustain",
+			"preferred_starters": [
+				"bio_chimera"
+			],
+			"prioritize_duplicates": false,
+			"role_bias": 0,
+			"runs": 1500,
+			"tag": 1,
+			"winrate": 1.0,
+			"wins": 1500
+		},
+		{
+			"description": "Mono Net-Phantom skirmishers — Cloak/Phase Infiltration speed-evasion-crit stacking with Kinetic burst on backline Snipers.",
+			"faction": 6,
+			"id": "net_phantom_crit_evasion",
+			"name": "Net-Phantom Crit/Evasion",
+			"preferred_starters": [
+				"phantom_spectre"
+			],
+			"prioritize_duplicates": false,
+			"role_bias": 2,
+			"runs": 1500,
+			"tag": 4,
+			"winrate": 1.0,
+			"wins": 1500
+		},
+		{
+			"description": "Cross-faction Viral tag chain — attack-speed/spread payoff stacking regardless of faction identity.",
+			"faction": 0,
+			"id": "viral_spread_chain",
+			"name": "Viral Spread Chain",
+			"preferred_starters": [],
+			"prioritize_duplicates": false,
+			"role_bias": 6,
+			"runs": 1500,
+			"tag": 1,
+			"winrate": 1.0,
+			"wins": 1500
+		},
+		{
+			"description": "Econ-greedy 3-star rush — prioritizes duplicating and star-upping whatever's already fielded over widening the roster.",
+			"faction": 0,
+			"id": "greedy_star_up_econ",
+			"name": "Greedy Star-Up Econ",
+			"preferred_starters": [],
+			"prioritize_duplicates": true,
+			"role_bias": 6,
+			"runs": 1500,
+			"tag": 0,
+			"winrate": 0.999333333333333,
+			"wins": 1499
+		},
+		{
+			"description": "Mono Corp Enforcer shield wall — Aegis Protocol shield/armor/reflect stacking behind a frontline Tank core.",
+			"faction": 2,
+			"id": "corp_tank_wall",
+			"name": "Corp Enforcer Tank Wall",
+			"preferred_starters": [
+				"corp_sentinel"
+			],
+			"prioritize_duplicates": false,
+			"role_bias": 0,
+			"runs": 1500,
+			"tag": 0,
+			"winrate": 0.997333333333333,
+			"wins": 1496
+		},
+		{
+			"description": "Cross-faction Thermal tag chain — pure burn/DOT payoff stacking regardless of faction identity.",
+			"faction": 0,
+			"id": "thermal_burn_chain",
+			"name": "Thermal Burn Chain",
+			"preferred_starters": [],
+			"prioritize_duplicates": false,
+			"role_bias": 6,
+			"runs": 1500,
+			"tag": 2,
+			"winrate": 0.997333333333333,
+			"wins": 1496
+		},
+		{
+			"description": "Mono Street Runner velocity — Adrenaline Surge attack-speed/evasion stacking with Kinetic burst augments.",
+			"faction": 1,
+			"id": "street_runner_rush",
+			"name": "Street Runner Rush",
+			"preferred_starters": [
+				"runner_blitz"
+			],
+			"prioritize_duplicates": false,
+			"role_bias": 6,
+			"runs": 1500,
+			"tag": 4,
+			"winrate": 0.996,
+			"wins": 1494
+		},
+		{
+			"description": "Placement-first — backline Snipers behind whatever frontline is available; role fit and grid position over faction/tag purity.",
+			"faction": 0,
+			"id": "sniper_backline_turtle",
+			"name": "Sniper Backline Turtle",
+			"preferred_starters": [],
+			"prioritize_duplicates": false,
+			"role_bias": 2,
+			"runs": 1500,
+			"tag": 0,
+			"winrate": 0.976666666666667,
+			"wins": 1465
+		},
+		{
+			"description": "Fixer economy splash — Underworld Network gold/attack-damage stacking, banking free rerolls into a late greedy spike.",
+			"faction": 4,
+			"id": "fixer_econ_splash",
+			"name": "Fixer Econ Splash",
+			"preferred_starters": [
+				"fixer_broker"
+			],
+			"prioritize_duplicates": false,
+			"role_bias": 3,
+			"runs": 1500,
+			"tag": 0,
+			"winrate": 0.927333333333333,
+			"wins": 1391
+		},
+		{
+			"description": "Mono Rogue AI mana/control — Subnet Sync AP and mana-battery stacking with a Neural-tag chain.",
+			"faction": 3,
+			"id": "rogue_ai_neural_control",
+			"name": "Rogue AI Neural Control",
+			"preferred_starters": [
+				"ai_glitch"
+			],
+			"prioritize_duplicates": false,
+			"role_bias": 1,
+			"runs": 1500,
+			"tag": 3,
+			"winrate": 0.902666666666667,
+			"wins": 1354
+		}
+	],
+	"generated_runs_per_archetype": 1500
+}
