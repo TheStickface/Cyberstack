@@ -3,8 +3,8 @@
 [ext_resource type="Script" path="res://src/ui/components/AugmentChip.gd" id="1_chip"]
 
 [node name="AugmentChip" type="PanelContainer"]
-custom_minimum_size = Vector2(96, 70)
-offset_right = 96.0
+custom_minimum_size = Vector2(82, 70)
+offset_right = 82.0
 offset_bottom = 70.0
 mouse_filter = 0
 script = ExtResource("1_chip")

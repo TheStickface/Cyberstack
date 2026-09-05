@@ -78,7 +78,7 @@ text = "✖ ABANDON"
 [node name="MainBody" type="HBoxContainer" parent="Margin/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 10
+theme_override_constants/separation = 8
 
 [node name="BoardArea" type="VBoxContainer" parent="Margin/VBox/MainBody"]
 layout_mode = 2
@@ -122,6 +122,7 @@ text = "BENCH RESERVES (Standby Squad — Click DEPLOY to field):"
 custom_minimum_size = Vector2(0, 80)
 layout_mode = 2
 mouse_filter = 1
+horizontal_scroll_mode = 1
 vertical_scroll_mode = 0
 
 [node name="BenchContainer" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/BenchSection/BenchScroll"]
@@ -146,7 +147,7 @@ theme_override_font_sizes/font_size = 9
 text = "RECRUITMENT:"
 
 [node name="TierOddsLabel" type="RichTextLabel" parent="Margin/VBox/MainBody/BoardArea/CrewShop/CrewShopHeader"]
-custom_minimum_size = Vector2(170, 18)
+custom_minimum_size = Vector2(130, 18)
 layout_mode = 2
 size_flags_horizontal = 3
 bbcode_enabled = true
@@ -154,13 +155,13 @@ text = "[font_size=8][color=#9999aa]T1:[/color]60% [color=#00f5d4]T2:[/color]35%
 scroll_active = false
 
 [node name="FreezeBtn" type="Button" parent="Margin/VBox/MainBody/BoardArea/CrewShop/CrewShopHeader"]
-custom_minimum_size = Vector2(85, 18)
+custom_minimum_size = Vector2(80, 18)
 layout_mode = 2
 theme_override_font_sizes/font_size = 8
 text = "🔒 FREEZE"
 
 [node name="RerollBtn" type="Button" parent="Margin/VBox/MainBody/BoardArea/CrewShop/CrewShopHeader"]
-custom_minimum_size = Vector2(90, 18)
+custom_minimum_size = Vector2(85, 18)
 layout_mode = 2
 theme_override_font_sizes/font_size = 8
 text = "REROLL (2 CR)"
@@ -170,7 +171,7 @@ custom_minimum_size = Vector2(0, 122)
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 1
-horizontal_scroll_mode = 0
+horizontal_scroll_mode = 1
 vertical_scroll_mode = 0
 
 [node name="CrewShopContainer" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/CrewShop/CrewShopScroll"]
@@ -180,9 +181,9 @@ size_flags_vertical = 3
 theme_override_constants/separation = 6
 
 [node name="Sidebar" type="VBoxContainer" parent="Margin/VBox/MainBody"]
-custom_minimum_size = Vector2(512, 0)
+custom_minimum_size = Vector2(550, 0)
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 4
 
 [node name="SynergyTrackerHUD" parent="Margin/VBox/MainBody/Sidebar" instance=ExtResource("2_hud")]
 layout_mode = 2
@@ -207,7 +208,7 @@ custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 1
-horizontal_scroll_mode = 0
+horizontal_scroll_mode = 1
 vertical_scroll_mode = 0
 
 [node name="AugmentShopContainer" type="HBoxContainer" parent="Margin/VBox/MainBody/Sidebar/AugmentShop/AugmentShopScroll"]
@@ -245,7 +246,7 @@ text = "AUGMENT BAG (Select chip to equip):"
 custom_minimum_size = Vector2(0, 76)
 layout_mode = 2
 size_flags_vertical = 3
-horizontal_scroll_mode = 0
+horizontal_scroll_mode = 1
 vertical_scroll_mode = 0
 
 [node name="AugmentContainer" type="HBoxContainer" parent="Margin/VBox/MainBody/Sidebar/AugmentTray/AugmentScroll"]
