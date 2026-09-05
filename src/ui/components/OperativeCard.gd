@@ -309,6 +309,8 @@ func set_active_formation_tags(tags: Array) -> void:
 func _ensure_nodes() -> void:
 	if portrait_icon == null:
 		portrait_icon = get_node_or_null("Margin/VBox/Header/PortraitIcon")
+	if portrait_frame == null:
+		portrait_frame = get_node_or_null("Margin/VBox/Header/PortraitIcon/Frame")
 	if name_label == null:
 		name_label = get_node_or_null("Margin/VBox/Header/NameLabel")
 	if role_badge == null:
@@ -391,9 +393,9 @@ func _update_ui() -> void:
 		portrait_icon.visible = res.portrait != null
 	if portrait_frame:
 		var border_col = Color(0, 0.95, 0.83, 0.6)
-		if res.tier == 2:
+		if res.base_cost == 2:
 			border_col = Color(0.2, 0.7, 1.0, 0.8)
-		elif res.tier >= 3:
+		elif res.base_cost >= 3:
 			border_col = Color(1.0, 0.85, 0.0, 0.9)
 		var frame_style = StyleBoxFlat.new()
 		frame_style.bg_color = Color(0.04, 0.03, 0.08, 0.85)

@@ -67,6 +67,7 @@ func _make_custom_tooltip(_for_text: String) -> Object:
 func setup(p_index: int, p_data: Dictionary, player_gold: int) -> void:
 	slot_index = p_index
 	slot_data = p_data
+	_resolve_nodes()
 	_update_ui(player_gold)
 
 func _update_ui(player_gold: int) -> void:
@@ -105,9 +106,10 @@ func _update_ui(player_gold: int) -> void:
 			icon_rect.visible = unit_res.portrait != null
 		if icon_frame:
 			var border_col = Color(0, 0.95, 0.83, 0.6)
-			if unit_res.tier == 2:
+			var u_cost = cost if cost > 0 else unit_res.base_cost
+			if u_cost == 2:
 				border_col = Color(0.2, 0.7, 1.0, 0.8)
-			elif unit_res.tier >= 3:
+			elif u_cost >= 3:
 				border_col = Color(1.0, 0.85, 0.0, 0.9)
 			_set_frame_border(icon_frame, border_col)
 		if name_label:
@@ -207,3 +209,19 @@ func _set_frame_border(p_frame: Panel, p_color: Color) -> void:
 	style.corner_radius_bottom_right = 3
 	style.corner_radius_bottom_left = 3
 	p_frame.add_theme_stylebox_override("panel", style)
+
+func _resolve_nodes() -> void:
+	if type_label == null:
+		type_label = get_node_or_null("Margin/VBox/Header/TypeLabel")
+	if cost_label == null:
+		cost_label = get_node_or_null("Margin/VBox/Header/CostLabel")
+	if icon_rect == null:
+		icon_rect = get_node_or_null("Margin/VBox/NameRow/IconRect")
+	if icon_frame == null:
+		icon_frame = get_node_or_null("Margin/VBox/NameRow/IconRect/Frame")
+	if name_label == null:
+		name_label = get_node_or_null("Margin/VBox/NameRow/NameLabel")
+	if details_label == null:
+		details_label = get_node_or_null("Margin/VBox/DetailsLabel")
+	if buy_btn == null:
+		buy_btn = get_node_or_null("Margin/VBox/BuyBtn")
