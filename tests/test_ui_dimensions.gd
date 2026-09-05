@@ -70,5 +70,38 @@ func test_screen_containment_dimensions() -> Dictionary:
 		prep.queue_free()
 		return {"passed": false, "message": "PrepScreen missing root VBox", "assertions": 2}
 		
+	var synergy_hud = prep.get_node_or_null("Margin/VBox/MainBody/Sidebar/SynergyTrackerHUD")
+	if synergy_hud == null:
+		prep.queue_free()
+		return {"passed": false, "message": "PrepScreen missing SynergyTrackerHUD", "assertions": 3}
+	if synergy_hud.size_flags_horizontal != Control.SIZE_SHRINK_END:
+		prep.queue_free()
+		return {"passed": false, "message": "SynergyTrackerHUD should have SIZE_SHRINK_END (8) for upper-right anchoring", "assertions": 4}
+		
 	prep.queue_free()
-	return {"passed": true, "assertions": 3}
+	return {"passed": true, "assertions": 4}
+
+func test_synergy_tracker_hud_dimensions_and_scroll() -> Dictionary:
+	var hud_scene = preload("res://src/ui/components/SynergyTrackerHUD.tscn")
+	var hud = hud_scene.instantiate()
+	if hud == null:
+		return {"passed": false, "message": "Failed to instantiate SynergyTrackerHUD", "assertions": 1}
+		
+	var scroll: ScrollContainer = hud.find_child("SynergyScroll", true, false)
+	if scroll == null:
+		hud.queue_free()
+		return {"passed": false, "message": "SynergyTrackerHUD missing SynergyScroll ScrollContainer", "assertions": 2}
+		
+	if hud.custom_minimum_size.x > 280 or hud.custom_minimum_size.y > 180:
+		hud.queue_free()
+		return {"passed": false, "message": "SynergyTrackerHUD exceeds sensible window dimensions: %s" % str(hud.custom_minimum_size), "assertions": 3}
+		
+	var report = SynergyReport.new()
+	hud.update_synergies(report)
+	var faction_list: VBoxContainer = hud.find_child("FactionList", true, false)
+	if faction_list == null or faction_list.get_child_count() == 0:
+		hud.queue_free()
+		return {"passed": false, "message": "SynergyTrackerHUD failed to populate faction list inside scroll container", "assertions": 4}
+		
+	hud.queue_free()
+	return {"passed": true, "assertions": 5}

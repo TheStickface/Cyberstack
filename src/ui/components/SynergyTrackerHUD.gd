@@ -7,16 +7,20 @@ extends PanelContainer
 const SynergyTooltipScript = preload("res://src/ui/components/SynergyTooltip.gd")
 const DataRepoScript = preload("res://src/systems/DataRepository.gd")
 
-@onready var faction_list: VBoxContainer = $VBox/FactionList
-@onready var tag_list: VBoxContainer = $VBox/TagList
-@onready var combo_list: VBoxContainer = $VBox/ComboList
+@onready var faction_list: VBoxContainer = _find_list("FactionList")
+@onready var tag_list: VBoxContainer = _find_list("TagList")
+@onready var combo_list: VBoxContainer = _find_list("ComboList")
 
 var repo: Object = null
+
+func _find_list(node_name: String) -> VBoxContainer:
+	var node = find_child(node_name, true, false)
+	return node as VBoxContainer
 
 func _get_repo() -> Object:
 	if repo != null:
 		return repo
-	if get_node_or_null("/root/GameManager") and get_node("/root/GameManager").active_run_manager:
+	if is_inside_tree() and get_node_or_null("/root/GameManager") and get_node("/root/GameManager").active_run_manager:
 		var rm = get_node("/root/GameManager").active_run_manager
 		if rm._repo:
 			repo = rm._repo
@@ -32,10 +36,11 @@ func update_synergies(report: SynergyReport) -> void:
 	_update_combos(report)
 
 func _update_factions(report: SynergyReport) -> void:
-	if not faction_list:
+	var target_list = faction_list if faction_list else _find_list("FactionList")
+	if not target_list:
 		return
 		
-	for child in faction_list.get_children():
+	for child in target_list.get_children():
 		child.queue_free()
 		
 	var r = _get_repo()
@@ -58,13 +63,14 @@ func _update_factions(report: SynergyReport) -> void:
 		var color = Color(0, 0.95, 0.83) if is_active else (Color(0.7, 0.7, 0.8) if count > 0 else Color(0.4, 0.4, 0.5))
 		
 		var item = SynergyHUDItem.new(display_text, "faction", fac_res, count, color)
-		faction_list.add_child(item)
+		target_list.add_child(item)
 
 func _update_tags(report: SynergyReport) -> void:
-	if not tag_list:
+	var target_list = tag_list if tag_list else _find_list("TagList")
+	if not target_list:
 		return
 		
-	for child in tag_list.get_children():
+	for child in target_list.get_children():
 		child.queue_free()
 		
 	var r = _get_repo()
@@ -85,13 +91,14 @@ func _update_tags(report: SynergyReport) -> void:
 		var color = Color(0.7, 0.3, 1.0) if is_active else (Color(0.7, 0.7, 0.8) if count > 0 else Color(0.4, 0.4, 0.5))
 		
 		var item = SynergyHUDItem.new(display_text, "tag", tag_res, count, color)
-		tag_list.add_child(item)
+		target_list.add_child(item)
 
 func _update_combos(report: SynergyReport) -> void:
-	if not combo_list:
+	var target_list = combo_list if combo_list else _find_list("ComboList")
+	if not target_list:
 		return
 		
-	for child in combo_list.get_children():
+	for child in target_list.get_children():
 		child.queue_free()
 		
 	if report == null or report.cross_system_bonuses.is_empty():
@@ -99,7 +106,7 @@ func _update_combos(report: SynergyReport) -> void:
 		empty_lbl.text = "None"
 		empty_lbl.add_theme_font_size_override("font_size", 9)
 		empty_lbl.add_theme_color_override("font_color", Color(0.4, 0.4, 0.5))
-		combo_list.add_child(empty_lbl)
+		target_list.add_child(empty_lbl)
 		return
 		
 	for combo in report.cross_system_bonuses:
@@ -107,9 +114,9 @@ func _update_combos(report: SynergyReport) -> void:
 		lbl.text = "★ %s" % combo.name
 		lbl.tooltip_text = "[%s]\n%s" % [combo.name, combo.description]
 		lbl.mouse_filter = Control.MOUSE_FILTER_PASS
-		lbl.add_theme_font_size_override("font_size", 10)
+		lbl.add_theme_font_size_override("font_size", 9)
 		lbl.add_theme_color_override("font_color", Color(1, 0.2, 0.5))
-		combo_list.add_child(lbl)
+		target_list.add_child(lbl)
 
 class SynergyHUDItem extends Label:
 	var item_type: String = ""
@@ -123,7 +130,7 @@ class SynergyHUDItem extends Label:
 		current_count = p_count
 		mouse_filter = Control.MOUSE_FILTER_PASS
 		tooltip_text = "synergy_details"
-		add_theme_font_size_override("font_size", 10)
+		add_theme_font_size_override("font_size", 9)
 		add_theme_color_override("font_color", p_color)
 		
 	func _make_custom_tooltip(_for_text: String) -> Object:

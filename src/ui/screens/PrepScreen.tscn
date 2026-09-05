@@ -187,6 +187,10 @@ theme_override_constants/separation = 4
 
 [node name="SynergyTrackerHUD" parent="Margin/VBox/MainBody/Sidebar" instance=ExtResource("2_hud")]
 layout_mode = 2
+size_flags_horizontal = 8
+
+[node name="SidebarSpacer" type="Control" parent="Margin/VBox/MainBody/Sidebar"]
+layout_mode = 2
 size_flags_vertical = 3
 
 [node name="AugmentShop" type="VBoxContainer" parent="Margin/VBox/MainBody/Sidebar"]
