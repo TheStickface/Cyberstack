@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ConduitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/ConduitResource.gd" id="1_cond"]
+[ext_resource type="Texture2D" path="res://assets/icons/conduits/conduit_kinetic_bastion.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_cond")
+icon = ExtResource("2_icon")
+id = "conduit_kinetic_bastion"
+display_name = "Kinetic Bastion Plate"
+description = "Reinforces the slot with kinetic reactive sub-plating. Frontline only. Occupant gains +250 Shield and +25 Armor."
+cost = 4
+max_charges = 2
+allowed_rows = 9
+stat_modifiers = {
+4: 25.0,
+5: 250.0
+}
+theme_color = Color(0.3, 0.7, 1, 1)
+icon_code = "🛡️"

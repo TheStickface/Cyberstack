@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ConduitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/ConduitResource.gd" id="1_cond"]
+[ext_resource type="Texture2D" path="res://assets/icons/conduits/conduit_overcharged_bus.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_cond")
+icon = ExtResource("2_icon")
+id = "conduit_overcharged_bus"
+display_name = "Overcharged Bus"
+description = "Overclocks the slot's neural throughput. Occupant gains +35 Starting Mana and +20 Speed."
+cost = 3
+max_charges = 3
+allowed_rows = 0
+stat_modifiers = {
+6: 35.0,
+9: 20.0
+}
+theme_color = Color(0, 0.95, 0.83, 1)
+icon_code = "⚡"

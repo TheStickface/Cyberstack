@@ -22,8 +22,10 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 UNITS_DIR = os.path.join(ROOT, "data", "units")
 AUGS_DIR = os.path.join(ROOT, "data", "augments")
+CONDUITS_DIR = os.path.join(ROOT, "data", "conduits")
 PORTRAIT_OUT = os.path.join(ROOT, "assets", "portraits")
 ICON_OUT = os.path.join(ROOT, "assets", "icons", "augments")
+CONDUIT_ICON_OUT = os.path.join(ROOT, "assets", "icons", "conduits")
 
 FONT_BOLD = "C:/Windows/Fonts/consolab.ttf"
 FONT_REG = "C:/Windows/Fonts/consola.ttf"
@@ -60,6 +62,9 @@ TAG_COLORS = {
 # UnitRole (Enums.UnitRole) -> badge shape / label
 ROLE_SHAPE_SIDES = {0: 6, 1: 4, 2: 3, 3: 5, 4: 8, 5: 7}  # tank hex, hacker diamond, sniper triangle, fixer pentagon, meatshield octagon, commander heptagon
 ROLE_ABBR = {0: "TANK", 1: "HACK", 2: "SNIPE", 3: "FIXER", 4: "MEAT", 5: "CMDR"}
+
+# Enums.GridDirection (only the values ConduitResource.allowed_rows actually uses) -> corner mark
+ROW_SYMBOL = {0: "◆", 9: "▼", 10: "▲"}  # NONE=any (diamond), FRONTLINE (down), BACKLINE (up)
 
 
 # ---------- .tres parsing ----------
@@ -100,6 +105,30 @@ def load_augments():
             "tag": tag,
         })
     return augs
+
+
+def parse_color_field(text: str, name: str):
+    m = re.search(rf'^{name}\s*=\s*Color\(([^)]+)\)', text, re.M)
+    if not m:
+        raise ValueError(f"color field '{name}' not found")
+    r, g, b = (float(x) for x in m.group(1).split(",")[:3])
+    return (int(r * 255), int(g * 255), int(b * 255))
+
+
+def load_conduits():
+    conduits = []
+    for path in sorted(glob.glob(os.path.join(CONDUITS_DIR, "*.tres"))):
+        text = open(path, encoding="utf-8").read()
+        conduits.append({
+            "path": path,
+            "id": parse_field(text, "id"),
+            "display_name": parse_field(text, "display_name"),
+            "icon_code": parse_field(text, "icon_code"),
+            "allowed_rows": int(parse_field(text, "allowed_rows", int)),
+            "max_charges": int(parse_field(text, "max_charges", int)),
+            "theme_color": parse_color_field(text, "theme_color"),
+        })
+    return conduits
 
 
 def monogram_for(display_name):
@@ -240,6 +269,79 @@ def draw_viral(draw, cx, cy, s, color):
 TAG_DRAW = {1: draw_viral, 2: draw_flame, 3: draw_neural, 4: draw_bolt}
 
 
+def draw_shield(draw, cx, cy, s, color):
+    pts = [
+        (cx, cy - 0.46*s), (cx + 0.32*s, cy - 0.30*s), (cx + 0.32*s, cy + 0.06*s),
+        (cx, cy + 0.46*s), (cx - 0.32*s, cy + 0.06*s), (cx - 0.32*s, cy - 0.30*s),
+    ]
+    draw.polygon(pts, outline=color, width=max(3, int(s * 0.05)))
+    draw.line([(cx, cy - 0.22*s), (cx, cy + 0.22*s)], fill=color, width=max(2, int(s * 0.04)))
+
+
+def draw_target(draw, cx, cy, s, color):
+    for frac in (0.44, 0.24):
+        r = frac * s
+        draw.ellipse([cx - r, cy - r, cx + r, cy + r], outline=color, width=max(2, int(s * 0.035)))
+    r = 0.06 * s
+    draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=color)
+    draw.line([(cx, cy - 0.5*s), (cx, cy - 0.3*s)], fill=color, width=max(2, int(s * 0.035)))
+    draw.line([(cx, cy + 0.3*s), (cx, cy + 0.5*s)], fill=color, width=max(2, int(s * 0.035)))
+
+
+def draw_vortex(draw, cx, cy, s, color):
+    for i, frac in enumerate((0.44, 0.30, 0.16)):
+        r = frac * s
+        start = 30 + i * 50
+        draw.arc([cx - r, cy - r, cx + r, cy + r], start, start + 270, fill=color, width=max(2, int(s * 0.045)))
+
+
+def draw_vial(draw, cx, cy, s, color):
+    top, bot, half = cy - 0.42*s, cy + 0.4*s, 0.16*s
+    draw.line([(cx - half, top), (cx - half, cy - 0.05*s)], fill=color, width=max(2, int(s * 0.04)))
+    draw.line([(cx + half, top), (cx + half, cy - 0.05*s)], fill=color, width=max(2, int(s * 0.04)))
+    draw.line([(cx - half * 1.5, top), (cx + half * 1.5, top)], fill=color, width=max(2, int(s * 0.04)))
+    draw.polygon([
+        (cx - half, cy - 0.05*s), (cx + half, cy - 0.05*s),
+        (cx + half * 1.5, bot), (cx - half * 1.5, bot),
+    ], outline=color, width=max(2, int(s * 0.04)))
+    draw.ellipse([cx - 0.12*s, cy + 0.08*s, cx + 0.12*s, cy + 0.28*s], fill=color)
+
+
+CONDUIT_GLYPH = {"🛡️": draw_shield, "⚡": draw_bolt, "🎯": draw_target, "🌀": draw_vortex, "🧪": draw_vial, "🔥": draw_flame}
+
+
+def make_conduit_icon(cond, size=96):
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    color = cond["theme_color"]
+    cx, cy = size / 2, size / 2
+
+    # Hex frame (distinct silhouette from the augment rounded-rect frame)
+    outer = regular_polygon(cx, cy, size * 0.47, 6, rotation=-90)
+    draw.polygon(outer, fill=(9, 8, 18, 235), outline=color, width=3)
+    inner = regular_polygon(cx, cy, size * 0.40, 6, rotation=-90)
+    draw.polygon(inner, outline=(*color, 130), width=1)
+
+    glyph_fn = CONDUIT_GLYPH.get(cond["icon_code"], draw_bolt)
+    glyph_fn(draw, cx, cy - 3, size * 0.5, color)
+
+    # Charge pips along the bottom, one per max_charges
+    pip_r = 3
+    pip_count = max(1, cond["max_charges"])
+    total_w = pip_count * (pip_r * 2 + 4) - 4
+    start_x = cx - total_w / 2 + pip_r
+    py = size - 13
+    for i in range(pip_count):
+        px = start_x + i * (pip_r * 2 + 4)
+        draw.ellipse([px - pip_r, py - pip_r, px + pip_r, py + pip_r], fill=color)
+
+    # Row-eligibility mark, top-left corner
+    font_row = ImageFont.truetype(FONT_BOLD, 13)
+    draw.text((7, 4), ROW_SYMBOL.get(cond["allowed_rows"], "◆"), font=font_row, fill=(*color, 255))
+
+    return img
+
+
 def make_augment_icon(aug, size=96):
     img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
@@ -295,6 +397,7 @@ def wire_resource(path, res_relpath, field_name, ext_id):
 def main():
     os.makedirs(PORTRAIT_OUT, exist_ok=True)
     os.makedirs(ICON_OUT, exist_ok=True)
+    os.makedirs(CONDUIT_ICON_OUT, exist_ok=True)
 
     units = dedupe_monograms(load_units())
     for u in units:
@@ -308,7 +411,13 @@ def main():
         wired = wire_resource(a["path"], f"assets/icons/augments/{a['id']}.png", "icon", "2_icon")
         print(("wired " if wired else "image  "), "augment", a["id"])
 
-    print(f"\n{len(units)} unit portraits, {len(augs)} augment icons generated.")
+    conduits = load_conduits()
+    for c in conduits:
+        make_conduit_icon(c).save(os.path.join(CONDUIT_ICON_OUT, f"{c['id']}.png"))
+        wired = wire_resource(c["path"], f"assets/icons/conduits/{c['id']}.png", "icon", "2_icon")
+        print(("wired " if wired else "image  "), "conduit", c["id"])
+
+    print(f"\n{len(units)} unit portraits, {len(augs)} augment icons, {len(conduits)} conduit icons generated.")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ConduitResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/data/resources/ConduitResource.gd" id="1_cond"]
+[ext_resource type="Texture2D" path="res://assets/icons/conduits/conduit_siphon_bio_vat.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_cond")
+icon = ExtResource("2_icon")
+id = "conduit_siphon_bio_vat"
+display_name = "Siphon Bio-Vat"
+description = "Saturates the slot with parasitic nanites. Occupant gains +200 Max HP and +20 AD."
+cost = 5
+max_charges = 2
+allowed_rows = 0
+stat_modifiers = {
+0: 200.0,
+1: 20.0
+}
+theme_color = Color(0.2, 0.9, 0.4, 1)
+icon_code = "🧪"
