@@ -85,7 +85,7 @@ static func format_currency(amount: int, short: bool = false) -> String:
 static func format_cost(amount: int) -> String:
 	return "%d %s" % [amount, CURRENCY_NAME.to_upper()]
 
-const DEFAULT_STARTING_GOLD: int = 12
+const DEFAULT_STARTING_GOLD: int = 14
 const BASE_REROLL_COST: int = 2
 const DEFAULT_CREW_SHOP_SLOTS: int = 5
 const MAX_CREW_SHOP_SLOTS: int = 7
@@ -142,7 +142,7 @@ const DISTRICT_UNIT_SHOP_ODDS: Dictionary = {
 
 # Enemy Stat Scaling Multipliers per District (HP, Damage)
 const DISTRICT_ENEMY_SCALING: Dictionary = {
-	1: { "hp_mult": 0.50, "dmg_mult": 0.65 },
+	1: { "hp_mult": 0.50, "dmg_mult": 0.50 },
 	2: { "hp_mult": 0.85, "dmg_mult": 0.85 },
 	3: { "hp_mult": 1.30, "dmg_mult": 1.15 },
 	4: { "hp_mult": 1.70, "dmg_mult": 1.40 },
