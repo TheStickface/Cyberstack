@@ -5,6 +5,7 @@ extends SceneTree
 ## Simulates thousands of full 4-district roguelite playthroughs including combat, shopping, and narrative events
 
 const DataRepoScript = preload("res://src/systems/DataRepository.gd")
+const CombatEngineScript = preload("res://src/systems/CombatEngine.gd")
 
 func _init() -> void:
 	var total_runs = _parse_runs_from_args(10000)
@@ -543,115 +544,39 @@ static func simulate_single_battle(
 	repo: Object,
 	district_index: int = 1,
 	is_boss: bool = false,
-	district: DistrictResource = null,
-	player_grid: Array = [],
+	_district: DistrictResource = null,
+	_player_grid: Array = [],
 	synergy_report: SynergyReport = null,
 	formation_bonuses: Dictionary = {}
 ) -> Dictionary:
 	# Calculate active synergy bonuses for player squad
 	var factions_dict = repo.factions if repo != null else {}
 	var tags_dict = repo.tags if repo != null else {}
-	var player_synergy_report = synergy_report if synergy_report != null else SynergyEngine.evaluate_crew(player_crew, factions_dict, tags_dict)
+	var player_synergy_report = synergy_report if synergy_report != null else (SynergyEngine.evaluate_crew(player_crew, factions_dict, tags_dict) if repo != null else null)
 	
-	var player_combatants: Array[Dictionary] = []
+	# Ensure grid slots are assigned for player units
 	for i in range(player_crew.size()):
 		var u = player_crew[i]
-		var c = _create_combatant(u, repo, true, district_index, false, player_synergy_report)
-		var slot = _assign_tactical_slot(u, i, district_index)
-		c["slot"] = slot
-		var coords = UnitInstance.slot_to_coords(slot)
-		c["row"] = coords.x
-		c["col"] = coords.y
-
-		# Integrate formation bonuses (conduits, doctrines, etc.) if provided
-		if formation_bonuses.has(u):
-			var b = formation_bonuses[u]
-			c["max_hp"] += b.get("max_health_bonus", 0.0)
-			c["hp"] += b.get("max_health_bonus", 0.0)
-			c["shield"] += b.get("shield_bonus", 0.0)
-			c["armor"] += b.get("armor_bonus", 0.0)
-			c["attack_damage"] += b.get("attack_damage_bonus", 0.0)
-			c["ability_power"] += b.get("ability_power_bonus", 0.0)
-			c["attack_speed"] *= (1.0 + b.get("attack_speed_bonus", 0.0))
-			c["crit_chance"] += b.get("crit_bonus", 0.0)
-			c["evasion"] += b.get("evasion_bonus", 0.0)
-			c["mana"] = minf(c["max_mana"], c["mana"] + b.get("starting_mana_bonus", 0.0))
-			c["active_conduit_id"] = b.get("active_conduit_id", "")
-			c["slot_doctrine_id"] = b.get("slot_doctrine_id", "")
-			c["retaliation_icd"] = 0.0
-
-		player_combatants.append(c)
-		
-	var enemy_combatants: Array[Dictionary] = []
+		if u != null and u.grid_slot < 0:
+			u.grid_slot = _assign_tactical_slot(u, i, district_index)
+			
+	# Ensure grid slots are assigned for enemy units
 	for i in range(enemy_crew.size()):
 		var u = enemy_crew[i]
-		var c = _create_combatant(u, repo, false, district_index, is_boss, null)
-		var slot = _assign_tactical_slot(u, i, district_index)
-		c["slot"] = slot
-		var coords = UnitInstance.slot_to_coords(slot)
-		c["row"] = coords.x
-		c["col"] = coords.y
-		enemy_combatants.append(c)
-		
-	# Apply start-of-battle formation buffs
-	if formation_bonuses.is_empty():
-		_apply_sim_formations(player_combatants)
-	_apply_sim_formations(enemy_combatants)
-	
-	# Apply District-Thematic Environmental Hazards & Modifiers
-	_apply_district_environmental_hazards(player_combatants, enemy_combatants, district_index)
-		
-	var time = 0.0
-	var dt = 0.1
-	var max_time = 60.0
-	
-	while time < max_time:
-		time += dt
-		
-		# Step player combatants
-		for c in player_combatants:
-			if c["hp"] > 0:
-				_step_combatant(c, enemy_combatants, player_combatants, dt, district_index)
-				
-		# Step enemy combatants
-		for c in enemy_combatants:
-			if c["hp"] > 0:
-				_step_combatant(c, player_combatants, enemy_combatants, dt, district_index)
-				
-		# Check victory
-		var living_enemies = 0
-		for c in enemy_combatants:
-			if c["hp"] > 0:
-				living_enemies += 1
-				
-		var living_players = 0
-		for c in player_combatants:
-			if c["hp"] > 0:
-				living_players += 1
-				
-		if living_enemies == 0:
-			return {
-				"victory": true, "duration": time, "survivors": living_players,
-				"player_hp_frac": _squad_hp_fraction(player_combatants),
-				"enemy_hp_frac": _squad_hp_fraction(enemy_combatants)
-			}
-		if living_players == 0:
-			return {
-				"victory": false, "duration": time, "survivors": 0,
-				"player_hp_frac": _squad_hp_fraction(player_combatants),
-				"enemy_hp_frac": _squad_hp_fraction(enemy_combatants)
-			}
+		if u != null and u.grid_slot < 0:
+			u.grid_slot = _assign_tactical_slot(u, i, district_index)
 
-	# Timeout
-	var survivors = 0
-	for c in player_combatants:
-		if c["hp"] > 0:
-			survivors += 1
-	return {
-		"victory": false, "duration": max_time, "survivors": survivors,
-		"player_hp_frac": _squad_hp_fraction(player_combatants),
-		"enemy_hp_frac": _squad_hp_fraction(enemy_combatants)
-	}
+	# Execute battle via CombatEngine with 60 FPS sub-frame precision (dt = 1.0 / 60.0)
+	return CombatEngineScript.simulate_battle(
+		player_crew,
+		enemy_crew,
+		district_index,
+		is_boss,
+		formation_bonuses,
+		1.0 / 60.0,
+		60.0,
+		player_synergy_report
+	)
 
 ## Aggregate remaining-HP fraction of a squad (0.0 = wiped, 1.0 = untouched).
 ## Shields are ignored; only raw HP pools count toward the margin.

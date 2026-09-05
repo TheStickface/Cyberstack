@@ -169,8 +169,10 @@ func _on_toggle_pause() -> void:
 func _on_step_frame() -> void:
 	if arena == null: return
 	if "battle_active" in arena and arena.battle_active:
-		arena._tick_squad(arena.player_states, arena.enemy_states, 0.1)
-		arena._tick_squad(arena.enemy_states, arena.player_states, 0.1)
+		var dt_frame = 1.0 / 60.0
+		arena.battle_time += dt_frame
+		arena._tick_squad(arena.player_states, arena.enemy_states, dt_frame)
+		arena._tick_squad(arena.enemy_states, arena.player_states, dt_frame)
 		arena._update_all_bars()
 		arena._check_battle_end()
 
