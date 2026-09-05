@@ -3,9 +3,9 @@
 [ext_resource type="Script" path="res://src/ui/components/AugmentChip.gd" id="1_chip"]
 
 [node name="AugmentChip" type="PanelContainer"]
-custom_minimum_size = Vector2(160, 52)
-offset_right = 160.0
-offset_bottom = 52.0
+custom_minimum_size = Vector2(96, 70)
+offset_right = 96.0
+offset_bottom = 70.0
 mouse_filter = 0
 script = ExtResource("1_chip")
 
@@ -15,10 +15,10 @@ theme_override_constants/separation = 2
 
 [node name="TopRow" type="HBoxContainer" parent="VBox"]
 layout_mode = 2
-theme_override_constants/separation = 4
+theme_override_constants/separation = 3
 
 [node name="IconRect" type="TextureRect" parent="VBox/TopRow"]
-custom_minimum_size = Vector2(16, 16)
+custom_minimum_size = Vector2(18, 18)
 layout_mode = 2
 size_flags_vertical = 4
 expand_mode = 1
@@ -27,8 +27,16 @@ stretch_mode = 5
 [node name="NameLabel" type="Label" parent="VBox/TopRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 9
 text = "Viral Nanites"
+clip_text = true
+
+[node name="DetailsLabel" type="Label" parent="VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.8, 0.82, 0.9, 1)
+theme_override_font_sizes/font_size = 8
+text = "+10 AP"
 clip_text = true
 
 [node name="HBox" type="HBoxContainer" parent="VBox"]
@@ -37,14 +45,14 @@ layout_mode = 2
 [node name="SlotTypeLabel" type="Label" parent="VBox/HBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0.7, 0.9, 1)
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 8
 text = "[UTIL]"
 
 [node name="TagLabel" type="Label" parent="VBox/HBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0, 0.95, 0.4, 1)
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 8
 text = "Viral"
 horizontal_alignment = 2
 clip_text = true

@@ -96,7 +96,7 @@ func _update_ui(player_gold: int) -> void:
 		cost_label.add_theme_color_override("font_color", Color(1, 0.85, 0) if player_gold >= cost else Color(0.9, 0.2, 0.2))
 		
 	if item_type == "unit":
-		custom_minimum_size = Vector2(150, 118)
+		custom_minimum_size = Vector2(138, 118)
 		var unit_res = res as UnitResource
 		if icon_rect:
 			icon_rect.texture = unit_res.portrait
@@ -116,7 +116,7 @@ func _update_ui(player_gold: int) -> void:
 				formation_line
 			]
 	elif item_type == "augment":
-		custom_minimum_size = Vector2(130, 88)
+		custom_minimum_size = Vector2(120, 88)
 		var aug_res = res as AugmentResource
 		if icon_rect:
 			icon_rect.texture = aug_res.icon
@@ -136,7 +136,7 @@ func _update_ui(player_gold: int) -> void:
 				" · ".join(aug_res.get_stat_lines())
 			]
 	elif item_type == "conduit":
-		custom_minimum_size = Vector2(130, 88)
+		custom_minimum_size = Vector2(120, 88)
 		var cond_res = res as ConduitResource
 		if icon_rect:
 			icon_rect.texture = cond_res.icon

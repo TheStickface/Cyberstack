@@ -16,6 +16,7 @@ var is_selected: bool = false
 
 @onready var icon_rect: TextureRect = $VBox/TopRow/IconRect
 @onready var name_label: Label = $VBox/TopRow/NameLabel
+@onready var details_label: Label = get_node_or_null("VBox/DetailsLabel")
 @onready var slot_type_label: Label = $VBox/HBox/SlotTypeLabel
 @onready var tag_label: Label = $VBox/HBox/TagLabel
 
@@ -111,6 +112,11 @@ func _update_ui() -> void:
 
 	if name_label:
 		name_label.text = augment_resource.display_name
+		name_label.add_theme_color_override("font_color", Color(augment_resource.get_tier_color_hex()))
+		
+	if details_label:
+		var stat_lines = augment_resource.get_stat_lines()
+		details_label.text = " · ".join(stat_lines) if not stat_lines.is_empty() else augment_resource.get_tier_name()
 		
 	if slot_type_label:
 		slot_type_label.text = "[%s]" % Enums.slot_type_to_string(augment_resource.slot_type)
@@ -132,11 +138,15 @@ func _update_ui() -> void:
 	# Apply Tier Styling
 	var tier_color = Color(augment_resource.get_tier_color_hex())
 	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.05, 0.04, 0.12, 0.9)
-	style.border_width_left = 2
-	style.border_width_top = 2
-	style.border_width_right = 2
-	style.border_width_bottom = 2
+	style.bg_color = Color(0.06, 0.05, 0.12, 0.95)
+	style.content_margin_left = 5
+	style.content_margin_top = 4
+	style.content_margin_right = 5
+	style.content_margin_bottom = 4
+	style.border_width_left = 1
+	style.border_width_top = 1
+	style.border_width_right = 1
+	style.border_width_bottom = 1
 	style.border_color = Color(0.2, 0.8, 1.0) if is_selected else tier_color
 	style.corner_radius_top_left = 4
 	style.corner_radius_top_right = 4

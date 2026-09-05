@@ -170,6 +170,7 @@ custom_minimum_size = Vector2(0, 122)
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 1
+horizontal_scroll_mode = 0
 vertical_scroll_mode = 0
 
 [node name="CrewShopContainer" type="HBoxContainer" parent="Margin/VBox/MainBody/BoardArea/CrewShop/CrewShopScroll"]
@@ -179,7 +180,7 @@ size_flags_vertical = 3
 theme_override_constants/separation = 6
 
 [node name="Sidebar" type="VBoxContainer" parent="Margin/VBox/MainBody"]
-custom_minimum_size = Vector2(280, 0)
+custom_minimum_size = Vector2(512, 0)
 layout_mode = 2
 theme_override_constants/separation = 6
 
@@ -199,13 +200,14 @@ layout_mode = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(0.7, 0.4, 1, 1)
 theme_override_font_sizes/font_size = 9
-text = "BLACK MARKET (AUGMENTS):"
+text = "BLACK MARKET (AUGMENTS & CONDUITS):"
 
 [node name="AugmentShopScroll" type="ScrollContainer" parent="Margin/VBox/MainBody/Sidebar/AugmentShop"]
-custom_minimum_size = Vector2(0, 95)
+custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 1
+horizontal_scroll_mode = 0
 vertical_scroll_mode = 0
 
 [node name="AugmentShopContainer" type="HBoxContainer" parent="Margin/VBox/MainBody/Sidebar/AugmentShop/AugmentShopScroll"]
@@ -229,7 +231,7 @@ text = "⚡ OVERDRIVE (6 CR)"
 tooltip_text = "Black Market Overdrive (District 3+): Spend 6 credits to upgrade an equipped augment to the next rarity tier."
 
 [node name="AugmentTray" type="VBoxContainer" parent="Margin/VBox/MainBody/Sidebar"]
-custom_minimum_size = Vector2(0, 105)
+custom_minimum_size = Vector2(0, 95)
 layout_mode = 2
 theme_override_constants/separation = 2
 
@@ -240,9 +242,10 @@ theme_override_font_sizes/font_size = 9
 text = "AUGMENT BAG (Select chip to equip):"
 
 [node name="AugmentScroll" type="ScrollContainer" parent="Margin/VBox/MainBody/Sidebar/AugmentTray"]
-custom_minimum_size = Vector2(0, 85)
+custom_minimum_size = Vector2(0, 76)
 layout_mode = 2
 size_flags_vertical = 3
+horizontal_scroll_mode = 0
 vertical_scroll_mode = 0
 
 [node name="AugmentContainer" type="HBoxContainer" parent="Margin/VBox/MainBody/Sidebar/AugmentTray/AugmentScroll"]
